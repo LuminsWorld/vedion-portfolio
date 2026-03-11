@@ -16,6 +16,7 @@ const PROJECTS = [
     detail: "Built entirely from scratch. The hero features a Three.js particle field that reacts to a procedural Web Audio synthesizer running a 100 BPM Am-F-C-G progression. The glitch effect on the title is beat-detected from the audio analyser node. Every animation — from the EQ visualizer divider to the scroll reveals — was hand-coded with no animation libraries.",
     highlights: ["Beat-synced Three.js particle system", "Procedural Web Audio synthesis — no static audio files", "Multi-color glitch text driven by AnalyserNode", "Mirrored EQ visualizer with centered bass spike", "Reveal-locked landing with animated card entrance"],
     color: "var(--green)", colorHex: "#00FF41",
+    link: "https://github.com/LuminsWorld/vedion-portfolio",
     hasChat: false, isPlaceholder: false,
   },
   {
@@ -277,11 +278,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div style={{ position: "absolute", bottom: "1.5rem", left: "50%", transform: "translateX(-50%)", textAlign: "center", zIndex: 5 }}>
-          <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.25)", marginBottom: "0.4rem" }}>SCROLL</div>
-          <div style={{ width: 1, height: 32, background: "linear-gradient(var(--green), transparent)", margin: "0 auto" }} />
-        </div>
+
       </section>
 
 
@@ -328,7 +325,7 @@ export default function Home() {
             This site is powered by an AI called Vedion — my personal assistant. Hit the chat button and ask it anything.
           </p>
           <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem" }}>
-            {[["GITHUB", "#"], ["LINKEDIN", "#"]].map(([l, h]) => (
+            {[["GITHUB", "https://github.com/LuminsWorld"], ["LINKEDIN", "#"]].map(([l, h]) => (
               <a key={l} href={h} style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.35)", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={e => e.target.style.color = "var(--green)"}
                 onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.35)"}>
