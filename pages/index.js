@@ -90,6 +90,9 @@ export default function Home() {
   // Lock scroll until user reveals work
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     return () => { document.body.style.overflow = ''; };
   }, []);
 
