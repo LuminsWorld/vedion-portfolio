@@ -197,10 +197,24 @@ export default function Home() {
         className={navScrolled ? "nav-scrolled" : ""}
         style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.25rem clamp(1.25rem, 5vw, 2rem)", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "all 0.3s ease" }}
       >
-        <span style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.3em", color: "var(--green)" }}>AT</span>
+        <span
+          onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.3em", color: "var(--green)", cursor: "pointer" }}
+        >VEDION</span>
         <div style={{ display: "flex", gap: "clamp(1rem, 4vw, 2rem)" }}>
           {["WORK", "ABOUT", "CONTACT"].map(l => (
-            <a key={l} href={"#" + l.toLowerCase()} style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
+            <a key={l} href={"#" + l.toLowerCase()}
+              onClick={e => {
+                if (!revealed) {
+                  e.preventDefault();
+                  handleReveal();
+                  setTimeout(() => {
+                    const el = document.getElementById(l.toLowerCase());
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }, 800);
+                }
+              }}
+              style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
               onMouseEnter={e => e.target.style.color = "var(--green)"}
               onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>
               {l}
