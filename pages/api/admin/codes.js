@@ -1,4 +1,4 @@
-import { setDoc, listDocs, updateDoc } from '../../../lib/firestore'
+import { setDoc, listDocs } from '../../../lib/firestore'
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET
 
@@ -9,9 +9,11 @@ function randomCode() {
   return code
 }
 
+const VALID_PLANS     = ['free', 'pro', 'ultra']
+const VALID_DURATIONS = ['7', '30', '90', '365', 'indefinite']
+
 export default async function handler(req, res) {
   try {
-    // Always return JSON — never let Next.js serve an HTML error page
     res.setHeader('Content-Type', 'application/json')
 
     if (!ADMIN_SECRET) {
@@ -24,23 +26,27 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const count = Math.min(parseInt(req.body?.count ?? '1'), 50)
-      const note  = req.body?.note ?? ''
-      const codes = []
+      const count    = Math.min(parseInt(req.body?.count ?? '1'), 50)
+      const note     = req.body?.note ?? ''
+      const plan     = VALID_PLANS.includes(req.body?.plan) ? req.body.plan : 'free'
+      const duration = VALID_DURATIONS.includes(req.body?.duration) ? req.body.duration : 'indefinite'
+      const codes    = []
 
       for (let i = 0; i < count; i++) {
         let code
         do { code = randomCode() } while (codes.includes(code))
         codes.push(code)
         await setDoc(`inviteCodes/${code}`, {
-          used: false,
-          usedBy: null,
+          used:      false,
+          usedBy:    null,
           createdAt: new Date().toISOString(),
+          plan,
+          duration,
           note,
         })
       }
 
-      return res.json({ codes })
+      return res.json({ codes, plan, duration })
     }
 
     if (req.method === 'GET') {

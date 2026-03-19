@@ -8,8 +8,10 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
   const [authErr, setAuthErr] = useState('')
   const [codes, setCodes]   = useState([])
-  const [count, setCount]   = useState(1)
-  const [note, setNote]     = useState('')
+  const [count, setCount]     = useState(1)
+  const [note, setNote]       = useState('')
+  const [plan, setPlan]       = useState('free')
+  const [duration, setDuration] = useState('indefinite')
   const [loading, setLoading] = useState(false)
   const [msg, setMsg]       = useState('')
   const [copied, setCopied] = useState(null)
@@ -46,7 +48,7 @@ export default function AdminPage() {
   async function generate() {
     setLoading(true); setMsg('')
     try {
-      const data = await apiReq('POST', { count: parseInt(count), note })
+      const data = await apiReq('POST', { count: parseInt(count), note, plan, duration })
       setMsg(`Generated: ${data.codes.join(', ')}`)
       await loadCodes()
     } catch (e) {
@@ -61,7 +63,12 @@ export default function AdminPage() {
   }
 
   const inp = { background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '10px 14px', color: '#fff', ...m, fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }
+  const sel = { ...inp, cursor: 'pointer' }
   const btn = { background: '#00FF41', color: '#000', border: 'none', borderRadius: 8, padding: '10px 20px', ...m, fontWeight: 900, fontSize: 13, letterSpacing: 1, cursor: 'pointer' }
+
+  const PLAN_COLORS = { free: '#00FF41', pro: '#00D4FF', ultra: '#7B2FFF' }
+  const PLAN_LABELS = { free: 'Free', pro: 'Pro', ultra: 'Ultra' }
+  const DUR_LABELS  = { '7': '7 days', '30': '30 days', '90': '90 days', '365': '1 year', indefinite: 'Indefinite' }
 
   if (!authed) return (
     <div style={{ background: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -95,7 +102,21 @@ export default function AdminPage() {
           <p style={{ ...m, fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.4)', margin: 0 }}>GENERATE CODES</p>
           <div style={{ display: 'flex', gap: 8 }}>
             <input type="number" min="1" max="50" value={count} onChange={e => setCount(e.target.value)}
-              style={{ ...inp, width: 72 }} placeholder="Count" />
+              style={{ ...inp, width: 64 }} placeholder="#" />
+            <select value={plan} onChange={e => setPlan(e.target.value)} style={{ ...sel, flex: 1, color: PLAN_COLORS[plan] }}>
+              <option value="free">Free tier</option>
+              <option value="pro">Pro tier</option>
+              <option value="ultra">Ultra tier</option>
+            </select>
+            <select value={duration} onChange={e => setDuration(e.target.value)} style={{ ...sel, flex: 1 }}>
+              <option value="indefinite">Indefinite</option>
+              <option value="7">7 days</option>
+              <option value="30">30 days</option>
+              <option value="90">90 days</option>
+              <option value="365">1 year</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
             <input value={note} onChange={e => setNote(e.target.value)}
               style={{ ...inp, flex: 1 }} placeholder="Note (optional)" />
             <button onClick={generate} disabled={loading} style={{ ...btn, whiteSpace: 'nowrap', opacity: loading ? 0.5 : 1 }}>
@@ -113,10 +134,12 @@ export default function AdminPage() {
           {unused.length === 0 && <p style={{ ...m, fontSize: 12, color: 'rgba(255,255,255,0.2)', margin: 0 }}>None</p>}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {unused.map(c => (
-              <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#000', borderRadius: 8, padding: '8px 12px' }}>
-                <span style={{ ...m, fontSize: 16, letterSpacing: 3, color: '#00FF41' }}>{c.id}</span>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  {c.note && <span style={{ ...m, fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{c.note}</span>}
+              <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#000', borderRadius: 8, padding: '8px 12px', gap: 8 }}>
+                <span style={{ ...m, fontSize: 15, letterSpacing: 3, color: '#00FF41' }}>{c.id}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {c.plan && <span style={{ ...m, fontSize: 9, letterSpacing: 1, color: PLAN_COLORS[c.plan] ?? '#fff', border: `1px solid ${PLAN_COLORS[c.plan] ?? '#fff'}55`, borderRadius: 4, padding: '1px 6px' }}>{(PLAN_LABELS[c.plan] ?? c.plan).toUpperCase()}</span>}
+                  {c.duration && <span style={{ ...m, fontSize: 9, color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 6px' }}>{DUR_LABELS[c.duration] ?? c.duration}</span>}
+                  {c.note && <span style={{ ...m, fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>{c.note}</span>}
                   <button onClick={() => copy(c.id)} style={{ ...btn, padding: '4px 10px', fontSize: 10, background: copied === c.id ? '#00D4FF' : '#00FF41' }}>
                     {copied === c.id ? 'COPIED' : 'COPY'}
                   </button>
