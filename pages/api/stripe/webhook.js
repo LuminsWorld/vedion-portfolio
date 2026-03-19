@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-const { adminDb, FieldValue } = require('../../../lib/firebaseAdmin')
+import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 

@@ -1,5 +1,5 @@
-const { requireAuth } = require('../../../lib/authMiddleware')
-const { adminDb, FieldValue } = require('../../../lib/firebaseAdmin')
+import { requireAuth } from '../../../lib/authMiddleware'
+import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
 import { PLAN_LIMITS } from '../../../lib/credits'
 
 export default async function handler(req, res) {

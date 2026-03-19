@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI } from '@google/genai'
-const { requireAuth } = require('../../../lib/authMiddleware')
-const { adminDb, FieldValue, adminStorage } = require('../../../lib/firebaseAdmin')
+import { requireAuth } from '../../../lib/authMiddleware'
+import { adminDb, FieldValue, adminStorage } from '../../../lib/firebaseAdmin'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })

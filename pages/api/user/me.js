@@ -1,4 +1,4 @@
-const { requireAuth } = require('../../../lib/authMiddleware')
+import { requireAuth } from '../../../lib/authMiddleware'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end()
