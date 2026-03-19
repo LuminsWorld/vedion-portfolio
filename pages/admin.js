@@ -1,0 +1,148 @@
+import { useState } from 'react'
+import Head from 'next/head'
+
+const m = { fontFamily: 'monospace' }
+
+export default function AdminPage() {
+  const [secret, setSecret] = useState('')
+  const [authed, setAuthed] = useState(false)
+  const [authErr, setAuthErr] = useState('')
+  const [codes, setCodes]   = useState([])
+  const [count, setCount]   = useState(1)
+  const [note, setNote]     = useState('')
+  const [loading, setLoading] = useState(false)
+  const [msg, setMsg]       = useState('')
+  const [copied, setCopied] = useState(null)
+
+  async function apiReq(method, body) {
+    const res = await fetch('/api/admin/codes', {
+      method,
+      headers: { 'Authorization': `Bearer ${secret}`, 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+    const data = await res.json()
+    if (res.status === 401) throw new Error('Wrong secret')
+    if (!res.ok) throw new Error(data.error ?? 'Unknown error')
+    return data
+  }
+
+  async function handleLogin() {
+    setAuthErr('')
+    try {
+      await apiReq('GET')
+      setAuthed(true)
+      await loadCodes()
+    } catch (e) {
+      setAuthErr(e.message)
+    }
+  }
+
+  async function loadCodes() {
+    const data = await apiReq('GET')
+    const sorted = (data.codes ?? []).sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+    setCodes(sorted)
+  }
+
+  async function generate() {
+    setLoading(true); setMsg('')
+    try {
+      const data = await apiReq('POST', { count: parseInt(count), note })
+      setMsg(`Generated: ${data.codes.join(', ')}`)
+      await loadCodes()
+    } catch (e) {
+      setMsg('Error: ' + e.message)
+    } finally { setLoading(false) }
+  }
+
+  function copy(code) {
+    navigator.clipboard.writeText(code)
+    setCopied(code)
+    setTimeout(() => setCopied(null), 1500)
+  }
+
+  const inp = { background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '10px 14px', color: '#fff', ...m, fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }
+  const btn = { background: '#00FF41', color: '#000', border: 'none', borderRadius: 8, padding: '10px 20px', ...m, fontWeight: 900, fontSize: 13, letterSpacing: 1, cursor: 'pointer' }
+
+  if (!authed) return (
+    <div style={{ background: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Head><title>Admin — Vedion</title></Head>
+      <div style={{ width: 360, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <p style={{ ...m, color: '#00FF41', fontSize: 22, fontWeight: 900, margin: 0, letterSpacing: 3 }}>VEDION ADMIN</p>
+        <input type="password" value={secret} onChange={e => setSecret(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleLogin()}
+          placeholder="Admin secret" style={inp} />
+        {authErr && <p style={{ ...m, color: '#FF2D55', fontSize: 12, margin: 0 }}>{authErr}</p>}
+        <button onClick={handleLogin} style={btn}>ENTER</button>
+      </div>
+    </div>
+  )
+
+  const unused = codes.filter(c => !c.used)
+  const used   = codes.filter(c => c.used)
+
+  return (
+    <div style={{ background: '#000', minHeight: '100vh', color: '#fff', padding: 24 }}>
+      <Head><title>Admin — Vedion</title></Head>
+      <div style={{ maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <p style={{ ...m, color: '#00FF41', fontSize: 20, fontWeight: 900, margin: 0, letterSpacing: 3 }}>VEDION ADMIN</p>
+          <a href="/" style={{ ...m, color: 'rgba(255,255,255,0.3)', fontSize: 11, textDecoration: 'none' }}>← SITE</a>
+        </div>
+
+        {/* Generate */}
+        <div style={{ background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <p style={{ ...m, fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.4)', margin: 0 }}>GENERATE CODES</p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input type="number" min="1" max="50" value={count} onChange={e => setCount(e.target.value)}
+              style={{ ...inp, width: 72 }} placeholder="Count" />
+            <input value={note} onChange={e => setNote(e.target.value)}
+              style={{ ...inp, flex: 1 }} placeholder="Note (optional)" />
+            <button onClick={generate} disabled={loading} style={{ ...btn, whiteSpace: 'nowrap', opacity: loading ? 0.5 : 1 }}>
+              {loading ? '...' : 'GENERATE'}
+            </button>
+          </div>
+          {msg && <p style={{ ...m, fontSize: 12, color: '#00FF41', margin: 0, wordBreak: 'break-all' }}>{msg}</p>}
+        </div>
+
+        {/* Unused codes */}
+        <div style={{ background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 16 }}>
+          <p style={{ ...m, fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.4)', margin: '0 0 10px' }}>
+            UNUSED CODES ({unused.length})
+          </p>
+          {unused.length === 0 && <p style={{ ...m, fontSize: 12, color: 'rgba(255,255,255,0.2)', margin: 0 }}>None</p>}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {unused.map(c => (
+              <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#000', borderRadius: 8, padding: '8px 12px' }}>
+                <span style={{ ...m, fontSize: 16, letterSpacing: 3, color: '#00FF41' }}>{c.id}</span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {c.note && <span style={{ ...m, fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{c.note}</span>}
+                  <button onClick={() => copy(c.id)} style={{ ...btn, padding: '4px 10px', fontSize: 10, background: copied === c.id ? '#00D4FF' : '#00FF41' }}>
+                    {copied === c.id ? 'COPIED' : 'COPY'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Used codes */}
+        {used.length > 0 && (
+          <div style={{ background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 16 }}>
+            <p style={{ ...m, fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.2)', margin: '0 0 10px' }}>
+              USED CODES ({used.length})
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {used.map(c => (
+                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', borderRadius: 6 }}>
+                  <span style={{ ...m, fontSize: 13, letterSpacing: 2, color: 'rgba(255,255,255,0.25)', textDecoration: 'line-through' }}>{c.id}</span>
+                  <span style={{ ...m, fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>{c.usedBy?.slice(0, 8)}…</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -37,8 +37,8 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    // List all codes
     const docs = await queryDocs('inviteCodes', [])
+    // Include document ID as `id` field
     return res.json({ codes: docs })
   }
 
