@@ -58,6 +58,7 @@ export default function AppPage() {
       setMessages([])
     } catch (e) {
       if (e.upgradeRequired) alert(e.error)
+      else alert('Failed to create chat: ' + (e.error ?? JSON.stringify(e)))
     }
   }
 
@@ -166,9 +167,12 @@ export default function AppPage() {
           )}
 
           {tab === 'account' && (
-            userData
-              ? <AccountPanel userData={userData} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
-              : <div style={{ padding: '1rem', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Loading...</div>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {userData
+                ? <AccountPanel userData={userData} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
+                : <div style={{ padding: '1rem', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Loading...</div>
+              }
+            </div>
           )}
         </div>
 
