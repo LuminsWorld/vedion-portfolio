@@ -58,7 +58,7 @@ export default function AppPage() {
       setMessages([])
     } catch (e) {
       if (e.upgradeRequired) alert(e.error)
-      else alert('Failed to create chat: ' + (e.error ?? JSON.stringify(e)))
+      else alert(`Chat error (${e._status ?? '?'}): ${e.error ?? JSON.stringify(e)}`)
     }
   }
 
