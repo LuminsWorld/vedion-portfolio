@@ -5,9 +5,8 @@ import { auth } from '../lib/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS } from '../lib/credits'
 import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage } from '../lib/api'
+import ChatIcon, { ICON_KEYS } from '../components/ChatIcon'
 
-// Custom geometric icons — no emoji
-const CHAT_ICONS = ['◈','◉','⬡','◆','▲','◐','⊕','⊗','⌘','⊞','✦','◎','⬢','◇','△','◒','⊛','⌖','◑','◀','▶','⬤','⬦','◧','⌬','◬','⊠','⊿','⊜','◍']
 const CHAT_COLORS = ['#00FF41','#7B2FFF','#00D4FF','#FFB800','#FF2D55','#FF6B35','#C084FC','#FFFFFF']
 
 export default function AppPage() {
@@ -45,7 +44,7 @@ export default function AppPage() {
   async function handleNewChat() {
     try {
       const { chatId, title } = await createChat('New Chat')
-      setChats(c => [{ id: chatId, title, icon: '◈', color: '#00FF41' }, ...c])
+      setChats(c => [{ id: chatId, title, icon: 'chat', color: '#00FF41' }, ...c])
       setActive(chatId); setMessages([])
     } catch (e) {
       alert(e.upgradeRequired ? e.error : `Error: ${e.error ?? e._status}`)
@@ -188,7 +187,7 @@ export default function AppPage() {
                     {/* Icon button — opens picker */}
                     <button style={{ ...s.iconPill, color: c.color ?? '#00FF41' }}
                       onClick={e => { e.stopPropagation(); setPickerChatId(pickerChatId === c.id ? null : c.id) }}>
-                      {c.icon ?? '◈'}
+                      <ChatIcon name={c.icon ?? 'chat'} size={15} color={c.color ?? '#00FF41'} />
                     </button>
 
                     {/* Color accent */}
@@ -247,7 +246,7 @@ export default function AppPage() {
             )}
             <span style={{ ...s.topTitle, color: activeChatId ? accentColor : 'rgba(255,255,255,0.5)' }}>
               {activeChatId
-                ? <><span style={{ marginRight: 8, fontFamily: 'monospace' }}>{activeChat?.icon ?? '◈'}</span>{activeChat?.title ?? 'Chat'}</>
+                ? <><ChatIcon name={activeChat?.icon ?? 'chat'} size={15} color={accentColor} /><span style={{ marginLeft: 8 }}>{activeChat?.title ?? 'Chat'}</span></>
                 : 'Vedion AI'
               }
             </span>
@@ -323,10 +322,11 @@ function IconColorPicker({ chat, onUpdate, onClose }) {
     <div style={s.picker} onClick={e => e.stopPropagation()}>
       <p style={s.pickerLabel}>ICON</p>
       <div style={s.iconGrid}>
-        {CHAT_ICONS.map(ic => (
-          <button key={ic} style={{ ...s.iconCell, ...(chat?.icon === ic ? { ...s.iconCellActive, borderColor: chat?.color ?? '#00FF41', color: chat?.color ?? '#00FF41' } : {}) }}
-            onClick={() => { onUpdate({ icon: ic }); onClose() }}>
-            {ic}
+        {ICON_KEYS.map(key => (
+          <button key={key} title={key}
+            style={{ ...s.iconCell, ...(chat?.icon === key ? { ...s.iconCellActive, borderColor: chat?.color ?? '#00FF41', background: `${chat?.color ?? '#00FF41'}15` } : {}) }}
+            onClick={() => { onUpdate({ icon: key }); onClose() }}>
+            <ChatIcon name={key} size={16} color={chat?.icon === key ? (chat?.color ?? '#00FF41') : 'rgba(255,255,255,0.6)'} />
           </button>
         ))}
       </div>
