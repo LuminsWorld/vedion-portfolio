@@ -1,42 +1,40 @@
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
+import { listDocs, addDoc, countDocs, serverTimestamp, generateId } from '../../../lib/firestore'
 import { PLAN_LIMITS } from '../../../lib/credits'
 
 export default async function handler(req, res) {
   try {
-  const { user, error, status } = await requireAuth(req)
-  if (error) return res.status(status).json({ error })
+    const { user, error, status } = await requireAuth(req)
+    if (error) return res.status(status).json({ error })
 
-  if (req.method === 'GET') {
-    const snap = await adminDb.collection('users').doc(user.uid)
-      .collection('chats').orderBy('updatedAt', 'desc').limit(100).get()
-    return res.json({ chats: snap.docs.map(d => ({ id: d.id, ...d.data() })) })
-  }
-
-  if (req.method === 'POST') {
-    const { title = 'New Chat', projectId = null } = req.body
-    const limit = PLAN_LIMITS[user.plan]?.chats
-
-    if (limit !== null && limit !== undefined) {
-      const count = await adminDb.collection('users').doc(user.uid)
-        .collection('chats').count().get()
-      if (count.data().count >= limit) {
-        return res.status(403).json({
-          error: `Free plan is limited to ${limit} chats. Upgrade to Pro for unlimited.`,
-          upgradeRequired: true,
-        })
-      }
+    if (req.method === 'GET') {
+      const chats = await listDocs(`users/${user.uid}/chats`, { orderBy: 'updatedAt', desc: true, limit: 100 })
+      return res.json({ chats })
     }
 
-    const ref = adminDb.collection('users').doc(user.uid).collection('chats').doc()
-    const now = FieldValue.serverTimestamp()
-    await ref.set({ id: ref.id, title, projectId, createdAt: now, updatedAt: now })
-    return res.json({ chatId: ref.id, title })
-  }
+    if (req.method === 'POST') {
+      const { title = 'New Chat', projectId = null } = req.body ?? {}
+      const limit = PLAN_LIMITS[user.plan]?.chats
 
-  res.status(405).end()
+      if (limit !== null && limit !== undefined) {
+        const count = await countDocs(`users/${user.uid}/chats`)
+        if (count >= limit) {
+          return res.status(403).json({
+            error: `Free plan is limited to ${limit} chats. Upgrade to Pro for unlimited.`,
+            upgradeRequired: true,
+          })
+        }
+      }
+
+      const chatId = generateId()
+      const now = serverTimestamp()
+      await addDoc(`users/${user.uid}/chats`, { id: chatId, title, projectId, createdAt: now, updatedAt: now })
+      return res.json({ chatId, title })
+    }
+
+    res.status(405).end()
   } catch (e) {
     console.error('[/api/chats]', e)
-    res.status(500).json({ error: e.message, stack: e.stack?.split('\n').slice(0,5) })
+    res.status(500).json({ error: e.message })
   }
 }

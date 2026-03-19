@@ -1,7 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
-import { v4 as uuidv4 } from 'uuid'
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, FieldValue, adminStorage } from '../../../lib/firebaseAdmin'
+import { getDoc, updateDoc, addDoc, serverTimestamp, generateId } from '../../../lib/firestore'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -9,23 +8,23 @@ const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { user, error, status } = await requireAuth(req)
-  if (error) return res.status(status).json({ error })
-
-  const { chatId, prompt, model = 'imagen-4.0-generate-001', aspectRatio = '1:1' } = req.body
-  if (!chatId || !prompt) return res.status(400).json({ error: 'Missing chatId or prompt' })
-  if (!IMAGE_MODELS.has(model)) return res.status(400).json({ error: 'Invalid image model' })
-
-  if (!canUseModel(user.plan, model)) {
-    return res.status(403).json({ error: `${model} requires a higher plan.`, upgradeRequired: true })
-  }
-
-  const cost = getCreditCost(model)
-  if (user.credits < cost) {
-    return res.status(402).json({ error: 'Not enough credits.', creditsNeeded: cost, creditsAvailable: user.credits })
-  }
-
   try {
+    const { user, error, status } = await requireAuth(req)
+    if (error) return res.status(status).json({ error })
+
+    const { chatId, prompt, model = 'imagen-4.0-generate-001', aspectRatio = '1:1' } = req.body ?? {}
+    if (!chatId || !prompt) return res.status(400).json({ error: 'Missing chatId or prompt' })
+    if (!IMAGE_MODELS.has(model)) return res.status(400).json({ error: 'Invalid image model' })
+
+    if (!canUseModel(user.plan, model)) {
+      return res.status(403).json({ error: `${model} requires a higher plan.`, upgradeRequired: true })
+    }
+
+    const cost = getCreditCost(model)
+    if (user.credits < cost) {
+      return res.status(402).json({ error: 'Not enough credits.', creditsNeeded: cost })
+    }
+
     // Generate image via Imagen
     const response = await genai.models.generateImages({
       model,
@@ -34,38 +33,24 @@ export default async function handler(req, res) {
     })
 
     const imageBytes = response.generatedImages[0].image.imageBytes
-    const buffer     = Buffer.from(imageBytes)
+    // Return as base64 data URL (no storage needed)
+    const imageUrl = `data:image/png;base64,${imageBytes}`
 
-    // Upload to Firebase Storage
-    const bucket   = adminStorage.bucket()
-    const filename = `images/${user.uid}/${uuidv4()}.png`
-    const file     = bucket.file(filename)
-
-    await file.save(buffer, { contentType: 'image/png', public: true })
-
-    const imageUrl = `https://storage.googleapis.com/vedion-978cc.firebasestorage.app/${filename}`
+    const now = serverTimestamp()
+    const userDoc = await getDoc(`users/${user.uid}`)
 
     // Deduct credits
-    await adminDb.collection('users').doc(user.uid).update({
-      credits: FieldValue.increment(-cost),
-    })
+    await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
     // Save messages
-    const now    = FieldValue.serverTimestamp()
-    const msgRef = adminDb.collection('users').doc(user.uid)
-      .collection('chats').doc(chatId).collection('messages')
+    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'user',      content: prompt,   type: 'text',  createdAt: now })
+    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'assistant', content: imageUrl, type: 'image', model, createdAt: now })
+    await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
 
-    await msgRef.add({ role: 'user',      content: prompt,   type: 'text',  createdAt: now })
-    await msgRef.add({ role: 'assistant', content: imageUrl, type: 'image', model, createdAt: now })
-
-    await adminDb.collection('users').doc(user.uid)
-      .collection('chats').doc(chatId)
-      .set({ updatedAt: now }, { merge: true })
-
-    res.json({ imageUrl, creditsUsed: cost, creditsRemaining: user.credits - cost })
+    res.json({ imageUrl, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
 
   } catch (e) {
     console.error('Image gen error:', e)
-    res.status(500).json({ error: 'Image generation failed.' })
+    res.status(500).json({ error: e.message })
   }
 }

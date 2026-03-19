@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI } from '@google/genai'
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, FieldValue, adminStorage } from '../../../lib/firebaseAdmin'
+import { addDoc, updateDoc, getDoc, serverTimestamp } from '../../../lib/firestore'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -19,23 +19,23 @@ const MODEL_IDS = {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const { user, error, status } = await requireAuth(req)
-  if (error) return res.status(status).json({ error })
-
-  const { chatId, message, model = 'claude-haiku-4-5', history = [] } = req.body
-  if (!chatId || !message) return res.status(400).json({ error: 'Missing chatId or message' })
-  if (IMAGE_MODELS.has(model)) return res.status(400).json({ error: 'Use /api/ai/image for image generation' })
-
-  if (!canUseModel(user.plan, model)) {
-    return res.status(403).json({ error: `${model} requires a higher plan.`, upgradeRequired: true })
-  }
-
-  const cost = getCreditCost(model)
-  if (user.credits < cost) {
-    return res.status(402).json({ error: 'Not enough credits.', creditsNeeded: cost, creditsAvailable: user.credits })
-  }
-
   try {
+    const { user, error, status } = await requireAuth(req)
+    if (error) return res.status(status).json({ error })
+
+    const { chatId, message, model = 'claude-haiku-4-5', history = [] } = req.body ?? {}
+    if (!chatId || !message) return res.status(400).json({ error: 'Missing chatId or message' })
+    if (IMAGE_MODELS.has(model)) return res.status(400).json({ error: 'Use /api/ai/image for image generation' })
+
+    if (!canUseModel(user.plan, model)) {
+      return res.status(403).json({ error: `${model} requires a higher plan.`, upgradeRequired: true })
+    }
+
+    const cost = getCreditCost(model)
+    if (user.credits < cost) {
+      return res.status(402).json({ error: 'Not enough credits.', creditsNeeded: cost, creditsAvailable: user.credits })
+    }
+
     const messages = [
       ...history.slice(-20).map(m => ({ role: m.role, content: m.content })),
       { role: 'user', content: message },
@@ -68,27 +68,21 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Unknown model' })
     }
 
+    const now = serverTimestamp()
+
     // Deduct credits
-    await adminDb.collection('users').doc(user.uid).update({
-      credits: FieldValue.increment(-cost),
-    })
+    const userDoc = await getDoc(`users/${user.uid}`)
+    await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
     // Save messages
-    const now     = FieldValue.serverTimestamp()
-    const msgRef  = adminDb.collection('users').doc(user.uid)
-      .collection('chats').doc(chatId).collection('messages')
+    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'user',      content: message, model, createdAt: now })
+    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'assistant', content: reply,   model, createdAt: now })
+    await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
 
-    await msgRef.add({ role: 'user',      content: message, model, createdAt: now })
-    await msgRef.add({ role: 'assistant', content: reply,   model, createdAt: now })
-
-    await adminDb.collection('users').doc(user.uid)
-      .collection('chats').doc(chatId)
-      .set({ updatedAt: now }, { merge: true })
-
-    res.json({ reply, creditsUsed: cost, creditsRemaining: user.credits - cost })
+    res.json({ reply, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
 
   } catch (e) {
     console.error('Chat error:', e)
-    res.status(500).json({ error: 'AI request failed.' })
+    res.status(500).json({ error: e.message })
   }
 }
