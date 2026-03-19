@@ -1,4 +1,4 @@
-import { adminDb, _initError } from '../../lib/firebaseAdmin'
+const { adminDb, _initError } = require('../../lib/firebaseAdmin')
 
 export default function handler(req, res) {
   res.json({

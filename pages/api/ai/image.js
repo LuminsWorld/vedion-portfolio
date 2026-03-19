@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { v4 as uuidv4 } from 'uuid'
-import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, FieldValue, adminStorage } from '../../../lib/firebaseAdmin'
+const { requireAuth } = require('../../../lib/authMiddleware')
+const { adminDb, FieldValue, adminStorage } = require('../../../lib/firebaseAdmin')
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
