@@ -194,7 +194,7 @@ export default function AppPage() {
   const isImageModel = IMAGE_MODELS.has(model)
   const activeChat   = chats.find(c => c.id === activeChatId)
   const accentColor  = activeChat?.color ?? '#00FF41'
-  const needsAccess  = userData && userData.accessGranted === false
+  const needsAccess  = userData && userData.accessGranted !== true
 
   // ── Invite code gate ────────────────────────────────────────────────────
   if (needsAccess) return <AccessGate user={user} onGranted={() => setUserData(d => ({ ...d, accessGranted: true }))} onCheckout={handleCheckout} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
