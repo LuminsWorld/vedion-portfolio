@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { auth } from '../lib/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS } from '../lib/credits'
-import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage } from '../lib/api'
+import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage, checkout } from '../lib/api'
 import ChatIcon, { ICON_KEYS } from '../components/ChatIcon'
 
 const CHAT_COLORS = ['#00FF41','#7B2FFF','#00D4FF','#FFB800','#FF2D55','#FF6B35','#C084FC','#FFFFFF']
@@ -40,6 +40,26 @@ export default function AppPage() {
   }, [])
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  async function handleCheckout(itemId) {
+    try {
+      const { url } = await checkout(itemId)
+      window.location.href = url
+    } catch (e) {
+      alert('Checkout failed: ' + (e.error ?? e.message ?? 'Unknown error'))
+    }
+  }
+
+  // Show success toast if returning from Stripe
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('payment') === 'success') {
+      alert('Payment successful! Your credits/plan have been updated.')
+      window.history.replaceState({}, '', '/app')
+      // Refresh user data
+      getMe().then(setUserData).catch(() => {})
+    }
+  }, [])
 
   async function handleNewChat() {
     try {
@@ -211,7 +231,9 @@ export default function AppPage() {
           {tab === 'account' && (
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {userData
-                ? <AccountPanel userData={userData} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
+                ? <AccountPanel userData={userData}
+                    onCheckout={handleCheckout}
+                    onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
                 : <div style={{ padding: 24, textAlign: 'center', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>Loading...</div>
               }
             </div>
@@ -427,7 +449,7 @@ function ModelRow({ id, model, selected, onSelect, plan }) {
 
 // ── Account Panel ─────────────────────────────────────────────────────────────
 
-function AccountPanel({ userData, onSignOut }) {
+function AccountPanel({ userData, onSignOut, onCheckout }) {
   const planColor = { free: 'rgba(255,255,255,0.4)', pro: '#00D4FF', ultra: '#7B2FFF' }[userData.plan]
   const maxCredits = { free: 20, pro: 500, ultra: 1500 }[userData.plan] ?? 20
   const pct = Math.min(100, Math.round((userData.credits / maxCredits) * 100))
@@ -469,7 +491,8 @@ function AccountPanel({ userData, onSignOut }) {
             <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 13, color: '#fff' }}>{pack.label}</span>
             {pack.badge && <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#FFB800', letterSpacing: 1 }}>{pack.badge}</span>}
           </div>
-          <button style={{ background: '#00FF41', color: '#000', border: 'none', borderRadius: 6, padding: '5px 12px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+          <button onClick={() => onCheckout(pack.id)}
+            style={{ background: '#00FF41', color: '#000', border: 'none', borderRadius: 6, padding: '5px 12px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
             ${pack.price}
           </button>
         </div>
@@ -492,7 +515,8 @@ function AccountPanel({ userData, onSignOut }) {
                   </p>
                 ))}
               </div>
-              <button style={{ background: sub.color, color: '#000', border: 'none', borderRadius: 7, padding: '8px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, cursor: 'pointer', marginTop: 2, letterSpacing: 1 }}>
+              <button onClick={() => onCheckout(sub.id)}
+                style={{ background: sub.color, color: '#000', border: 'none', borderRadius: 7, padding: '8px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, cursor: 'pointer', marginTop: 2, letterSpacing: 1 }}>
                 UPGRADE TO {sub.label.toUpperCase()}
               </button>
             </div>
