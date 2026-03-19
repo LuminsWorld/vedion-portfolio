@@ -3,6 +3,7 @@ import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
 import { PLAN_LIMITS } from '../../../lib/credits'
 
 export default async function handler(req, res) {
+  try {
   const { user, error, status } = await requireAuth(req)
   if (error) return res.status(status).json({ error })
 
@@ -34,4 +35,8 @@ export default async function handler(req, res) {
   }
 
   res.status(405).end()
+  } catch (e) {
+    console.error('[/api/chats]', e)
+    res.status(500).json({ error: e.message, stack: e.stack?.split('\n').slice(0,5) })
+  }
 }
