@@ -1,16 +1,10 @@
 import { GoogleGenAI } from '@google/genai'
-import { v2 as cloudinary } from 'cloudinary'
+import { v4 as uuidv4 } from 'uuid'
 import { requireAuth } from '../../../lib/authMiddleware'
 import { adminDb, admin } from '../../../lib/firebaseAdmin'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
-
-cloudinary.config({
-  cloud_name:  process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:     process.env.CLOUDINARY_API_KEY,
-  api_secret:  process.env.CLOUDINARY_API_SECRET,
-})
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -32,7 +26,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Generate image
+    // Generate image via Imagen
     const response = await genai.models.generateImages({
       model,
       prompt,
@@ -40,16 +34,16 @@ export default async function handler(req, res) {
     })
 
     const imageBytes = response.generatedImages[0].image.imageBytes
-    const base64     = Buffer.from(imageBytes).toString('base64')
-    const dataUri    = `data:image/png;base64,${base64}`
+    const buffer     = Buffer.from(imageBytes)
 
-    // Upload to Cloudinary
-    const upload = await cloudinary.uploader.upload(dataUri, {
-      folder: `vedion/${user.uid}`,
-      resource_type: 'image',
-    })
+    // Upload to Firebase Storage
+    const bucket   = admin.storage().bucket()
+    const filename = `images/${user.uid}/${uuidv4()}.png`
+    const file     = bucket.file(filename)
 
-    const imageUrl = upload.secure_url
+    await file.save(buffer, { contentType: 'image/png', public: true })
+
+    const imageUrl = `https://storage.googleapis.com/vedion-978cc.firebasestorage.app/${filename}`
 
     // Deduct credits
     await adminDb.collection('users').doc(user.uid).update({
