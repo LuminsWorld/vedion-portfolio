@@ -26,11 +26,12 @@ async function handleCheckoutComplete(session) {
   const currentCredits = user?.credits ?? 0
 
   if (type === 'credits') {
-    await updateDoc(`users/${uid}`, { credits: currentCredits + credits })
+    await updateDoc(`users/${uid}`, { credits: currentCredits + credits, accessGranted: true })
   } else if (type === 'subscription') {
     await updateDoc(`users/${uid}`, {
       plan,
       credits: currentCredits + credits,
+      accessGranted: true,
       billingCycleEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       stripeCustomerId: session.customer,
       stripeSubscriptionId: session.subscription,

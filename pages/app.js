@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { auth } from '../lib/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS, PLAN_LIMITS } from '../lib/credits'
-import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage, checkout } from '../lib/api'
+import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage, checkout, redeemCode } from '../lib/api'
 import ChatIcon, { ICON_KEYS } from '../components/ChatIcon'
 import { uploadFile, validateFiles, TYPE_LABELS } from '../lib/uploadFile'
 
@@ -194,6 +194,10 @@ export default function AppPage() {
   const isImageModel = IMAGE_MODELS.has(model)
   const activeChat   = chats.find(c => c.id === activeChatId)
   const accentColor  = activeChat?.color ?? '#00FF41'
+  const needsAccess  = userData && userData.accessGranted === false
+
+  // ── Invite code gate ────────────────────────────────────────────────────
+  if (needsAccess) return <AccessGate user={user} onGranted={() => setUserData(d => ({ ...d, accessGranted: true }))} onCheckout={handleCheckout} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
 
   return (
     <>
@@ -452,6 +456,86 @@ export default function AppPage() {
 }
 
 // ── Icon + Color Picker ───────────────────────────────────────────────────────
+
+function AccessGate({ user, onGranted, onCheckout, onSignOut }) {
+  const [code, setCode]       = useState('')
+  const [loading, setLoading] = useState(false)
+  const [err, setErr]         = useState('')
+
+  async function handleRedeem() {
+    if (!code.trim()) return
+    setLoading(true); setErr('')
+    try {
+      await redeemCode(code.trim())
+      onGranted()
+    } catch (e) {
+      setErr(e.error ?? 'Invalid code.')
+    } finally { setLoading(false) }
+  }
+
+  return (
+    <div style={{ background: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'monospace' }}>
+      <div style={{ width: '100%', maxWidth: 420, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <p style={{ margin: 0, fontSize: 28, fontWeight: 900, letterSpacing: 4, color: '#00FF41', fontFamily: 'monospace' }}>VEDION</p>
+          <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: 2 }}>EARLY ACCESS</p>
+        </div>
+
+        {/* Invite code box */}
+        <div style={{ background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: 2 }}>INVITE CODE</p>
+          <input
+            value={code}
+            onChange={e => { setCode(e.target.value.toUpperCase()); setErr('') }}
+            onKeyDown={e => e.key === 'Enter' && handleRedeem()}
+            placeholder="XXXXXXXX"
+            style={{ background: '#000', border: `1px solid ${err ? '#FF2D55' : 'rgba(255,255,255,0.12)'}`, borderRadius: 8, padding: '10px 14px', color: '#00FF41', fontFamily: 'monospace', fontSize: 18, letterSpacing: 4, textTransform: 'uppercase', outline: 'none', textAlign: 'center' }}
+          />
+          {err && <p style={{ margin: 0, fontSize: 11, color: '#FF2D55', textAlign: 'center' }}>{err}</p>}
+          <button onClick={handleRedeem} disabled={!code.trim() || loading}
+            style={{ background: '#00FF41', color: '#000', border: 'none', borderRadius: 8, padding: '11px', fontFamily: 'monospace', fontWeight: 900, fontSize: 13, letterSpacing: 2, cursor: code.trim() && !loading ? 'pointer' : 'default', opacity: !code.trim() || loading ? 0.4 : 1 }}>
+            {loading ? 'CHECKING...' : 'REDEEM'}
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', letterSpacing: 2 }}>OR</span>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+        </div>
+
+        {/* Upgrade options */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button onClick={() => onCheckout('sub_pro')}
+            style={{ background: 'none', border: '1px solid #00D4FF44', borderRadius: 10, padding: '12px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ margin: 0, color: '#00D4FF', fontFamily: 'monospace', fontWeight: 900, fontSize: 13 }}>PRO</p>
+              <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', fontSize: 10 }}>500 credits/mo · Sonnet + Gemini</p>
+            </div>
+            <span style={{ color: '#00D4FF', fontFamily: 'monospace', fontSize: 13, fontWeight: 700 }}>$9.99/mo</span>
+          </button>
+          <button onClick={() => onCheckout('sub_ultra')}
+            style={{ background: 'none', border: '1px solid #7B2FFF44', borderRadius: 10, padding: '12px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ textAlign: 'left' }}>
+              <p style={{ margin: 0, color: '#7B2FFF', fontFamily: 'monospace', fontWeight: 900, fontSize: 13 }}>ULTRA</p>
+              <p style={{ margin: '2px 0 0', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', fontSize: 10 }}>1500 credits/mo · All models</p>
+            </div>
+            <span style={{ color: '#7B2FFF', fontFamily: 'monospace', fontSize: 13, fontWeight: 700 }}>$19.99/mo</span>
+          </button>
+        </div>
+
+        {/* Sign out */}
+        <button onClick={onSignOut}
+          style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace', fontSize: 10, cursor: 'pointer', textAlign: 'center', letterSpacing: 2, marginTop: 4 }}>
+          SIGN OUT — {user?.email}
+        </button>
+      </div>
+    </div>
+  )
+}
 
 function IconColorPicker({ chat, onUpdate, onClose }) {
   useEffect(() => {

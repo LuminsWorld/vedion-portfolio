@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   try {
-    const { user, error, status } = await requireAuth(req)
+    const { user, error, status } = await requireAuth(req, { requireAccess: true })
     if (error) return res.status(status).json({ error })
 
     const { chatId, prompt, model = 'imagen-4.0-generate-001', aspectRatio = '1:1' } = req.body ?? {}

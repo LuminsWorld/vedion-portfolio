@@ -93,7 +93,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
   try {
-    const { user, error, status } = await requireAuth(req)
+    const { user, error, status } = await requireAuth(req, { requireAccess: true })
     if (error) return res.status(status).json({ error })
 
     const { chatId, message, model = 'claude-haiku-4-5', history = [], files = [] } = req.body ?? {}

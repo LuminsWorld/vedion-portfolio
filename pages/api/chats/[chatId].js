@@ -3,7 +3,7 @@ import { listDocs, updateDoc, deleteDoc, serverTimestamp } from '../../../lib/fi
 
 export default async function handler(req, res) {
   try {
-    const { user, error, status } = await requireAuth(req)
+    const { user, error, status } = await requireAuth(req, { requireAccess: true })
     if (error) return res.status(status).json({ error })
 
     const { chatId } = req.query
