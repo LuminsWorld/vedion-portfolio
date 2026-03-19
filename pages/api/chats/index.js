@@ -1,5 +1,5 @@
 import { requireAuth } from '../../../lib/authMiddleware'
-import { listDocs, addDoc, countDocs, serverTimestamp, generateId } from '../../../lib/firestore'
+import { listDocs, setDoc, countDocs, serverTimestamp, generateId } from '../../../lib/firestore'
 import { PLAN_LIMITS } from '../../../lib/credits'
 
 export default async function handler(req, res) {
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
       const chatId = generateId()
       const now = serverTimestamp()
-      await addDoc(`users/${user.uid}/chats`, { id: chatId, title, projectId, createdAt: now, updatedAt: now })
+      await setDoc(`users/${user.uid}/chats/${chatId}`, { id: chatId, title, projectId, createdAt: now, updatedAt: now })
       return res.json({ chatId, title })
     }
 

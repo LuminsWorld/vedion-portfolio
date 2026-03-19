@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI } from '@google/genai'
 import { requireAuth } from '../../../lib/authMiddleware'
-import { addDoc, updateDoc, getDoc, serverTimestamp } from '../../../lib/firestore'
+import { setDoc, updateDoc, getDoc, serverTimestamp, generateId } from '../../../lib/firestore'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -75,8 +75,9 @@ export default async function handler(req, res) {
     await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
     // Save messages
-    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'user',      content: message, model, createdAt: now })
-    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'assistant', content: reply,   model, createdAt: now })
+    const m1 = generateId(), m2 = generateId()
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, { role: 'user',      content: message, model, createdAt: now })
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, { role: 'assistant', content: reply,   model, createdAt: now })
     await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
 
     res.json({ reply, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })

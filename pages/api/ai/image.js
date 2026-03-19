@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
 import { requireAuth } from '../../../lib/authMiddleware'
-import { getDoc, updateDoc, addDoc, serverTimestamp, generateId } from '../../../lib/firestore'
+import { getDoc, updateDoc, setDoc, serverTimestamp, generateId } from '../../../lib/firestore'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -43,8 +43,9 @@ export default async function handler(req, res) {
     await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
     // Save messages
-    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'user',      content: prompt,   type: 'text',  createdAt: now })
-    await addDoc(`users/${user.uid}/chats/${chatId}/messages`, { role: 'assistant', content: imageUrl, type: 'image', model, createdAt: now })
+    const m1 = generateId(), m2 = generateId()
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, { role: 'user',      content: prompt,   type: 'text',  createdAt: now })
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, { role: 'assistant', content: imageUrl, type: 'image', model, createdAt: now })
     await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
 
     res.json({ imageUrl, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
