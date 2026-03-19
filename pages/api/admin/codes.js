@@ -1,4 +1,4 @@
-import { setDoc, queryDocs, updateDoc } from '../../../lib/firestore'
+import { setDoc, listDocs, updateDoc } from '../../../lib/firestore'
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET
 
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-      const docs = await queryDocs('inviteCodes', [])
+      const docs = await listDocs('inviteCodes')
       return res.json({ codes: docs })
     }
 

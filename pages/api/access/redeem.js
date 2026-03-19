@@ -1,5 +1,5 @@
 import { requireAuth } from '../../../lib/authMiddleware'
-import { getDoc, setDoc, updateDoc, queryDocs } from '../../../lib/firestore'
+import { getDoc, setDoc, updateDoc } from '../../../lib/firestore'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
