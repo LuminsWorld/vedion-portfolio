@@ -152,48 +152,32 @@ export default function AppPage() {
           {/* Header */}
           <div style={s.sidebarHeader}>
             <a href="/" style={{ ...s.logoText, textDecoration: 'none' }}>VEDION</a>
-            <div style={{ display: 'flex', gap: 2 }}>
-              <a href="/" title="Back to site" style={{ ...s.iconBtn, textDecoration: 'none', fontSize: 12 }}>←</a>
-              <button style={s.iconBtn} onClick={() => setSidebar(false)} title="Close">✕</button>
-            </div>
+            <button style={s.iconBtn} onClick={() => setSidebar(false)} title="Close">✕</button>
           </div>
 
-          {/* Tabs */}
-          <div style={s.tabs}>
-            {['chats','account'].map(t => (
-              <button key={t} style={{ ...s.tabBtn, ...(tab === t ? s.tabActive : {}) }} onClick={() => setTab(t)}>
-                {t === 'chats' ? 'CHATS' : 'ACCOUNT'}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Chats tab ── */}
+          {/* ── Chats panel (always visible unless settings/account) ── */}
           {tab === 'chats' && (
             <>
               <button style={s.newChatBtn} onClick={handleNewChat}>＋ New Chat</button>
               <div style={s.chatList}>
                 {chats.length === 0 && (
-                  <p style={{ textAlign: 'center', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 24 }}>No chats yet</p>
+                  <p style={{ textAlign: 'center', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.15)', marginTop: 32 }}>No chats yet</p>
                 )}
                 {chats.map(c => (
                   <div key={c.id} className="chat-item"
                     style={{ ...s.chatItem, ...(activeChatId === c.id ? {
                       background: `${c.color ?? '#00FF41'}0D`,
                       border: `1px solid ${c.color ?? '#00FF41'}30`,
-                      boxShadow: `0 0 12px ${c.color ?? '#00FF41'}10`,
+                      boxShadow: `0 0 14px ${c.color ?? '#00FF41'}12`,
                     } : {}) }}
                     onClick={() => { if (renamingId !== c.id) handleSelectChat(c.id) }}>
 
-                    {/* Icon button — opens picker */}
                     <button style={{ ...s.iconPill, color: c.color ?? '#00FF41' }}
                       onClick={e => { e.stopPropagation(); setPickerChatId(pickerChatId === c.id ? null : c.id) }}>
                       <ChatIcon name={c.icon ?? 'chat'} size={15} color={c.color ?? '#00FF41'} />
                     </button>
-
-                    {/* Color accent */}
                     <span style={{ ...s.chatAccent, background: c.color ?? '#00FF41' }} />
 
-                    {/* Title / rename input */}
                     {renamingId === c.id ? (
                       <input autoFocus style={s.renameInput} value={renameVal}
                         onChange={e => setRenameVal(e.target.value)}
@@ -204,18 +188,15 @@ export default function AppPage() {
                       <span style={s.chatTitle}>{c.title}</span>
                     )}
 
-                    {/* Actions (visible on hover) */}
-                    <div className="chat-item-actions" style={{ display: 'flex', gap: 2 }}>
+                    <div className="chat-item-actions" style={{ display: 'flex', gap: 1 }}>
                       <button style={s.actionBtn} title="Rename"
                         onClick={e => { e.stopPropagation(); setRenamingId(c.id); setRenameVal(c.title) }}>⌇</button>
-                      <button style={s.actionBtn} title="Delete"
+                      <button style={{ ...s.actionBtn, color: '#FF2D55' }} title="Delete"
                         onClick={e => handleDelete(e, c.id)}>⊘</button>
                     </div>
                   </div>
                 ))}
               </div>
-
-              {/* Icon/Color picker popover */}
               {pickerChatId && (
                 <IconColorPicker
                   chat={chats.find(c => c.id === pickerChatId)}
@@ -226,15 +207,60 @@ export default function AppPage() {
             </>
           )}
 
-          {/* ── Account tab ── */}
+          {/* ── Account panel ── */}
           {tab === 'account' && (
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {userData
                 ? <AccountPanel userData={userData} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
-                : <div style={{ padding: 16, fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>Loading...</div>
+                : <div style={{ padding: 24, textAlign: 'center', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>Loading...</div>
               }
             </div>
           )}
+
+          {/* ── Settings panel ── */}
+          {tab === 'settings' && (
+            <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <p style={s.sectionLabel}>DEFAULT MODEL</p>
+              {['claude-haiku-4-5','claude-sonnet-4-6','gemini-2.5-flash'].map(m => (
+                <button key={m} onClick={() => setModel(m)}
+                  style={{ ...s.settingRow, borderColor: model === m ? 'rgba(0,255,65,0.3)' : 'rgba(255,255,255,0.06)', background: model === m ? 'rgba(0,255,65,0.05)' : '#0D0D0D' }}>
+                  <span style={{ ...s.modelDot, background: MODELS[m]?.color ?? '#00FF41' }} />
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: model === m ? '#fff' : 'rgba(255,255,255,0.5)' }}>{MODELS[m]?.label ?? m}</span>
+                  {model === m && <span style={{ marginLeft: 'auto', color: '#00FF41', fontSize: 11 }}>✓</span>}
+                </button>
+              ))}
+              <p style={{ ...s.sectionLabel, marginTop: 8 }}>KEYBOARD</p>
+              {[['Send message','Enter'],['New line','Shift+Enter'],['New chat','Ctrl+N']].map(([k, v]) => (
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', background: '#0D0D0D', borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>{k}</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#00FF41', background: 'rgba(0,255,65,0.08)', padding: '1px 6px', borderRadius: 3 }}>{v}</span>
+                </div>
+              ))}
+              <p style={{ ...s.sectionLabel, marginTop: 8 }}>DANGER</p>
+              <button style={{ background: 'none', border: '1px solid rgba(255,45,85,0.2)', borderRadius: 8, color: '#FF2D55', fontFamily: 'monospace', fontSize: 11, padding: '8px 12px', cursor: 'pointer', textAlign: 'left' }}
+                onClick={() => { if (confirm('Delete all chats?')) { setChats([]); setActive(null); setMessages([]) } }}>
+                ⊘ Clear all chats
+              </button>
+            </div>
+          )}
+
+          {/* ── Bottom nav ── */}
+          <div style={s.bottomNav}>
+            {[
+              { id: 'chats',    icon: 'chat',     label: 'Chats' },
+              { id: 'settings', icon: 'grid',     label: 'Settings' },
+              { id: 'account',  icon: 'key',      label: 'Account' },
+            ].map(item => (
+              <button key={item.id}
+                style={{ ...s.navBtn, ...(tab === item.id ? s.navBtnActive : {}) }}
+                onClick={() => setTab(item.id)}>
+                <ChatIcon name={item.icon} size={16} color={tab === item.id ? '#00FF41' : 'rgba(255,255,255,0.3)'} />
+                <span style={{ fontFamily: 'monospace', fontSize: 8, letterSpacing: 1, marginTop: 2, color: tab === item.id ? '#00FF41' : 'rgba(255,255,255,0.3)' }}>
+                  {item.label.toUpperCase()}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Main area ────────────────────────────────────── */}
@@ -433,32 +459,47 @@ function AccountPanel({ userData, onSignOut }) {
       {/* Buy credits */}
       <p style={s.sectionLabel}>BUY CREDITS</p>
       {CREDIT_PACKS.map(pack => (
-        <div key={pack.id} style={s.packRow}>
-          <span style={{ fontSize: 16 }}>◈</span>
-          <div style={{ flex: 1 }}>
+        <div key={pack.id} style={{ ...s.packRow, justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 13, color: '#fff' }}>{pack.label}</span>
-            {pack.badge && <span style={s.packBadge}>{pack.badge}</span>}
+            {pack.badge && <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#FFB800', letterSpacing: 1 }}>{pack.badge}</span>}
           </div>
-          <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 13, color: '#00FF41' }}>${pack.price}</span>
+          <button style={{ background: '#00FF41', color: '#000', border: 'none', borderRadius: 6, padding: '5px 12px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+            ${pack.price}
+          </button>
         </div>
       ))}
 
-      {/* Upgrade */}
+      {/* Upgrade plans */}
       {userData.plan === 'free' && (
         <>
-          <p style={s.sectionLabel}>UPGRADE PLAN</p>
+          <p style={{ ...s.sectionLabel, marginTop: 6 }}>UPGRADE</p>
           {SUBSCRIPTIONS.map(sub => (
-            <div key={sub.id} style={{ ...s.accountCard, borderColor: `${sub.color}44`, cursor: 'pointer', transition: 'border-color 0.2s' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ color: sub.color, fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 15 }}>{sub.label}</span>
-                <span style={{ fontFamily: 'monospace', fontSize: 12, color: sub.color, fontWeight: 700 }}>{sub.priceLabel}</span>
+            <div key={sub.id} style={{ background: '#0D0D0D', border: `1px solid ${sub.color}30`, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: sub.color, fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 14, letterSpacing: 1 }}>{sub.label}</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{sub.priceLabel}</span>
               </div>
-              {sub.perks.map(p => (
-                <p key={p} style={{ margin: '2px 0', fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.45)' }}>✓ {p}</p>
-              ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {sub.perks.map(p => (
+                  <p key={p} style={{ margin: 0, fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>
+                    <span style={{ color: sub.color }}>✓</span> {p}
+                  </p>
+                ))}
+              </div>
+              <button style={{ background: sub.color, color: '#000', border: 'none', borderRadius: 7, padding: '8px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, cursor: 'pointer', marginTop: 2, letterSpacing: 1 }}>
+                UPGRADE TO {sub.label.toUpperCase()}
+              </button>
             </div>
           ))}
         </>
+      )}
+
+      {userData.plan !== 'free' && (
+        <div style={{ background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 14px' }}>
+          <p style={{ margin: '0 0 4px', fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>NEXT RENEWAL</p>
+          <p style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>{userData.billingCycleEnd ?? 'N/A'}</p>
+        </div>
       )}
 
       {/* Sign out */}
@@ -476,9 +517,10 @@ const s = {
   sidebarHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)' },
   logoText:    { fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 15, color: '#00FF41', letterSpacing: 4 },
   iconBtn:     { background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', fontSize: 14, padding: '4px 6px', borderRadius: 4, lineHeight: 1 },
-  tabs:        { display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.06)' },
-  tabBtn:      { flex: 1, background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', fontSize: 9, letterSpacing: 1.5, padding: '10px 4px', cursor: 'pointer' },
-  tabActive:   { color: '#00FF41', borderBottom: '2px solid #00FF41' },
+  bottomNav:   { display: 'flex', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '4px 0', background: '#070707' },
+  navBtn:      { flex: 1, background: 'none', border: 'none', padding: '8px 4px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, borderRadius: 0 },
+  navBtnActive: { background: 'rgba(0,255,65,0.05)' },
+  settingRow:  { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', border: '1px solid', borderRadius: 8, cursor: 'pointer', background: '#0D0D0D', textAlign: 'left' },
   newChatBtn:  { margin: '10px 10px 6px', background: '#00FF41', color: '#000', border: 'none', borderRadius: 6, padding: '8px 12px', fontFamily: 'monospace', fontWeight: 700, fontSize: 12, letterSpacing: 0.5, cursor: 'pointer' },
   newChatBtnLarge: { background: '#00FF41', color: '#000', border: 'none', borderRadius: 8, padding: '12px 24px', fontFamily: 'monospace', fontWeight: 700, fontSize: 14, letterSpacing: 1, cursor: 'pointer', marginTop: 8 },
   chatList:    { flex: 1, overflowY: 'auto', padding: '4px 0 12px' },
