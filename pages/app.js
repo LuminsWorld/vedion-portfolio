@@ -115,7 +115,10 @@ export default function AppPage() {
 
   return (
     <>
-      <Head><title>Vedion AI</title></Head>
+      <Head>
+        <title>Vedion AI</title>
+        <style>{`body { cursor: auto !important; } * { cursor: auto !important; } button, a, [onclick] { cursor: pointer !important; }`}</style>
+      </Head>
       <div style={s.root}>
 
         {/* Sidebar */}

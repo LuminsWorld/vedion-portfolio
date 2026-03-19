@@ -42,7 +42,10 @@ export default function AuthPage() {
 
   return (
     <>
-      <Head><title>Vedion — Sign In</title></Head>
+      <Head>
+        <title>Vedion — Sign In</title>
+        <style>{`body { cursor: auto !important; } * { cursor: auto !important; } button, a { cursor: pointer !important; }`}</style>
+      </Head>
       <div style={s.page}>
         <div style={s.card}>
           <h1 style={s.logo}>VEDION</h1>
