@@ -6,8 +6,9 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS } from '../lib/credits'
 import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage } from '../lib/api'
 
-const CHAT_ICONS = ['💬','🤖','💡','🔬','💻','🎨','📝','🔍','🚀','🎵','🎮','🌐','⚡','🔒','📊','🧪','📚','🎯','🌙','🔥','🌊','🎭','🦋','🧠','⚔️','🏆','🎪','🛸','🌈','🎲']
-const CHAT_COLORS = ['#00FF41','#7B2FFF','#00D4FF','#FFB800','#FF2D55','#FF6B35','#FF69B4','#AAAAAA']
+// Custom geometric icons — no emoji
+const CHAT_ICONS = ['◈','◉','⬡','◆','▲','◐','⊕','⊗','⌘','⊞','✦','◎','⬢','◇','△','◒','⊛','⌖','◑','◀','▶','⬤','⬦','◧','⌬','◬','⊠','⊿','⊜','◍']
+const CHAT_COLORS = ['#00FF41','#7B2FFF','#00D4FF','#FFB800','#FF2D55','#FF6B35','#C084FC','#FFFFFF']
 
 export default function AppPage() {
   const router = useRouter()
@@ -126,6 +127,8 @@ export default function AppPage() {
   if (!user) return <div style={{ background: '#000', minHeight: '100vh' }} />
   const currentModel = MODELS[model]
   const isImageModel = IMAGE_MODELS.has(model)
+  const activeChat   = chats.find(c => c.id === activeChatId)
+  const accentColor  = activeChat?.color ?? '#00FF41'
 
   return (
     <>
@@ -179,9 +182,9 @@ export default function AppPage() {
                     onClick={() => { if (renamingId !== c.id) handleSelectChat(c.id) }}>
 
                     {/* Icon button — opens picker */}
-                    <button style={s.iconPill}
+                    <button style={{ ...s.iconPill, color: c.color ?? '#00FF41' }}
                       onClick={e => { e.stopPropagation(); setPickerChatId(pickerChatId === c.id ? null : c.id) }}>
-                      {c.icon ?? '💬'}
+                      {c.icon ?? '◈'}
                     </button>
 
                     {/* Color accent */}
@@ -234,23 +237,23 @@ export default function AppPage() {
         {/* ── Main area ────────────────────────────────────── */}
         <div style={s.main}>
           {/* Top bar */}
-          <div style={s.topBar}>
+          <div style={{ ...s.topBar, borderBottom: `1px solid ${activeChatId ? accentColor + '22' : 'rgba(255,255,255,0.05)'}`, boxShadow: activeChatId ? `0 1px 20px ${accentColor}08` : 'none' }}>
             {!sidebarOpen && (
               <button style={s.iconBtn} onClick={() => setSidebar(true)}>☰</button>
             )}
-            <span style={s.topTitle}>
+            <span style={{ ...s.topTitle, color: activeChatId ? accentColor : 'rgba(255,255,255,0.5)' }}>
               {activeChatId
-                ? <><span style={{ marginRight: 8 }}>{chats.find(c => c.id === activeChatId)?.icon ?? '💬'}</span>{chats.find(c => c.id === activeChatId)?.title ?? 'Chat'}</>
+                ? <><span style={{ marginRight: 8, fontFamily: 'monospace' }}>{activeChat?.icon ?? '◈'}</span>{activeChat?.title ?? 'Chat'}</>
                 : 'Vedion AI'
               }
             </span>
             {userData && (
-              <span style={s.creditsDisplay}>{userData.credits} ◈</span>
+              <span style={{ ...s.creditsDisplay, color: accentColor }}>{userData.credits} ◈</span>
             )}
           </div>
 
           {/* Messages */}
-          <div style={s.messages}>
+          <div style={{ ...s.messages, background: activeChatId ? `radial-gradient(ellipse at top, ${accentColor}06 0%, #000 60%)` : '#000' }}>
             {!activeChatId && (
               <div style={s.emptyState}>
                 <p style={s.emptyTitle}>VEDION</p>
@@ -258,10 +261,10 @@ export default function AppPage() {
                 <button style={s.newChatBtnLarge} onClick={handleNewChat}>＋ New Chat</button>
               </div>
             )}
-            {messages.map((msg, i) => <MessageBubble key={msg.id ?? i} msg={msg} />)}
+            {messages.map((msg, i) => <MessageBubble key={msg.id ?? i} msg={msg} accentColor={accentColor} />)}
             {sending && (
               <div style={s.bubbleAI}>
-                <span style={{ color: '#00FF41', fontFamily: 'monospace', animation: 'pulse 1s infinite' }}>▋</span>
+                <span style={{ color: accentColor, fontFamily: 'monospace' }}>▋</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -269,8 +272,8 @@ export default function AppPage() {
 
           {/* Model bar */}
           {activeChatId && (
-            <div style={s.modelBar} onClick={() => setShowModels(v => !v)}>
-              <span style={{ ...s.modelDot, background: currentModel?.color ?? '#00FF41' }} />
+            <div style={{ ...s.modelBar, borderTop: `1px solid ${accentColor}15` }} onClick={() => setShowModels(v => !v)}>
+              <span style={{ ...s.modelDot, background: currentModel?.color ?? accentColor }} />
               <span style={s.modelLabel}>{currentModel?.label ?? model}</span>
               <span style={s.modelCost}>{currentModel?.credits ?? 1} ◈ / {isImageModel ? 'img' : 'msg'}</span>
               <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>{showModels ? '▼' : '▲'}</span>
@@ -283,15 +286,17 @@ export default function AppPage() {
 
           {activeChatId && (
             <div style={s.inputRow}>
-              <textarea style={s.input}
+              <textarea style={{ ...s.input, borderColor: `${accentColor}30`, '--focus-color': accentColor }}
                 placeholder={isImageModel ? 'Describe an image to generate...' : 'Message Vedion...'}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
+                onFocus={e => e.target.style.borderColor = `${accentColor}80`}
+                onBlur={e => e.target.style.borderColor = `${accentColor}30`}
                 rows={1} />
-              <button style={{ ...s.sendBtn, opacity: (!input.trim() || sending) ? 0.3 : 1 }}
+              <button style={{ ...s.sendBtn, background: accentColor, color: '#000', opacity: (!input.trim() || sending) ? 0.3 : 1 }}
                 onClick={handleSend} disabled={!input.trim() || sending}>
-                {isImageModel ? '🖼' : '↑'}
+                {isImageModel ? '⬡' : '↑'}
               </button>
             </div>
           )}
@@ -315,7 +320,7 @@ function IconColorPicker({ chat, onUpdate, onClose }) {
       <p style={s.pickerLabel}>ICON</p>
       <div style={s.iconGrid}>
         {CHAT_ICONS.map(ic => (
-          <button key={ic} style={{ ...s.iconCell, ...(chat?.icon === ic ? s.iconCellActive : {}) }}
+          <button key={ic} style={{ ...s.iconCell, ...(chat?.icon === ic ? { ...s.iconCellActive, borderColor: chat?.color ?? '#00FF41', color: chat?.color ?? '#00FF41' } : {}) }}
             onClick={() => { onUpdate({ icon: ic }); onClose() }}>
             {ic}
           </button>
@@ -334,7 +339,7 @@ function IconColorPicker({ chat, onUpdate, onClose }) {
 
 // ── Message Bubble ────────────────────────────────────────────────────────────
 
-function MessageBubble({ msg }) {
+function MessageBubble({ msg, accentColor = '#00FF41' }) {
   const isUser = msg.role === 'user'
   if (msg.type === 'image') {
     return (
@@ -345,8 +350,10 @@ function MessageBubble({ msg }) {
     )
   }
   return (
-    <div style={isUser ? s.bubbleUser : s.bubbleAI}>
-      <span style={isUser ? s.bubbleTextUser : s.bubbleTextAI}>{msg.content}</span>
+    <div style={isUser ? { ...s.bubbleUser, borderColor: `${accentColor}18` } : s.bubbleAI}>
+      <span style={isUser ? s.bubbleTextUser : { ...s.bubbleTextAI, color: accentColor === '#FFFFFF' ? 'rgba(255,255,255,0.9)' : accentColor }}>
+        {msg.content}
+      </span>
     </div>
   )
 }
@@ -473,7 +480,7 @@ const s = {
   chatList:    { flex: 1, overflowY: 'auto', padding: '4px 0 12px' },
   chatItem:    { display: 'flex', alignItems: 'center', gap: 6, padding: '7px 8px', cursor: 'pointer', borderRadius: 6, margin: '1px 6px', position: 'relative' },
   chatItemActive: { background: 'rgba(0,255,65,0.06)', border: '1px solid rgba(0,255,65,0.12)' },
-  iconPill:    { background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', padding: '0 2px', lineHeight: 1, flexShrink: 0 },
+  iconPill:    { background: 'none', border: 'none', fontSize: 14, fontFamily: 'monospace', cursor: 'pointer', padding: '0 2px', lineHeight: 1, flexShrink: 0, color: 'rgba(255,255,255,0.7)' },
   chatAccent:  { width: 2, height: 18, borderRadius: 1, flexShrink: 0 },
   chatTitle:   { flex: 1, fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   renameInput: { flex: 1, background: 'rgba(0,255,65,0.08)', border: '1px solid rgba(0,255,65,0.3)', borderRadius: 4, color: '#fff', fontFamily: 'Inter, sans-serif', fontSize: 12, padding: '2px 6px', outline: 'none' },
@@ -483,7 +490,7 @@ const s = {
   picker:      { position: 'absolute', bottom: 8, left: 10, right: 10, background: '#0F0F0F', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 12, zIndex: 100, boxShadow: '0 8px 32px rgba(0,0,0,0.8)' },
   pickerLabel: { fontFamily: 'monospace', fontSize: 9, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', margin: '0 0 6px' },
   iconGrid:    { display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 2 },
-  iconCell:    { background: 'none', border: '1px solid transparent', borderRadius: 6, fontSize: 18, padding: 4, cursor: 'pointer', textAlign: 'center' },
+  iconCell:    { background: 'none', border: '1px solid transparent', borderRadius: 6, fontSize: 14, fontFamily: 'monospace', color: 'rgba(255,255,255,0.6)', padding: 5, cursor: 'pointer', textAlign: 'center' },
   iconCellActive: { borderColor: '#00FF41', background: 'rgba(0,255,65,0.1)' },
   colorDot:    { width: 22, height: 22, borderRadius: '50%', border: 'none', cursor: 'pointer' },
 
