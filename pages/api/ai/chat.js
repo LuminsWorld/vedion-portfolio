@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI } from '@google/genai'
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, admin } from '../../../lib/firebaseAdmin'
+import { adminDb, FieldValue, adminStorage } from '../../../lib/firebaseAdmin'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -70,11 +70,11 @@ export default async function handler(req, res) {
 
     // Deduct credits
     await adminDb.collection('users').doc(user.uid).update({
-      credits: admin.firestore.FieldValue.increment(-cost),
+      credits: FieldValue.increment(-cost),
     })
 
     // Save messages
-    const now     = admin.firestore.FieldValue.serverTimestamp()
+    const now     = FieldValue.serverTimestamp()
     const msgRef  = adminDb.collection('users').doc(user.uid)
       .collection('chats').doc(chatId).collection('messages')
 

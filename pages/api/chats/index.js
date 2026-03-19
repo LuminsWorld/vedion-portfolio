@@ -1,5 +1,5 @@
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, admin } from '../../../lib/firebaseAdmin'
+import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
 import { PLAN_LIMITS } from '../../../lib/credits'
 
 export default async function handler(req, res) {
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     const ref = adminDb.collection('users').doc(user.uid).collection('chats').doc()
-    const now = admin.firestore.FieldValue.serverTimestamp()
+    const now = FieldValue.serverTimestamp()
     await ref.set({ id: ref.id, title, projectId, createdAt: now, updatedAt: now })
     return res.json({ chatId: ref.id, title })
   }

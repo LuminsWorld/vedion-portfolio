@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import { adminDb, admin } from '../../../lib/firebaseAdmin'
+import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
   try {
     if (event.type === 'checkout.session.completed') {
       if (CREDIT_PACKS[productId]) {
-        await ref.update({ credits: admin.firestore.FieldValue.increment(CREDIT_PACKS[productId]) })
+        await ref.update({ credits: FieldValue.increment(CREDIT_PACKS[productId]) })
       }
     }
 
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         expiry.setMonth(expiry.getMonth() + 1)
         await ref.update({
           plan,
-          credits: admin.firestore.FieldValue.increment(SUB_CREDITS[plan]),
+          credits: FieldValue.increment(SUB_CREDITS[plan]),
           billingCycleEnd: expiry,
         })
       }

@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { v4 as uuidv4 } from 'uuid'
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb, admin } from '../../../lib/firebaseAdmin'
+import { adminDb, FieldValue, adminStorage } from '../../../lib/firebaseAdmin'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     const buffer     = Buffer.from(imageBytes)
 
     // Upload to Firebase Storage
-    const bucket   = admin.storage().bucket()
+    const bucket   = adminStorage.bucket()
     const filename = `images/${user.uid}/${uuidv4()}.png`
     const file     = bucket.file(filename)
 
@@ -47,11 +47,11 @@ export default async function handler(req, res) {
 
     // Deduct credits
     await adminDb.collection('users').doc(user.uid).update({
-      credits: admin.firestore.FieldValue.increment(-cost),
+      credits: FieldValue.increment(-cost),
     })
 
     // Save messages
-    const now    = admin.firestore.FieldValue.serverTimestamp()
+    const now    = FieldValue.serverTimestamp()
     const msgRef = adminDb.collection('users').doc(user.uid)
       .collection('chats').doc(chatId).collection('messages')
 
