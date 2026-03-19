@@ -3,9 +3,10 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { auth } from '../lib/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS } from '../lib/credits'
+import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS, PLAN_LIMITS } from '../lib/credits'
 import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage, checkout } from '../lib/api'
 import ChatIcon, { ICON_KEYS } from '../components/ChatIcon'
+import { uploadFile, validateFiles, TYPE_LABELS } from '../lib/uploadFile'
 
 const CHAT_COLORS = ['#00FF41','#7B2FFF','#00D4FF','#FFB800','#FF2D55','#FF6B35','#C084FC','#FFFFFF']
 
@@ -25,6 +26,9 @@ export default function AppPage() {
   const [renamingId, setRenamingId] = useState(null)
   const [renameVal, setRenameVal]   = useState('')
   const [pickerChatId, setPickerChatId] = useState(null)
+  const [attachedFiles, setAttachedFiles] = useState([])   // { name, url, mimeType, size, path, progress }
+  const [uploading, setUploading]         = useState(false)
+  const fileInputRef  = useRef(null)
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -60,6 +64,45 @@ export default function AppPage() {
       getMe().then(setUserData).catch(() => {})
     }
   }, [])
+
+  async function handleFileSelect(e) {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+    e.target.value = ''
+
+    const plan = userData?.plan ?? 'free'
+    const currentCount = attachedFiles.filter(f => f.url).length
+    const limits = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free
+    const allFiles = [...attachedFiles.filter(f => f.url).map(f => ({ type: f.mimeType, size: f.size, name: f.name })), ...files]
+
+    const errors = validateFiles(allFiles, plan)
+    if (errors.length) { alert(errors.join('\n')); return }
+
+    if (!activeChatId) { alert('Start a chat first.'); return }
+
+    setUploading(true)
+    const uid = user.uid
+
+    for (const file of files) {
+      const tempId = `tmp_${Date.now()}_${Math.random().toString(36).slice(2)}`
+      setAttachedFiles(prev => [...prev, { tempId, name: file.name, mimeType: file.type, size: file.size, progress: 0, url: null }])
+
+      try {
+        const result = await uploadFile(file, uid, activeChatId, pct => {
+          setAttachedFiles(prev => prev.map(f => f.tempId === tempId ? { ...f, progress: pct } : f))
+        })
+        setAttachedFiles(prev => prev.map(f => f.tempId === tempId ? { ...f, ...result, progress: 100 } : f))
+      } catch (err) {
+        setAttachedFiles(prev => prev.filter(f => f.tempId !== tempId))
+        alert(`Upload failed: ${err.message}`)
+      }
+    }
+    setUploading(false)
+  }
+
+  function removeAttachment(idx) {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== idx))
+  }
 
   async function handleNewChat() {
     try {
@@ -115,8 +158,11 @@ export default function AppPage() {
   async function handleSend() {
     const text = input.trim()
     if (!text || sending || !activeChatId) return
-    setInput(''); setSending(true)
-    const tempMsg = { id: Date.now(), role: 'user', content: text, type: 'text' }
+    if (uploading) { alert('Wait for uploads to finish.'); return }
+
+    const readyFiles = attachedFiles.filter(f => f.url)
+    setInput(''); setAttachedFiles([]); setSending(true)
+    const tempMsg = { id: Date.now(), role: 'user', content: text, type: 'text', files: readyFiles }
     setMessages(m => [...m, tempMsg])
     try {
       const history = messages.slice(-20)
@@ -125,7 +171,7 @@ export default function AppPage() {
         result = await generateImage(activeChatId, text, model)
         setMessages(m => [...m, { id: Date.now() + 1, role: 'assistant', content: result.imageUrl, type: 'image', model }])
       } else {
-        result = await sendMessage(activeChatId, text, model, history)
+        result = await sendMessage(activeChatId, text, model, history, readyFiles)
         setMessages(m => [...m, { id: Date.now() + 1, role: 'assistant', content: result.reply, type: 'text', model }])
       }
       setUserData(d => d ? { ...d, credits: result.creditsRemaining } : d)
@@ -341,19 +387,62 @@ export default function AppPage() {
           )}
 
           {activeChatId && (
-            <div style={s.inputRow}>
-              <textarea style={{ ...s.input, borderColor: `${accentColor}30`, '--focus-color': accentColor }}
-                placeholder={isImageModel ? 'Describe an image to generate...' : 'Message Vedion...'}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
-                onFocus={e => e.target.style.borderColor = `${accentColor}80`}
-                onBlur={e => e.target.style.borderColor = `${accentColor}30`}
-                rows={1} />
-              <button style={{ ...s.sendBtn, background: accentColor, color: '#000', opacity: (!input.trim() || sending) ? 0.3 : 1 }}
-                onClick={handleSend} disabled={!input.trim() || sending}>
-                {isImageModel ? '⬡' : '↑'}
-              </button>
+            <div style={{ borderTop: `1px solid ${accentColor}10` }}>
+              {/* File chips strip */}
+              {attachedFiles.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '8px 12px 0' }}>
+                  {attachedFiles.map((f, i) => (
+                    <div key={f.tempId ?? i} style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#111', border: `1px solid ${accentColor}25`, borderRadius: 6, padding: '3px 8px 3px 6px', maxWidth: 160 }}>
+                      <span style={{ fontFamily: 'monospace', fontSize: 9, color: accentColor, letterSpacing: 1 }}>{TYPE_LABELS[f.mimeType] ?? 'FILE'}</span>
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 80 }}>{f.name}</span>
+                      {f.progress < 100 && f.progress >= 0
+                        ? <span style={{ fontFamily: 'monospace', fontSize: 9, color: accentColor }}>{f.progress}%</span>
+                        : <button onClick={() => removeAttachment(i)} style={{ background: 'none', border: 'none', color: '#FF2D55', cursor: 'pointer', fontSize: 12, padding: 0, lineHeight: 1 }}>×</button>
+                      }
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Plan file limit hint */}
+              {!isImageModel && (
+                <div style={{ padding: '4px 14px 0', fontFamily: 'monospace', fontSize: 9, color: 'rgba(255,255,255,0.15)' }}>
+                  {attachedFiles.length}/{PLAN_LIMITS[userData?.plan ?? 'free']?.files ?? 1} files
+                  {' · '}{Math.round((PLAN_LIMITS[userData?.plan ?? 'free']?.fileSize ?? 5*1024*1024) / 1024 / 1024)}MB max
+                </div>
+              )}
+
+              <div style={s.inputRow}>
+                {/* Hidden file input */}
+                <input ref={fileInputRef} type="file" multiple
+                  accept="image/*,.pdf,.txt,.md,.csv,.js,.ts,.html,.css,.json,.xml"
+                  style={{ display: 'none' }} onChange={handleFileSelect} />
+
+                {/* Attach button — hidden for image models */}
+                {!isImageModel && (
+                  <button title="Attach file"
+                    style={{ ...s.attachBtn, borderColor: `${accentColor}25`, color: uploading ? accentColor : 'rgba(255,255,255,0.35)' }}
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}>
+                    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                      <path d="M13.5 7.5l-6 6a4 4 0 01-5.5-5.5l6-6a2.5 2.5 0 013.5 3.5L5.5 11a1 1 0 01-1.5-1.5L10 3.5"/>
+                    </svg>
+                  </button>
+                )}
+
+                <textarea style={{ ...s.input, borderColor: `${accentColor}30` }}
+                  placeholder={isImageModel ? 'Describe an image to generate...' : 'Message Vedion...'}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
+                  onFocus={e => e.target.style.borderColor = `${accentColor}80`}
+                  onBlur={e => e.target.style.borderColor = `${accentColor}30`}
+                  rows={1} />
+                <button style={{ ...s.sendBtn, background: accentColor, color: '#000', opacity: (!input.trim() || sending || uploading) ? 0.3 : 1 }}
+                  onClick={handleSend} disabled={!input.trim() || sending || uploading}>
+                  {isImageModel ? '⬡' : '↑'}
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -398,6 +487,7 @@ function IconColorPicker({ chat, onUpdate, onClose }) {
 
 function MessageBubble({ msg, accentColor = '#00FF41' }) {
   const isUser = msg.role === 'user'
+
   if (msg.type === 'image') {
     return (
       <div style={isUser ? s.bubbleUser : s.bubbleAI}>
@@ -406,11 +496,32 @@ function MessageBubble({ msg, accentColor = '#00FF41' }) {
       </div>
     )
   }
+
   return (
-    <div style={isUser ? { ...s.bubbleUser, borderColor: `${accentColor}18` } : s.bubbleAI}>
-      <span style={isUser ? s.bubbleTextUser : { ...s.bubbleTextAI, color: accentColor === '#FFFFFF' ? 'rgba(255,255,255,0.9)' : accentColor }}>
-        {msg.content}
-      </span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start', gap: 4 }}>
+      {/* File attachments */}
+      {isUser && msg.files?.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'flex-end' }}>
+          {msg.files.map((f, i) => {
+            const isImg = f.mimeType?.startsWith('image/')
+            return isImg ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={i} src={f.url} alt={f.name} style={{ maxWidth: 160, maxHeight: 120, borderRadius: 6, objectFit: 'cover', border: `1px solid ${accentColor}25` }} />
+            ) : (
+              <a key={i} href={f.url} target="_blank" rel="noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#111', border: `1px solid ${accentColor}25`, borderRadius: 6, padding: '4px 8px', textDecoration: 'none' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: 9, color: accentColor }}>FILE</span>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.6)', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
+              </a>
+            )
+          })}
+        </div>
+      )}
+      <div style={isUser ? { ...s.bubbleUser, borderColor: `${accentColor}18` } : s.bubbleAI}>
+        <span style={isUser ? s.bubbleTextUser : { ...s.bubbleTextAI, color: accentColor === '#FFFFFF' ? 'rgba(255,255,255,0.9)' : accentColor }}>
+          {msg.content}
+        </span>
+      </div>
     </div>
   )
 }
@@ -586,7 +697,8 @@ const s = {
   modelDot:    { width: 6, height: 6, borderRadius: 3, flexShrink: 0 },
   modelLabel:  { fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.45)', flex: 1 },
   modelCost:   { fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)' },
-  inputRow:    { display: 'flex', gap: 8, padding: '8px 12px 12px' },
+  inputRow:    { display: 'flex', gap: 8, padding: '8px 12px 12px', alignItems: 'flex-end' },
+  attachBtn:   { background: '#0D0D0D', border: '1px solid', borderRadius: 8, padding: '0 10px', height: 38, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 },
   input:       { flex: 1, background: '#0D0D0D', border: '1px solid rgba(0,255,65,0.2)', borderRadius: 10, color: '#fff', fontFamily: 'monospace', fontSize: 13, padding: '10px 14px', resize: 'none', lineHeight: 1.5, transition: 'border-color 0.2s' },
   sendBtn:     { background: '#00FF41', color: '#000', border: 'none', borderRadius: 10, width: 44, height: 44, fontSize: 18, cursor: 'pointer', fontWeight: 900, flexShrink: 0, alignSelf: 'flex-end' },
   modelPicker: { background: '#0A0A0A', border: '1px solid rgba(0,255,65,0.15)', borderRadius: 10, margin: '0 12px 6px', padding: 12, maxHeight: 280, overflowY: 'auto' },

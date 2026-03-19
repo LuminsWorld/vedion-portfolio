@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI } from '@google/genai'
 import { requireAuth } from '../../../lib/authMiddleware'
 import { setDoc, updateDoc, getDoc, serverTimestamp, generateId } from '../../../lib/firestore'
-import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
+import { getCreditCost, canUseModel, IMAGE_MODELS, PLAN_LIMITS } from '../../../lib/credits'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const genai     = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -16,6 +16,79 @@ const MODEL_IDS = {
   'claude-opus-4-6':   'claude-opus-4-6',
 }
 
+const ALLOWED_MIME = new Set([
+  'image/jpeg','image/png','image/gif','image/webp',
+  'application/pdf',
+  'text/plain','text/markdown','text/csv','text/javascript','text/typescript',
+  'text/html','text/css','application/json','application/xml',
+])
+
+const IMAGE_MIME = new Set(['image/jpeg','image/png','image/gif','image/webp'])
+
+// Fetch a file from Firebase Storage download URL and return { base64, text }
+async function fetchFileContent(url, mimeType) {
+  const resp = await fetch(url)
+  if (!resp.ok) throw new Error(`Failed to fetch file: ${resp.status}`)
+  const buf = await resp.arrayBuffer()
+
+  if (IMAGE_MIME.has(mimeType)) {
+    const base64 = Buffer.from(buf).toString('base64')
+    return { type: 'image', base64, mimeType }
+  }
+
+  // PDF — pass as base64 to Claude (it supports PDF natively)
+  if (mimeType === 'application/pdf') {
+    const base64 = Buffer.from(buf).toString('base64')
+    return { type: 'pdf', base64, mimeType }
+  }
+
+  // Text/code — decode as UTF-8
+  const text = new TextDecoder('utf-8').decode(buf)
+  return { type: 'text', text }
+}
+
+// Build Claude content blocks for a user turn with files
+async function buildClaudeContent(message, files) {
+  if (!files?.length) return message
+
+  const blocks = []
+
+  for (const f of files) {
+    const content = await fetchFileContent(f.url, f.mimeType)
+    if (content.type === 'image') {
+      blocks.push({ type: 'image', source: { type: 'base64', media_type: content.mimeType, data: content.base64 } })
+    } else if (content.type === 'pdf') {
+      blocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: content.base64 } })
+    } else {
+      blocks.push({ type: 'text', text: `<file name="${f.name}">\n${content.text}\n</file>` })
+    }
+  }
+
+  blocks.push({ type: 'text', text: message })
+  return blocks
+}
+
+// Build Gemini parts for a user turn with files
+async function buildGeminiParts(message, files) {
+  if (!files?.length) return [{ text: message }]
+
+  const parts = []
+
+  for (const f of files) {
+    const content = await fetchFileContent(f.url, f.mimeType)
+    if (content.type === 'image') {
+      parts.push({ inlineData: { mimeType: content.mimeType, data: content.base64 } })
+    } else if (content.type === 'pdf') {
+      parts.push({ inlineData: { mimeType: 'application/pdf', data: content.base64 } })
+    } else {
+      parts.push({ text: `<file name="${f.name}">\n${content.text}\n</file>` })
+    }
+  }
+
+  parts.push({ text: message })
+  return parts
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -23,7 +96,7 @@ export default async function handler(req, res) {
     const { user, error, status } = await requireAuth(req)
     if (error) return res.status(status).json({ error })
 
-    const { chatId, message, model = 'claude-haiku-4-5', history = [] } = req.body ?? {}
+    const { chatId, message, model = 'claude-haiku-4-5', history = [], files = [] } = req.body ?? {}
     if (!chatId || !message) return res.status(400).json({ error: 'Missing chatId or message' })
     if (IMAGE_MODELS.has(model)) return res.status(400).json({ error: 'Use /api/ai/image for image generation' })
 
@@ -31,19 +104,35 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: `${model} requires a higher plan.`, upgradeRequired: true })
     }
 
+    // ── Strict file validation (server-side, cannot be bypassed) ─────────
+    const limits = PLAN_LIMITS[user.plan] ?? PLAN_LIMITS.free
+    if (files.length > limits.files) {
+      return res.status(400).json({ error: `Max ${limits.files} file${limits.files > 1 ? 's' : ''} per message on ${user.plan} plan.` })
+    }
+    for (const f of files) {
+      if (!ALLOWED_MIME.has(f.mimeType)) {
+        return res.status(400).json({ error: `File type not allowed: ${f.mimeType}` })
+      }
+      if (f.size > limits.fileSize) {
+        const mb = Math.round(limits.fileSize / 1024 / 1024)
+        return res.status(400).json({ error: `File "${f.name}" exceeds ${mb}MB limit on ${user.plan} plan.` })
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
     const cost = getCreditCost(model)
     if (user.credits < cost) {
       return res.status(402).json({ error: 'Not enough credits.', creditsNeeded: cost, creditsAvailable: user.credits })
     }
 
-    const messages = [
-      ...history.slice(-20).map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: message },
-    ]
-
     let reply
 
     if (CLAUDE_MODELS.has(model)) {
+      const userContent = await buildClaudeContent(message, files)
+      const messages = [
+        ...history.slice(-20).map(m => ({ role: m.role, content: m.content })),
+        { role: 'user', content: userContent },
+      ]
       const response = await anthropic.messages.create({
         model: MODEL_IDS[model] ?? model,
         max_tokens: 4096,
@@ -53,10 +142,14 @@ export default async function handler(req, res) {
       reply = response.content[0].text
 
     } else if (GEMINI_MODELS.has(model)) {
-      const contents = messages.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
-      }))
+      const userParts = await buildGeminiParts(message, files)
+      const contents = [
+        ...history.slice(-20).map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }],
+        })),
+        { role: 'user', parts: userParts },
+      ]
       const response = await genai.models.generateContent({
         model,
         contents,
@@ -69,15 +162,16 @@ export default async function handler(req, res) {
     }
 
     const now = serverTimestamp()
-
-    // Deduct credits
     const userDoc = await getDoc(`users/${user.uid}`)
     await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
-    // Save messages
     const m1 = generateId(), m2 = generateId()
-    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, { role: 'user',      content: message, model, createdAt: now })
-    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, { role: 'assistant', content: reply,   model, createdAt: now })
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, {
+      role: 'user', content: message, files: files.length ? files.map(f => ({ name: f.name, url: f.url, mimeType: f.mimeType, size: f.size })) : null, model, createdAt: now,
+    })
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, {
+      role: 'assistant', content: reply, model, createdAt: now,
+    })
     await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
 
     res.json({ reply, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
