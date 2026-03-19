@@ -14,8 +14,12 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'PATCH') {
-      const { title } = req.body ?? {}
-      await updateDoc(`users/${user.uid}/chats/${chatId}`, { title, updatedAt: serverTimestamp() })
+      const { title, icon, color } = req.body ?? {}
+      const patch = { updatedAt: serverTimestamp() }
+      if (title !== undefined) patch.title = title
+      if (icon  !== undefined) patch.icon  = icon
+      if (color !== undefined) patch.color = color
+      await updateDoc(`users/${user.uid}/chats/${chatId}`, patch)
       return res.json({ success: true })
     }
 
