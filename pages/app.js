@@ -29,10 +29,18 @@ export default function AppPage() {
     const unsub = onAuthStateChanged(auth, async u => {
       if (!u) { router.replace('/auth'); return }
       setUser(u)
-      const data = await getMe()
-      setUserData(data)
-      const { chats } = await listChats()
-      setChats(chats)
+      try {
+        const data = await getMe()
+        setUserData(data)
+      } catch (e) {
+        console.error('getMe failed:', e)
+        // Fallback so account tab always shows something
+        setUserData({ email: u.email, plan: 'free', credits: 20 })
+      }
+      try {
+        const { chats } = await listChats()
+        setChats(chats)
+      } catch (e) { console.error('listChats failed:', e) }
     })
     return unsub
   }, [])
@@ -124,8 +132,11 @@ export default function AppPage() {
         {/* Sidebar */}
         <div style={{ ...s.sidebar, ...(sidebarOpen ? {} : s.sidebarHidden) }}>
           <div style={s.sidebarHeader}>
-            <span style={s.logoText}>VEDION</span>
-            <button style={s.iconBtn} onClick={() => setSidebar(false)}>✕</button>
+            <a href="/" style={{ ...s.logoText, textDecoration: 'none' }}>VEDION</a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <a href="/" style={{ ...s.iconBtn, textDecoration: 'none', fontSize: 11, letterSpacing: 1, fontFamily: 'monospace' }}>← SITE</a>
+              <button style={s.iconBtn} onClick={() => setSidebar(false)}>✕</button>
+            </div>
           </div>
 
           {/* Tabs */}
@@ -154,8 +165,10 @@ export default function AppPage() {
             </>
           )}
 
-          {tab === 'account' && userData && (
-            <AccountPanel userData={userData} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
+          {tab === 'account' && (
+            userData
+              ? <AccountPanel userData={userData} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
+              : <div style={{ padding: '1rem', fontFamily: 'monospace', fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Loading...</div>
           )}
         </div>
 
@@ -164,7 +177,10 @@ export default function AppPage() {
           {/* Top bar */}
           <div style={s.topBar}>
             {!sidebarOpen && (
-              <button style={s.iconBtn} onClick={() => setSidebar(true)}>☰</button>
+              <>
+                <button style={s.iconBtn} onClick={() => setSidebar(true)}>☰</button>
+                <a href="/" style={{ ...s.iconBtn, textDecoration: 'none', fontSize: 11, fontFamily: 'monospace', letterSpacing: 1 }}>← SITE</a>
+              </>
             )}
             <span style={s.topTitle}>
               {activeChatId ? (chats.find(c => c.id === activeChatId)?.title ?? 'Chat') : 'Select or start a chat'}
