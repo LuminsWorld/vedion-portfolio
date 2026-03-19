@@ -45,7 +45,7 @@ export default function AppPage() {
   async function handleNewChat() {
     try {
       const { chatId, title } = await createChat('New Chat')
-      setChats(c => [{ id: chatId, title, icon: '💬', color: '#00FF41' }, ...c])
+      setChats(c => [{ id: chatId, title, icon: '◈', color: '#00FF41' }, ...c])
       setActive(chatId); setMessages([])
     } catch (e) {
       alert(e.upgradeRequired ? e.error : `Error: ${e.error ?? e._status}`)
@@ -163,7 +163,7 @@ export default function AppPage() {
           <div style={s.tabs}>
             {['chats','account'].map(t => (
               <button key={t} style={{ ...s.tabBtn, ...(tab === t ? s.tabActive : {}) }} onClick={() => setTab(t)}>
-                {t === 'chats' ? '💬 CHATS' : '👤 ACCOUNT'}
+                {t === 'chats' ? 'CHATS' : 'ACCOUNT'}
               </button>
             ))}
           </div>
@@ -178,7 +178,11 @@ export default function AppPage() {
                 )}
                 {chats.map(c => (
                   <div key={c.id} className="chat-item"
-                    style={{ ...s.chatItem, ...(activeChatId === c.id ? s.chatItemActive : {}) }}
+                    style={{ ...s.chatItem, ...(activeChatId === c.id ? {
+                      background: `${c.color ?? '#00FF41'}0D`,
+                      border: `1px solid ${c.color ?? '#00FF41'}30`,
+                      boxShadow: `0 0 12px ${c.color ?? '#00FF41'}10`,
+                    } : {}) }}
                     onClick={() => { if (renamingId !== c.id) handleSelectChat(c.id) }}>
 
                     {/* Icon button — opens picker */}
@@ -204,9 +208,9 @@ export default function AppPage() {
                     {/* Actions (visible on hover) */}
                     <div className="chat-item-actions" style={{ display: 'flex', gap: 2 }}>
                       <button style={s.actionBtn} title="Rename"
-                        onClick={e => { e.stopPropagation(); setRenamingId(c.id); setRenameVal(c.title) }}>✏️</button>
+                        onClick={e => { e.stopPropagation(); setRenamingId(c.id); setRenameVal(c.title) }}>⌇</button>
                       <button style={s.actionBtn} title="Delete"
-                        onClick={e => handleDelete(e, c.id)}>🗑️</button>
+                        onClick={e => handleDelete(e, c.id)}>⊘</button>
                     </div>
                   </div>
                 ))}
@@ -430,7 +434,7 @@ function AccountPanel({ userData, onSignOut }) {
       <p style={s.sectionLabel}>BUY CREDITS</p>
       {CREDIT_PACKS.map(pack => (
         <div key={pack.id} style={s.packRow}>
-          <span style={{ fontSize: 16 }}>{pack.emoji ?? '◈'}</span>
+          <span style={{ fontSize: 16 }}>◈</span>
           <div style={{ flex: 1 }}>
             <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: 13, color: '#fff' }}>{pack.label}</span>
             {pack.badge && <span style={s.packBadge}>{pack.badge}</span>}
@@ -484,7 +488,7 @@ const s = {
   chatAccent:  { width: 2, height: 18, borderRadius: 1, flexShrink: 0 },
   chatTitle:   { flex: 1, fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   renameInput: { flex: 1, background: 'rgba(0,255,65,0.08)', border: '1px solid rgba(0,255,65,0.3)', borderRadius: 4, color: '#fff', fontFamily: 'Inter, sans-serif', fontSize: 12, padding: '2px 6px', outline: 'none' },
-  actionBtn:   { background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, padding: '2px 3px', opacity: 0.6, lineHeight: 1 },
+  actionBtn:   { background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontFamily: 'monospace', padding: '2px 4px', opacity: 0.5, lineHeight: 1, color: '#fff' },
 
   // Icon/Color picker
   picker:      { position: 'absolute', bottom: 8, left: 10, right: 10, background: '#0F0F0F', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 12, zIndex: 100, boxShadow: '0 8px 32px rgba(0,0,0,0.8)' },
