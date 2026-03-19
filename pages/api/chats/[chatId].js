@@ -1,5 +1,5 @@
 import { requireAuth } from '../../../lib/authMiddleware'
-import { adminDb } from '../../../lib/firebaseAdmin'
+import { adminDb, FieldValue } from '../../../lib/firebaseAdmin'
 
 export default async function handler(req, res) {
   const { user, error, status } = await requireAuth(req)
