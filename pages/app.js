@@ -221,14 +221,19 @@ export default function AppPage() {
           {tab === 'settings' && (
             <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <p style={s.sectionLabel}>DEFAULT MODEL</p>
-              {['claude-haiku-4-5','claude-sonnet-4-6','gemini-2.5-flash'].map(m => (
-                <button key={m} onClick={() => setModel(m)}
-                  style={{ ...s.settingRow, borderColor: model === m ? 'rgba(0,255,65,0.3)' : 'rgba(255,255,255,0.06)', background: model === m ? 'rgba(0,255,65,0.05)' : '#0D0D0D' }}>
-                  <span style={{ ...s.modelDot, background: MODELS[m]?.color ?? '#00FF41' }} />
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: model === m ? '#fff' : 'rgba(255,255,255,0.5)' }}>{MODELS[m]?.label ?? m}</span>
-                  {model === m && <span style={{ marginLeft: 'auto', color: '#00FF41', fontSize: 11 }}>✓</span>}
-                </button>
-              ))}
+              {['claude-haiku-4-5','claude-sonnet-4-6','gemini-2.5-flash'].map(m => {
+                const locked = !MODELS[m]?.plans.includes(userData?.plan ?? 'free')
+                return (
+                  <button key={m}
+                    onClick={() => { if (!locked) setModel(m) }}
+                    style={{ ...s.settingRow, borderColor: model === m ? 'rgba(0,255,65,0.3)' : 'rgba(255,255,255,0.06)', background: model === m ? 'rgba(0,255,65,0.05)' : '#0D0D0D', opacity: locked ? 0.4 : 1, cursor: locked ? 'default' : 'pointer' }}>
+                    <span style={{ ...s.modelDot, background: MODELS[m]?.color ?? '#00FF41' }} />
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: model === m ? '#fff' : 'rgba(255,255,255,0.5)', flex: 1 }}>{MODELS[m]?.label ?? m}</span>
+                    {locked && <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#FFB800', border: '1px solid #FFB80066', borderRadius: 3, padding: '1px 5px', letterSpacing: 1 }}>PRO+</span>}
+                    {!locked && model === m && <span style={{ color: '#00FF41', fontSize: 11 }}>✓</span>}
+                  </button>
+                )
+              })}
               <p style={{ ...s.sectionLabel, marginTop: 8 }}>KEYBOARD</p>
               {[['Send message','Enter'],['New line','Shift+Enter'],['New chat','Ctrl+N']].map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', background: '#0D0D0D', borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)' }}>
