@@ -1367,6 +1367,243 @@
       ]
     },
     {
+      "id": "exam-midterm2",
+      "title": "Midterm 2 Checkpoint",
+      "isExam": true,
+      "suggestedMinutes": 50,
+      "content": "This checkpoint covers Midterm 2 material: probability foundations, binomial distribution, and normal distribution. Questions are formatted to match exam style — mix of select-one, select-all, and fill-in-the-blank. All R function questions require exact syntax.",
+      "quiz": [
+        {
+          "id": "e2-q1",
+          "type": "multiple",
+          "question": "A card is drawn from a standard 52-card deck. P(King) = 4/52 and P(Heart) = 13/52 and P(King of Hearts) = 1/52. What is P(King OR Heart)?",
+          "options": [
+            "17/52",
+            "16/52",
+            "52/52",
+            "4/52 × 13/52"
+          ],
+          "answer": 1,
+          "explanation": "Use the addition rule: P(A ∪ B) = P(A) + P(B) − P(A ∩ B) = 4/52 + 13/52 − 1/52 = 16/52. We subtract the intersection to avoid double-counting the King of Hearts."
+        },
+        {
+          "id": "e2-q2",
+          "type": "select-all",
+          "question": "Which of the following are required conditions for a Binomial distribution? Select ALL that apply.",
+          "options": [
+            "A fixed number of trials n",
+            "The probability of success p is constant across all trials",
+            "Each trial results in success or failure only",
+            "The trials must be independent",
+            "The expected number of successes must be at least 10"
+          ],
+          "answer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "The four Binomial conditions are: fixed n (A), constant p (B), binary outcomes (C), and independence (D). The condition np ≥ 10 (E) is required for the normal approximation to the binomial — it is NOT a condition for the binomial distribution itself."
+        },
+        {
+          "id": "e2-q3",
+          "type": "fill-blank",
+          "question": "Fill in the R function to find P(X = 4) when X ~ Binomial(n=10, p=0.3):",
+          "code": "_____(4, size = 10, prob = 0.3)",
+          "blanks": [
+            "dbinom",
+            "dbinom()"
+          ],
+          "explanation": "dbinom() gives the exact probability at a single value (the PMF). pbinom() gives cumulative probability P(X ≤ k). For P(X = k), always use dbinom."
+        },
+        {
+          "id": "e2-q4",
+          "type": "multiple",
+          "question": "X ~ Binomial(12, 0.4). What R code gives P(X ≥ 5)?",
+          "options": [
+            "pbinom(5, size=12, prob=0.4)",
+            "1 - pbinom(5, size=12, prob=0.4)",
+            "pbinom(4, size=12, prob=0.4, lower.tail=FALSE)",
+            "dbinom(5, size=12, prob=0.4)"
+          ],
+          "answer": 2,
+          "explanation": "P(X ≥ 5) = P(X > 4) = pbinom(4, size=12, prob=0.4, lower.tail=FALSE). The common mistake: 1 - pbinom(5, ...) gives P(X > 5) = P(X ≥ 6), which is off by one. lower.tail=FALSE with k-1 is the cleanest approach."
+        },
+        {
+          "id": "e2-q5",
+          "type": "select-all",
+          "question": "X ~ Binomial(20, 0.3). Which statements are TRUE? Select ALL that apply.",
+          "options": [
+            "E[X] = 6",
+            "Var(X) = 4.2",
+            "E[X] = 0.3",
+            "SD(X) = sqrt(4.2)",
+            "E[X] = 20 × 0.3"
+          ],
+          "answer": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "explanation": "For Binomial(n, p): E[X] = np = 20×0.3 = 6 (A and E are both true). Var(X) = np(1-p) = 20×0.3×0.7 = 4.2 (B). SD(X) = sqrt(4.2) (D). E[X] = 0.3 is wrong — that would be p itself (C is false)."
+        },
+        {
+          "id": "e2-q6",
+          "type": "multiple",
+          "question": "P(A) = 0.6 and P(B) = 0.5. If A and B are INDEPENDENT, what is P(A ∩ B)?",
+          "options": [
+            "0.11",
+            "0.30",
+            "1.10",
+            "Cannot be determined without more information"
+          ],
+          "answer": 1,
+          "explanation": "For independent events: P(A ∩ B) = P(A) × P(B) = 0.6 × 0.5 = 0.30. Independence means knowing one event occurred tells you nothing about the other, so the joint probability is just the product of the marginals."
+        },
+        {
+          "id": "e2-q7",
+          "type": "select-all",
+          "question": "Events A and B are MUTUALLY EXCLUSIVE with P(A) > 0 and P(B) > 0. Which statements are TRUE? Select ALL that apply.",
+          "options": [
+            "P(A ∩ B) = 0",
+            "P(A ∪ B) = P(A) + P(B)",
+            "A and B are also independent",
+            "P(A | B) = 0",
+            "A and B cannot both occur"
+          ],
+          "answer": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "explanation": "Mutually exclusive means they cannot both occur (E), so P(A ∩ B) = 0 (A). The addition rule simplifies to P(A) + P(B) (B). P(A|B) = P(A∩B)/P(B) = 0/P(B) = 0 (D). C is FALSE — mutually exclusive events with positive probability are NOT independent. Knowing B occurred means A definitely didn't (P(A|B)=0 ≠ P(A))."
+        },
+        {
+          "id": "e2-q8",
+          "type": "fill-blank",
+          "question": "X ~ N(75, 100) (mean=75, variance=100, so sd=10). Fill in the R function to find P(X ≤ 88):",
+          "code": "_____(88, mean = 75, sd = 10)",
+          "blanks": [
+            "pnorm",
+            "pnorm()"
+          ],
+          "explanation": "pnorm() gives the cumulative distribution function — P(X ≤ x) — for a normal distribution. Note that sd=10 because the variance is 100 and sd = sqrt(variance) = sqrt(100) = 10."
+        },
+        {
+          "id": "e2-q9",
+          "type": "select-all",
+          "question": "X ~ N(100, 225) (mean=100, sd=15). Which statements follow from the 68-95-99.7 rule? Select ALL that apply.",
+          "options": [
+            "P(85 < X < 115) ≈ 0.68",
+            "P(70 < X < 130) ≈ 0.95",
+            "P(X > 130) ≈ 0.025",
+            "P(55 < X < 145) ≈ 0.997",
+            "P(X < 85) ≈ 0.16"
+          ],
+          "answer": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "explanation": "With mean=100, sd=15: ±1 SD = (85,115) → 68% (A). ±2 SD = (70,130) → 95% (B). P(X > 130) = P(X > mean+2SD) = (1-0.95)/2 = 0.025 (C). ±3 SD = (55,145) → 99.7% (D). P(X < 85) = P(X < mean-1SD) = (1-0.68)/2 = 0.16 (E). All five are correct."
+        },
+        {
+          "id": "e2-q10",
+          "type": "multiple",
+          "question": "Exam scores are normally distributed with mean 72 and sd 8. A student scores 88. What is their z-score?",
+          "options": [
+            "1.5",
+            "2.0",
+            "16",
+            "-2.0"
+          ],
+          "answer": 1,
+          "explanation": "z = (x − μ) / σ = (88 − 72) / 8 = 16 / 8 = 2.0. A z-score of 2 means the student scored 2 standard deviations above the mean — roughly the top 2.5%."
+        },
+        {
+          "id": "e2-q11",
+          "type": "fill-blank",
+          "question": "X ~ N(72, 64) (mean=72, sd=8). Fill in the R function to find the score at the 90th percentile:",
+          "code": "_____(0.90, mean = 72, sd = 8)",
+          "blanks": [
+            "qnorm",
+            "qnorm()"
+          ],
+          "explanation": "qnorm() is the inverse of pnorm() — it takes a probability and returns the corresponding x value. Use qnorm when the question asks 'what score corresponds to the top X%?' or 'find the kth percentile.'"
+        },
+        {
+          "id": "e2-q12",
+          "type": "select-all",
+          "question": "A population has mean μ = 50 and sd σ = 20. We take random samples of size n = 100. Which statements about the sampling distribution of x̄ are TRUE? Select ALL that apply.",
+          "options": [
+            "The sampling distribution of x̄ is approximately Normal",
+            "The mean of x̄ is 50",
+            "The standard error of x̄ is 20",
+            "The standard error of x̄ is 2",
+            "This result holds regardless of the shape of the population distribution"
+          ],
+          "answer": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "explanation": "By the CLT: x̄ ~ N(μ, σ²/n) = N(50, 400/100) = N(50, 4). So the distribution is approximately Normal (A), mean is 50 (B), and SE = σ/√n = 20/√100 = 20/10 = 2 (D). C is wrong — SE is 2, not 20. The CLT works for any population shape with finite variance when n is large (E)."
+        },
+        {
+          "id": "e2-q13",
+          "type": "multiple",
+          "question": "Which R function would you use to find P(X = 7) for X ~ Binomial(15, 0.45)?",
+          "code": "# Which function gives the EXACT probability at a single value?",
+          "options": [
+            "pbinom(7, size=15, prob=0.45)",
+            "dbinom(7, size=15, prob=0.45)",
+            "qbinom(7, size=15, prob=0.45)",
+            "pnorm(7, mean=15*0.45, sd=sqrt(15*0.45*0.55))"
+          ],
+          "answer": 1,
+          "explanation": "dbinom() gives the probability mass function — the exact probability at a single value k. pbinom() gives cumulative P(X ≤ k). qbinom() gives the quantile (inverse CDF). pnorm() is for the normal distribution — it would be an approximation, not exact."
+        },
+        {
+          "id": "e2-q14",
+          "type": "select-all",
+          "question": "P(A) = 0.4, P(B) = 0.3, P(A ∩ B) = 0.12. Which statements are TRUE? Select ALL that apply.",
+          "options": [
+            "A and B are independent",
+            "P(A | B) = 0.4",
+            "P(A ∪ B) = 0.58",
+            "P(A | B) = P(A)",
+            "P(A ∩ B) = P(A) × P(B)"
+          ],
+          "answer": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "explanation": "Check independence: P(A)×P(B) = 0.4×0.3 = 0.12 = P(A∩B) → A and B ARE independent (A, E). P(A|B) = P(A∩B)/P(B) = 0.12/0.3 = 0.4 = P(A) (B, D — both true, as expected for independent events). P(A∪B) = 0.4 + 0.3 − 0.12 = 0.58 (C). All five are correct."
+        },
+        {
+          "id": "e2-q15",
+          "type": "multiple",
+          "question": "X ~ N(68, 100) (mean=68, sd=10). What R code gives P(X > 75)?",
+          "options": [
+            "pnorm(75, mean=68, sd=10)",
+            "1 - pnorm(75, mean=68, sd=10)",
+            "pnorm(75, mean=68, sd=10, lower.tail=FALSE)",
+            "Both B and C"
+          ],
+          "answer": 3,
+          "explanation": "pnorm() gives P(X ≤ x) by default. For P(X > 75) we need the upper tail. Both 1 - pnorm(75, ...) and pnorm(75, ..., lower.tail=FALSE) are equivalent and correct. lower.tail=FALSE is slightly more numerically stable for extreme tails but both work here."
+        }
+      ]
+    },
+    {
       "id": "module-9",
       "title": "Confidence Intervals & t-Tests",
       "content": "# Confidence Intervals & Hypothesis Testing\n\n## The Problem of Inference\n\nWe almost never have access to the entire population — we work with a **sample**. A sample mean x̄ gives us our best guess at the true population mean μ, but how precise is that guess?\n\nA **confidence interval** answers this by giving a range of plausible values rather than a single point:\n\n$$\bar{x} \\pm t^* \\cdot \frac{s}{\\sqrt{n}}$$\n\n- **x̄** — sample mean (our point estimate)\n- **t*** — critical value from the t-distribution (depends on confidence level and sample size)\n- **s/√n** — standard error (measures how much x̄ varies across samples)\n\n> **Interpreting a 95% CI:** If we repeated our study many times and built a 95% CI each time, 95% of those intervals would contain the true μ. The specific interval we built either does or doesn't contain μ — we can't know which, but we're 95% confident.\n\n## Why the t-Distribution (Not Normal)?\n\nWhen σ is unknown — which is always in practice — we estimate it with the sample standard deviation s. This introduces additional uncertainty that the normal distribution doesn't account for. The t-distribution has heavier tails to compensate.\n\nThe t-distribution has a parameter called **degrees of freedom** (df = n - 1). As n gets larger, the t-distribution approaches the normal distribution.\n\n> **Rule of thumb:** For large n (> 30), the difference between t and z is negligible. For small n, the heavier tails matter — they make intervals wider, reflecting genuine uncertainty.\n\n## Confidence Intervals in R\n\n```r\n# Height data for 25 students\nheights <- c(65, 67, 70, 68, 72, 64, 69, 71, 66, 68,\n             70, 73, 65, 67, 69, 68, 72, 71, 66, 64,\n             68, 70, 67, 69, 71)\n\nt.test(heights)\n```\n```output\n    One Sample t-test\n\ndata:  heights\nt = 107.52, df = 24, p-value < 2.2e-16\nalternative hypothesis: true mean is not equal to 0\n95 percent confidence interval:\n 67.49  69.27\nsample estimates:\nmean of x\n    68.38\n```\n\n> **Reading t.test output:** The 95% CI is (67.49, 69.27). Our best estimate is 68.38 inches, and we're 95% confident the true mean height is between 67.49 and 69.27 inches.\n\n## Hypothesis Testing\n\nA hypothesis test formally evaluates a specific claim about a population parameter.\n\n**Step 1: State hypotheses**\n- H₀ (null): μ = μ₀ — the \"no effect\" / status quo claim\n- Hₐ (alternative): μ ≠ μ₀, or μ > μ₀, or μ < μ₀\n\n**Step 2: Compute the test statistic**\n\n$$t = \frac{\bar{x} - \\mu_0}{s / \\sqrt{n}}$$\n\n**Step 3: Find the p-value** — the probability of seeing a result as extreme as ours, assuming H₀ is true.\n\n**Step 4: Decision** — if p-value < α (usually 0.05), reject H₀.\n\n```r\n# Test if mean height equals 70 inches\nt.test(heights, mu = 70)\n```\n```output\n    One Sample t-test\n\nt = -3.49, df = 24, p-value = 0.00191\nalternative hypothesis: true mean is not equal to 70\n95 percent confidence interval:\n 67.49  69.27\n```\n\nSince p-value (0.002) < α (0.05), we reject H₀: μ = 70. The data provide significant evidence that the true mean height is not 70 inches.\n\n## Type I and Type II Errors\n\nNo test is perfect — we can make two kinds of mistakes:\n\n| | H₀ is True | H₀ is False |\n|--|--|--|\n| **Reject H₀** | Type I Error (rate = α) | Correct! (Power) |\n| **Don't Reject** | Correct! | Type II Error (rate = β) |\n\n> **The tradeoff:** Making α smaller (e.g., 0.01 instead of 0.05) reduces Type I errors but increases Type II errors. In high-stakes settings (like medical testing), you choose α carefully based on the cost of each error type.\n\n**Power** = 1 - β = the probability of correctly detecting a real effect. Power increases with larger samples, bigger true effects, and higher α.",
