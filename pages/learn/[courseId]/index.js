@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { getCourse } from '../../../lib/courseData'
+import LearnAccountButton from '../../../components/LearnAccountButton'
 
 export async function getStaticPaths() {
   const { getAllCourses } = await import('../../../lib/courseData')
@@ -49,7 +50,10 @@ export default function CoursePage({ course }) {
     <div style={s.root}>
       <Head><title>{course.title} — Vedion Learn</title></Head>
       <div style={s.container}>
-        <Link href="/learn" style={{ ...s.back, textDecoration: 'none' }}>← ALL COURSES</Link>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+          <Link href="/learn" style={{ ...s.back, textDecoration: 'none' }}>← ALL COURSES</Link>
+          <LearnAccountButton />
+        </div>
 
         <div style={s.header}>
           <p style={s.courseId}>{course.id.toUpperCase()}</p>

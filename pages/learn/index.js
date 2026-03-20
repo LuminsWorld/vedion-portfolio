@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { getAllCourses } from '../../lib/courseData'
+import LearnAccountButton from '../../components/LearnAccountButton'
 
 export async function getStaticProps() {
   return { props: { courses: getAllCourses() } }
@@ -11,8 +12,13 @@ export default function LearnIndex({ courses }) {
     <div style={s.root}>
       <Head><title>Learn — Vedion</title></Head>
       <div style={s.container}>
-        <div style={s.header}>
+        {/* Top nav */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 48 }}>
           <Link href="/" style={{ ...s.back, textDecoration: 'none' }}>← BACK</Link>
+          <LearnAccountButton />
+        </div>
+
+        <div style={s.header}>
           <h1 style={s.title}>LEARN</h1>
           <p style={s.sub}>Interactive courses with quizzes and progress tracking.</p>
         </div>

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { getCourse } from '../../../lib/courseData'
+import LearnAccountButton from '../../../components/LearnAccountButton'
 
 export async function getStaticPaths() {
   const { getAllCourses } = await import('../../../lib/courseData')
@@ -436,7 +437,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           <span style={{ color: 'rgba(255,255,255,0.1)', fontSize: 12 }}>/</span>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>{mod.title}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em' }}>
             {modIndex + 1} / {totalMods}
           </span>
@@ -445,6 +446,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
               TAKE QUIZ
             </button>
           )}
+          <LearnAccountButton />
         </div>
       </nav>
 
