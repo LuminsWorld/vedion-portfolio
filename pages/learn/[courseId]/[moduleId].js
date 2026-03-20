@@ -143,6 +143,18 @@ function parseContent(text) {
     if (line.startsWith('## '))  { blocks.push({ type: 'h2', text: line.slice(3) });  i++; continue }
     if (line.startsWith('### ')) { blocks.push({ type: 'h3', text: line.slice(4) });  i++; continue }
 
+    // Callout / blockquote
+    if (line.startsWith('> ')) {
+      // collect multi-line callouts
+      const calloutLines = []
+      while (i < lines.length && lines[i].startsWith('> ')) {
+        calloutLines.push(lines[i].slice(2))
+        i++
+      }
+      blocks.push({ type: 'callout', lines: calloutLines })
+      continue
+    }
+
     // Bullet list — collect consecutive items
     if (line.startsWith('- ') || line.startsWith('* ')) {
       const items = []
@@ -283,6 +295,15 @@ function ContentBlock({ block }) {
           </li>
         ))}
       </ul>
+    )
+    case 'callout': return (
+      <div style={{ margin: '16px 0', padding: '14px 18px', background: 'rgba(0,212,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderLeft: '3px solid #00D4FF', borderRadius: '0 8px 8px 0' }}>
+        {block.lines.map((line, i) => (
+          <p key={i} style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, color: 'rgba(255,255,255,0.8)', margin: i > 0 ? '6px 0 0' : 0, lineHeight: 1.7 }}>
+            <InlineText text={line} />
+          </p>
+        ))}
+      </div>
     )
     case 'code': return <CodeWindow code={block.code} lang={block.lang} output={block.output} />
     case 'table': return <TableBlock rows={block.rows} />
