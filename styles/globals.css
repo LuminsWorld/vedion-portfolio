@@ -18,29 +18,11 @@ body {
   color: #fff;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
-  cursor: none;
 }
 
-/* Custom cursor */
-.cursor {
-  width: 12px; height: 12px;
-  background: var(--green);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.1s ease;
-  mix-blend-mode: difference;
-}
-.cursor-ring {
-  width: 32px; height: 32px;
-  border: 1px solid var(--green);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9998;
-  transition: transform 0.15s ease, width 0.2s, height 0.2s;
-  mix-blend-mode: difference;
+/* Hide native cursor on pointer devices (JS cursor handles it) */
+@media (hover: hover) and (pointer: fine) {
+  body, a, button, [style*="cursor: pointer"] { cursor: none !important; }
 }
 
 /* Glitch text animation */
@@ -364,11 +346,12 @@ body {
 
 /* Project card hover enhancements */
 .project-card {
-  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, background 0.3s ease, box-shadow 0.4s ease;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.4s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 .project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
 }
 
 /* Nav scroll blur */
@@ -381,15 +364,6 @@ body {
 
 /* ========= MOBILE RESPONSIVE ========= */
 @media (max-width: 768px) {
-  body { cursor: auto; }
-  .cursor, .cursor-ring { display: none; }
-
-  /* Nav */
-  nav { padding: 1rem 1.25rem !important; }
-
-  /* Hero */
-  section { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
-
   /* Chat widget */
   .chat-panel {
     width: calc(100vw - 2rem) !important;
@@ -397,22 +371,25 @@ body {
     bottom: 60px !important;
     height: 360px !important;
   }
-  .chat-widget { bottom: 1.25rem !important; right: 1.25rem !important; }
+  .chat-widget { bottom: 5rem !important; right: 1.25rem !important; }
 
-  /* Project grid */
+  /* Project grid single column */
   .project-card { padding: 1.25rem; }
-
-  /* EQ bar height handled in component */
 }
 
 @media (max-width: 480px) {
   .chat-panel { width: calc(100vw - 1.5rem) !important; }
 }
 
-/* Touch devices - disable hover-only effects */
+/* Touch devices — use active state instead of hover */
 @media (hover: none) {
-  .project-card:hover { transform: none; }
-  .project-card:active { transform: translateY(-2px); border-color: rgba(0,255,65,0.3); }
+  .project-card:active {
+    transform: translateY(-2px) !important;
+    border-color: rgba(0,255,65,0.3) !important;
+    transition: transform 0.1s ease !important;
+  }
+  /* Restore native cursor on touch */
+  body, a, button { cursor: auto !important; }
 }
 
 /* Smooth scrolling on iOS */

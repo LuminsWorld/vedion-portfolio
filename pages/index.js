@@ -50,46 +50,60 @@ export default function Home() {
   const glitchTimeout = useRef(null);
   const { start: synthStart, stop: synthStop, analyserRef } = useSynth();
 
-  // Custom cursor (desktop only)
-  useEffect(() => {
-    if (window.matchMedia("(hover: none)").matches) return;
-    const cursor = document.createElement("div");
-    const ring = document.createElement("div");
-    cursor.className = "cursor";
-    ring.className = "cursor-ring";
-    document.body.appendChild(cursor);
-    document.body.appendChild(ring);
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    const onMove = (e) => { mx = e.clientX; my = e.clientY; };
-    document.addEventListener("mousemove", onMove);
-    const animCursor = () => {
-      cursor.style.left = mx - 6 + "px";
-      cursor.style.top = my - 6 + "px";
-      rx += (mx - rx - 16) * 0.12;
-      ry += (my - ry - 16) * 0.12;
-      ring.style.left = rx + "px";
-      ring.style.top = ry + "px";
-      requestAnimationFrame(animCursor);
-    };
-    animCursor();
-    return () => {
-      document.removeEventListener("mousemove", onMove);
-      if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
-      if (ring.parentNode) ring.parentNode.removeChild(ring);
-    };
-  }, []);
+  // Cursor now handled globally in _app.js
 
-  // Scroll reveal
+  // Scroll reveal + skill bars
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("visible");
+          // Animate skill bars when they come into view
+          e.target.querySelectorAll && e.target.querySelectorAll('.skill-bar').forEach(bar => {
+            bar.style.width = bar.dataset.pct + '%';
+          });
+        }
+      });
     }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
     document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger, .glow-reveal").forEach(el => observer.observe(el));
+    // Also observe skill bar parents
+    document.querySelectorAll('.skill-bar').forEach(bar => {
+      const parent = bar.closest('section') || bar.parentElement;
+      if (parent) observer.observe(parent);
+    });
     return () => observer.disconnect();
-  }, []);
+  }, [revealed]);
 
-  // Lock scroll until user reveals work
+  // Card tilt effect (desktop only)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(hover: none)').matches) return;
+    const cards = document.querySelectorAll('.project-card');
+    const handlers = [];
+    cards.forEach(card => {
+      const onMove = (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(600px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateY(-4px)`;
+      };
+      const onLeave = () => { card.style.transform = 'perspective(600px) rotateY(0) rotateX(0) translateY(0)'; };
+      card.addEventListener('mousemove', onMove);
+      card.addEventListener('mouseleave', onLeave);
+      handlers.push({ card, onMove, onLeave });
+    });
+    return () => { handlers.forEach(({ card, onMove, onLeave }) => { card.removeEventListener('mousemove', onMove); card.removeEventListener('mouseleave', onLeave); }); };
+  }, [cardsVisible]);
+
+  // Lock scroll until user reveals work (desktop only — don't trap mobile)
+  useEffect(() => {
+    const isMobile = window.matchMedia('(hover: none)').matches || window.innerWidth < 768;
+    if (isMobile) {
+      // On mobile, auto-reveal immediately so scroll works
+      setRevealed(true);
+      setCardsVisible(true);
+      return;
+    }
     document.body.style.overflow = 'hidden';
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
@@ -315,6 +329,65 @@ export default function Home() {
         </div>
       </section>
 
+      {/* STATS */}
+      <section style={{ position: "relative", zIndex: 2, padding: "clamp(3rem, 8vw, 6rem) clamp(1.25rem, 5vw, 2rem)", borderTop: "1px solid rgba(255,255,255,0.05)", background: "#000" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1.5rem" }}>
+            {[
+              { val: "2026", label: "UW-Madison", sub: "Data Science" },
+              { val: "24/7", label: "AI Online", sub: "Vedion active" },
+              { val: "100+", label: "Quiz Questions", sub: "STAT 240 course" },
+              { val: "∞", label: "Curiosity", sub: "always learning" },
+            ].map(({ val, label, sub }) => (
+              <div key={label} style={{ textAlign: "center", padding: "1.5rem", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, background: "rgba(255,255,255,0.02)", transition: "all 0.3s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,255,65,0.25)"; e.currentTarget.style.background = "rgba(0,255,65,0.04)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}>
+                <div style={{ fontFamily: "JetBrains Mono", fontSize: "clamp(1.6rem, 4vw, 2.5rem)", fontWeight: 900, color: "var(--green)", letterSpacing: "-0.02em" }}>{val}</div>
+                <div style={{ fontFamily: "Inter", fontSize: "13px", fontWeight: 600, marginTop: "0.4rem" }}>{label}</div>
+                <div style={{ fontFamily: "JetBrains Mono", fontSize: "10px", color: "rgba(255,255,255,0.35)", marginTop: "0.25rem", letterSpacing: "0.05em" }}>{sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SKILLS */}
+      <section style={{ position: "relative", zIndex: 2, padding: "clamp(3rem, 8vw, 5rem) clamp(1.25rem, 5vw, 2rem)", background: "#000" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
+          <div>
+            <div className="section-label reveal" style={{ marginBottom: "1.25rem" }}>LANGUAGES</div>
+            {[
+              { name: "R", pct: 85, color: "var(--ice)" },
+              { name: "Python", pct: 75, color: "var(--violet)" },
+              { name: "JavaScript", pct: 80, color: "var(--amber)" },
+              { name: "SQL", pct: 65, color: "var(--green)" },
+            ].map(({ name, pct, color }) => (
+              <div key={name} className="reveal" style={{ marginBottom: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.35rem", fontFamily: "JetBrains Mono", fontSize: "11px" }}>
+                  <span>{name}</span>
+                  <span style={{ color: "rgba(255,255,255,0.35)" }}>{pct}%</span>
+                </div>
+                <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2, overflow: "hidden" }}>
+                  <div className="skill-bar" data-pct={pct} style={{ height: "100%", width: 0, background: color, borderRadius: 2, transition: "width 1.2s cubic-bezier(0.16,1,0.3,1)" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div className="section-label reveal" style={{ marginBottom: "1.25rem" }}>FRAMEWORKS & TOOLS</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              {["React", "Next.js", "Node.js", "Firebase", "Three.js", "ggplot2", "tidyverse", "Vercel", "Git", "Web Audio API", "Firestore"].map(t => (
+                <span key={t} className="reveal" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", padding: "5px 10px", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3, color: "rgba(255,255,255,0.55)", transition: "all 0.2s" }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--green)"; e.currentTarget.style.color = "var(--green)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(255,255,255,0.55)"; }}>
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ABOUT */}
       <section id="about" style={{ position: "relative", zIndex: 2, padding: "clamp(4rem, 10vw, 8rem) clamp(1.25rem, 5vw, 2rem)", borderTop: "1px solid rgba(255,255,255,0.05)", background: "#000" }}>
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
@@ -322,14 +395,14 @@ export default function Home() {
           <h2 className="reveal" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 900, marginBottom: "2rem", letterSpacing: "-0.02em" }}>Austin Tessmer</h2>
           <p className="reveal" style={{ fontSize: "1rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.8, marginBottom: "1.5rem" }}>
             Data Science student at UW-Madison. I build things at the intersection of data, code, and design.
-            When I am not writing Python or R, I am serving tables at Cafe Hollander or digging through indie music.
+            When I&apos;m not writing Python or R, I&apos;m serving tables at Cafe Hollander or digging through indie music.
           </p>
           <p className="reveal" style={{ fontSize: "1rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.8 }}>
             This site is powered by an AI called Vedion — my personal assistant. Hit the chat button and ask it anything.
           </p>
-          <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem" }}>
-            {[["GITHUB", "https://github.com/LuminsWorld"], ["LINKEDIN", "#"]].map(([l, h]) => (
-              <a key={l} href={h} style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.35)", textDecoration: "none", transition: "color 0.2s" }}
+          <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+            {[["GITHUB", "https://github.com/LuminsWorld"], ["INSTAGRAM", "https://instagram.com/aust1n_lt"]].map(([l, h]) => (
+              <a key={l} href={h} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.35)", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={e => e.target.style.color = "var(--green)"}
                 onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.35)"}>
                 {l}
