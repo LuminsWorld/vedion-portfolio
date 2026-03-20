@@ -639,7 +639,11 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                           explanations[q.id] ? (
                             <div style={{ width: '100%', marginTop: 4, padding: '12px 14px', background: 'rgba(123,47,255,0.06)', border: '1px solid rgba(123,47,255,0.2)', borderRadius: 8 }}>
                               <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, letterSpacing: '0.15em', color: '#7B2FFF', marginBottom: 6 }}>✦ AI EXPLANATION</div>
-                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.6 }}>{explanations[q.id]}</p>
+                              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
+                                {explanations[q.id].split('\n').filter(Boolean).map((line, i) => (
+                                  <p key={i} style={{ margin: i > 0 ? '6px 0 0' : 0 }}><InlineText text={line} /></p>
+                                ))}
+                              </div>
                             </div>
                           ) : (
                             <button onClick={() => getAIExplanation(q)} disabled={loadingExp[q.id]} style={{ background: 'rgba(123,47,255,0.08)', border: '1px solid rgba(123,47,255,0.25)', borderRadius: 6, padding: '7px 14px', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#7B2FFF', cursor: 'pointer', letterSpacing: '0.1em' }}>
