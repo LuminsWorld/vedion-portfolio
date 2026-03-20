@@ -102,13 +102,13 @@
         {
           "id": "m1-sa1",
           "type": "select-all",
-          "question": "Which of the following lines of code will return NA? Select ALL that apply.",
+          "question": "Given `x <- NA`, which of the following lines of code will return NA? Select ALL that apply.",
           "code": "# Assume starwars is loaded\nx <- NA\n(A) x + 5\n(B) is.na(x)\n(C) mean(starwars$mass)\n(D) x == NA",
           "options": [
-            "(A) x + 5",
-            "(B) is.na(x)",
-            "(C) mean(starwars$mass)",
-            "(D) x == NA"
+            "x + 5",
+            "is.na(x)",
+            "mean(starwars$mass)",
+            "x == NA"
           ],
           "answer": [
             0,
@@ -123,13 +123,11 @@
           "question": "Complete the argument to calculate the average mass of Star Wars characters, ignoring missing values:",
           "code": "mean(starwars$mass, _____ = TRUE)",
           "blanks": [
-            "na.rm",
             "na.rm = TRUE",
-            "na.rm=TRUE",
-            "na.rm =TRUE",
-            "na.rm= TRUE"
+            "na.rm=TRUE"
           ],
-          "explanation": "na.rm = TRUE tells mean() to remove NA values before computing the mean. Without it, a single NA in the column makes the whole result NA."
+          "explanation": "na.rm = TRUE tells mean() to remove NA values before computing the mean. Without it, a single NA in the column makes the whole result NA.",
+          "answer": "na.rm = TRUE"
         },
         {
           "id": "m1-sa2",
@@ -270,10 +268,10 @@
           "question": "Fill in the correct operator to check if a value is missing. Using == will NOT work:",
           "code": "# Correct way to check for NA:\n_____(x)",
           "blanks": [
-            "is.na",
-            "is.na()"
+            "is.na"
           ],
-          "explanation": "is.na() is the only correct way to test for NA. The == operator returns NA when either side is NA, not TRUE or FALSE."
+          "explanation": "is.na() is the only correct way to test for NA. The == operator returns NA when either side is NA, not TRUE or FALSE.",
+          "answer": "is.na"
         },
         {
           "id": "m2-sa2",
@@ -416,10 +414,10 @@
           "question": "We want to color the INTERIOR of bars by a variable. Fill in the aesthetic name (not `color`, which colors the border):",
           "code": "ggplot(data, aes(x = city, _____ = region)) +\n  geom_bar()",
           "blanks": [
-            "fill",
-            "fill = region"
+            "fill"
           ],
-          "explanation": "fill controls the interior color of bars, rectangles, and polygons. color (or colour) controls the outline/border. For bars, you almost always want fill."
+          "explanation": "fill controls the interior color of bars, rectangles, and polygons. color (or colour) controls the outline/border. For bars, you almost always want fill.",
+          "answer": "fill"
         },
         {
           "id": "m3-sa2",
@@ -559,10 +557,10 @@
           "question": "Fill in the join function to return only players from 'baseball' who have NOT previously won an award (from the 'past_winners' table, matched on player_id):",
           "code": "_____(baseball, past_winners, by = \"player_id\")",
           "blanks": [
-            "anti_join",
-            "anti_join()"
+            "anti_join"
           ],
-          "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's the perfect tool for 'find rows that are NOT in another table.' left_join would keep all players with NAs, inner_join would only keep matches — neither is what we want."
+          "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's the perfect tool for 'find rows that are NOT in another table.' left_join would keep all players with NAs, inner_join would only keep matches — neither is what we want.",
+          "answer": "anti_join"
         },
         {
           "id": "m4-sa2",
@@ -708,10 +706,11 @@
           "question": "The 'Major' table uses 'Student_Name' but the 'Language' table uses 'Name'. Complete the join_by() to match them:",
           "code": "inner_join(Major, Language,\n  by = join_by(Student_Name == _____))",
           "blanks": [
-            "Name",
-            "Name)"
+            "Student_Name == Name",
+            "join_by(Student_Name == Name)"
           ],
-          "explanation": "join_by() lets you specify a join condition when the key column has different names in each table. join_by(Student_Name == Name) tells R: match rows where Major$Student_Name equals Language$Name."
+          "explanation": "join_by() lets you specify a join condition when the key column has different names in each table. join_by(Student_Name == Name) tells R: match rows where Major$Student_Name equals Language$Name.",
+          "answer": "Student_Name == Name"
         },
         {
           "id": "m5-sa2",
@@ -775,11 +774,11 @@
           "question": "Complete the argument to ignore NAs when calculating mean PIT_AVG:",
           "code": "mean(baseball$PIT_AVG, _____ = TRUE)",
           "blanks": [
-            "na.rm",
             "na.rm = TRUE",
             "na.rm=TRUE"
           ],
-          "explanation": "na.rm stands for 'NA remove'. Setting it to TRUE tells mean() to strip NA values before computing the average."
+          "explanation": "na.rm stands for 'NA remove'. Setting it to TRUE tells mean() to strip NA values before computing the average.",
+          "answer": "na.rm = TRUE"
         },
         {
           "id": "e1-q4",
@@ -823,7 +822,8 @@
             "geom_hline",
             "geom_hline()"
           ],
-          "explanation": "geom_hline() draws a horizontal line at a fixed y value (yintercept). geom_vline() draws a vertical line. Note: color must be in quotes as a constant outside aes(), and we need mendota$duration not just duration since we're outside the ggplot context."
+          "explanation": "geom_hline() draws a horizontal line at a fixed y value (yintercept). geom_vline() draws a vertical line. Note: color must be in quotes as a constant outside aes(), and we need mendota$duration not just duration since we're outside the ggplot context.",
+          "answer": "geom_hline"
         },
         {
           "id": "e1-q7",
@@ -861,10 +861,10 @@
           "question": "Complete the join to return only players from baseball who have NOT previously won an award (from past_awardees, joined on id):",
           "code": "_____(baseball, past_awardees, by = \"id\")",
           "blanks": [
-            "anti_join",
-            "anti_join()"
+            "anti_join"
           ],
-          "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's designed exactly for this use case: 'find records in A that don't appear in B.'"
+          "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's designed exactly for this use case: 'find records in A that don't appear in B.'",
+          "answer": "anti_join"
         },
         {
           "id": "e1-q10",
@@ -921,7 +921,8 @@
             "pivot_longer",
             "pivot_longer()"
           ],
-          "explanation": "pivot_longer() converts wide data to long by stacking columns into rows. Here it takes the five language columns and creates two new columns: Language (the former column names) and Fluent (the TRUE/FALSE values). pivot_wider() goes the opposite direction."
+          "explanation": "pivot_longer() converts wide data to long by stacking columns into rows. Here it takes the five language columns and creates two new columns: Language (the former column names) and Fluent (the TRUE/FALSE values). pivot_wider() goes the opposite direction.",
+          "answer": "pivot_longer"
         },
         {
           "id": "e1-q14",
@@ -1412,9 +1413,11 @@
           "code": "_____(4, size = 10, prob = 0.3)",
           "blanks": [
             "dbinom",
-            "dbinom()"
+            "dbinom(4, 10, 0.3)",
+            "dbinom(4,10,0.3)"
           ],
-          "explanation": "dbinom() gives the exact probability at a single value (the PMF). pbinom() gives cumulative probability P(X ≤ k). For P(X = k), always use dbinom."
+          "explanation": "dbinom() gives the exact probability at a single value (the PMF). pbinom() gives cumulative probability P(X ≤ k). For P(X = k), always use dbinom.",
+          "answer": "dbinom"
         },
         {
           "id": "e2-q4",
@@ -1487,9 +1490,11 @@
           "code": "_____(88, mean = 75, sd = 10)",
           "blanks": [
             "pnorm",
-            "pnorm()"
+            "pnorm(88, 75, 10)",
+            "pnorm(88,75,10)"
           ],
-          "explanation": "pnorm() gives the cumulative distribution function — P(X ≤ x) — for a normal distribution. Note that sd=10 because the variance is 100 and sd = sqrt(variance) = sqrt(100) = 10."
+          "explanation": "pnorm() gives the cumulative distribution function — P(X ≤ x) — for a normal distribution. Note that sd=10 because the variance is 100 and sd = sqrt(variance) = sqrt(100) = 10.",
+          "answer": "pnorm"
         },
         {
           "id": "e2-q9",
@@ -1531,9 +1536,11 @@
           "code": "_____(0.90, mean = 72, sd = 8)",
           "blanks": [
             "qnorm",
-            "qnorm()"
+            "qnorm(0.9, 72, 8)",
+            "qnorm(0.9,72,8)"
           ],
-          "explanation": "qnorm() is the inverse of pnorm() — it takes a probability and returns the corresponding x value. Use qnorm when the question asks 'what score corresponds to the top X%?' or 'find the kth percentile.'"
+          "explanation": "qnorm() is the inverse of pnorm() — it takes a probability and returns the corresponding x value. Use qnorm when the question asks 'what score corresponds to the top X%?' or 'find the kth percentile.'",
+          "answer": "qnorm"
         },
         {
           "id": "e2-q12",
