@@ -1,0 +1,877 @@
+{
+  "id": "stat240",
+  "title": "STAT 240: Data Modeling I",
+  "description": "Introduction to data science with R: visualization, data manipulation, probability, and statistical inference. UW-Madison, Spring 2026.",
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "Intro to R & RStudio",
+      "content": "# Introduction to R & RStudio\n\n## What is R?\n\nR is a programming language designed for statistical computing and data analysis. RStudio is the integrated development environment (IDE) we use to write R code. Code is written in **chunks** inside R Markdown (`.Rmd`) files, which combine text and code in one document.\n\n## Variables and Assignment\n\nVariables store values for later use. In R, the standard assignment operator is `<-`:\n\n```r\nx <- 4\nmy_name <- \"Miranda\"\nis_raining <- TRUE\n```\n\nCapitalization matters — `x` and `X` are different variables. Variable names cannot start with a number (`1a <- 3` is illegal).\n\nTo see a variable's value, just type its name and run it:\n\n```r\nx         # prints 4\nx + 10    # prints 14, but does NOT change x\nx <- x + 1  # NOW x is 5\n```\n\n## Data Types\n\nEvery object in R has a **class**. Check it with `class()`:\n\n```r\nclass(42)        # \"numeric\"\nclass(\"hello\")   # \"character\"\nclass(TRUE)      # \"logical\"\n```\n\n- **Numeric**: numbers, supports math operations\n- **Character**: text strings, wrapped in quotes\n- **Logical**: `TRUE` or `FALSE` only\n\n## Basic Functions\n\nFunctions take inputs (arguments) and return outputs:\n\n```r\nsqrt(16)        # 4\nabs(-7)         # 7\nnchar(\"hello\")  # 5 (number of characters)\ntoupper(\"hi\")   # \"HI\"\n```\n\nThe `seq()` function generates sequences:\n\n```r\nseq(from = 0, to = 10, by = 2)  # 0 2 4 6 8 10\nseq(1, 5)                        # 1 2 3 4 5\n```\n\n## Math Operations\n\n```r\n3 + 4    # addition\n5 - 8    # subtraction\n2 * 9.5  # multiplication\n6.8 / 2  # division\n2 ^ 3    # exponentiation (8)\n```\n\nSpecial values:\n- `NaN`: not a number (e.g., `sqrt(-4)`, `0/0`)\n- `Inf` / `-Inf`: infinity (e.g., `1/0`)\n- `NA`: missing value\n\n## Comments\n\nAnything after `#` is a comment — R ignores it:\n\n```r\n# This is a comment\nx <- 5  # assign 5 to x\n```\n\nComments are essential for making your code readable to others (and future you).",
+      "quiz": [
+        {
+          "id": "m1-q1",
+          "question": "Which of the following is a valid variable assignment in R?",
+          "type": "multiple",
+          "options": ["1x <- 5", "x <- 5", "x == 5", "x = = 5"],
+          "answer": 1,
+          "explanation": "The `<-` operator is the standard assignment in R. Variable names cannot start with a number, and `==` is a comparison operator, not assignment."
+        },
+        {
+          "id": "m1-q2",
+          "question": "What does `class(TRUE)` return?",
+          "type": "multiple",
+          "options": ["\"numeric\"", "\"boolean\"", "\"logical\"", "\"character\""],
+          "answer": 2,
+          "explanation": "In R, boolean values are called 'logical'. `TRUE` and `FALSE` are the two logical values."
+        },
+        {
+          "id": "m1-q3",
+          "question": "What is the output of `x <- 3; x <- x + 2; x`?",
+          "type": "multiple",
+          "options": ["3", "2", "5", "Error"],
+          "answer": 2,
+          "explanation": "x is first assigned 3, then reassigned to x + 2 = 5. The final line prints x, which is 5."
+        },
+        {
+          "id": "m1-q4",
+          "question": "What does `seq(2, 10, 2)` produce?",
+          "type": "multiple",
+          "options": ["2 4 6 8 10", "2 3 4 5 6 7 8 9 10", "2 10", "2 4 6 8"],
+          "answer": 0,
+          "explanation": "seq(from=2, to=10, by=2) generates even numbers from 2 to 10 inclusive: 2, 4, 6, 8, 10."
+        },
+        {
+          "id": "m1-q5",
+          "question": "What is the result of `0 / 0` in R?",
+          "type": "multiple",
+          "options": ["0", "Inf", "NaN", "Error"],
+          "answer": 2,
+          "explanation": "0/0 is mathematically undefined, so R returns NaN (Not a Number) rather than throwing an error."
+        },
+        {
+          "id": "m1-q6",
+          "question": "Which statement about R capitalization is TRUE?",
+          "type": "multiple",
+          "options": ["R is case-insensitive for variable names", "x and X are the same variable in R", "x and X are different variables in R", "R converts all names to lowercase automatically"],
+          "answer": 2,
+          "explanation": "R is case-sensitive. `x` and `X` are completely separate variables and do not share values."
+        },
+        {
+          "id": "m1-q7",
+          "question": "What does `nchar(\"statistics\")` return?",
+          "type": "multiple",
+          "options": ["9", "10", "11", "1"],
+          "answer": 1,
+          "explanation": "nchar counts the number of characters in a string. 'statistics' has 10 characters."
+        },
+        {
+          "id": "m1-q8",
+          "question": "What is the output of `2 ^ 3 + 1` in R?",
+          "type": "multiple",
+          "options": ["7", "8", "9", "64"],
+          "answer": 2,
+          "explanation": "Exponentiation has higher precedence than addition: 2^3 = 8, then 8 + 1 = 9."
+        },
+        {
+          "id": "m1-q9",
+          "question": "In an R Markdown file, where does code go?",
+          "type": "multiple",
+          "options": ["Anywhere in the document", "Only in the YAML header", "Inside code chunks delimited by ```{r}", "In a separate .R file"],
+          "answer": 2,
+          "explanation": "R Markdown code chunks start with ```{r} and end with ```. Code inside these chunks is executed when the document is knit."
+        },
+        {
+          "id": "m1-q10",
+          "question": "Which function checks the data type of an object in R?",
+          "type": "multiple",
+          "options": ["type()", "typeof()", "class()", "datatype()"],
+          "answer": 2,
+          "explanation": "class() returns the class/type of an R object. It's the most commonly used function for checking data type in STAT 240."
+        }
+      ]
+    },
+    {
+      "id": "module-2",
+      "title": "Data Types & Structures",
+      "content": "# Data Types & Structures\n\n## Logical Operators\n\nLogical operators compare values and return `TRUE` or `FALSE`:\n\n```r\n5 > 3    # TRUE\n5 < 3    # FALSE\n5 >= 5   # TRUE\n5 == 5   # TRUE (equality check, NOT assignment!)\n5 != 3   # TRUE (not equal)\n```\n\nCombine conditions with `&` (AND) and `|` (OR):\n\n```r\n(5 > 3) & (2 < 1)   # FALSE — both must be TRUE\n(5 > 3) | (2 < 1)   # TRUE — at least one is TRUE\n```\n\n## Missing Values: NA\n\n`NA` represents a missing value. Most operations with `NA` return `NA`:\n\n```r\nNA + 2     # NA\nNA == NA   # NA (not TRUE!)\n```\n\nTo check for missing values, use `is.na()`:\n\n```r\nnothing <- NA\nis.na(nothing)   # TRUE\n```\n\n## Vectors\n\nA vector is a sequence of elements of the **same type**, created with `c()`:\n\n```r\nprimes <- c(2, 3, 5, 7, 11)\nnames <- c(\"Alice\", \"Bob\", \"Carol\")\n\nprimes[1]   # 2 (1-indexed!)\nnames[2]    # \"Bob\"\n```\n\nIf you mix types, R **coerces** to the most general type:\n\n```r\nc(2, TRUE, \"banana\")   # all become character\n```\n\n### Vector Operations\n\nOperations apply element-wise:\n\n```r\nprimes + 10        # adds 10 to each element\nprimes * 2         # doubles each element\nprimes == 5        # FALSE FALSE TRUE FALSE FALSE\nsum(primes == 5)   # 1 (counts TRUEs)\n```\n\nUseful shorthand: `1:5` creates the vector `1 2 3 4 5`.\n\n### Common Vector Functions\n\n```r\nmin(primes)     # 2\nmax(primes)     # 11\nmean(primes)    # 5.6\nsum(primes)     # 28\nlength(primes)  # 5\n```\n\nCheck membership with `%in%`:\n\n```r\n3 %in% primes   # TRUE\n4 %in% primes   # FALSE\n```\n\n## Dataframes and Tibbles\n\nA **dataframe** organizes multiple vectors into a table (like a spreadsheet). Use `tibble()` from tidyverse:\n\n```r\nlibrary(tidyverse)\n\nstudents <- tibble(\n  name = c(\"Alice\", \"Bob\"),\n  age  = c(20, 22),\n  pass = c(TRUE, FALSE)\n)\n```\n\nAccess columns with `$` or indexing `[row, col]`:\n\n```r\nstudents$name    # c(\"Alice\", \"Bob\")\nstudents[1, ]    # first row\nstudents[, 2]    # second column (age)\n```\n\nRead CSV data:\n\n```r\ndata <- read_csv(\"path/to/file.csv\")\nhead(data)     # first 6 rows\nglimpse(data)  # column names + types\nnrow(data)     # number of rows\nncol(data)     # number of columns\n```",
+      "quiz": [
+        {
+          "id": "m2-q1",
+          "question": "What is the output of `c(1, TRUE, \"cat")`?",
+          "type": "multiple",
+          "options": ["1 1 cat (numeric coercion)", "\"1\" \"TRUE\" \"cat\" (character coercion)", "1 TRUE cat (mixed vector)", "Error: cannot mix types"],
+          "answer": 1,
+          "explanation": "When mixing types in c(), R coerces to the most general type. Character is the most general, so all elements become character strings."
+        },
+        {
+          "id": "m2-q2",
+          "question": "What does `is.na(5 > 3)` return?",
+          "type": "multiple",
+          "options": ["TRUE", "FALSE", "NA", "Error"],
+          "answer": 1,
+          "explanation": "5 > 3 evaluates to TRUE (not NA), so is.na(TRUE) returns FALSE."
+        },
+        {
+          "id": "m2-q3",
+          "question": "Given `x <- c(10, 20, 30, 40)`, what does `x[3]` return?",
+          "type": "multiple",
+          "options": ["20", "30", "40", "10"],
+          "answer": 1,
+          "explanation": "R uses 1-based indexing. x[3] returns the 3rd element, which is 30."
+        },
+        {
+          "id": "m2-q4",
+          "question": "What is the output of `sum(c(1, 2, 3) == 2)`?",
+          "type": "multiple",
+          "options": ["2", "1", "3", "TRUE"],
+          "answer": 1,
+          "explanation": "c(1,2,3)==2 gives FALSE TRUE FALSE. sum() treats TRUE as 1 and FALSE as 0, so the total is 1."
+        },
+        {
+          "id": "m2-q5",
+          "question": "Which operator correctly checks if variable `age` equals 21?",
+          "type": "multiple",
+          "options": ["age = 21", "age <- 21", "age == 21", "age === 21"],
+          "answer": 2,
+          "explanation": "== is the equality comparison operator. = and <- are assignment operators. === does not exist in R."
+        },
+        {
+          "id": "m2-q6",
+          "question": "What does `length(c(\"a\", \"b\", \"c\", \"d\"))` return?",
+          "type": "multiple",
+          "options": ["3", "4", "1", "\"abcd\""],
+          "answer": 1,
+          "explanation": "length() counts the number of elements in a vector. This vector has 4 character elements."
+        },
+        {
+          "id": "m2-q7",
+          "question": "What is the result of `(3 > 2) & (5 < 4)`?",
+          "type": "multiple",
+          "options": ["TRUE", "FALSE", "NA", "Error"],
+          "answer": 1,
+          "explanation": "3 > 2 is TRUE, but 5 < 4 is FALSE. AND requires both conditions to be TRUE, so the result is FALSE."
+        },
+        {
+          "id": "m2-q8",
+          "question": "You have a tibble `df`. How do you access the column named `score`?",
+          "type": "multiple",
+          "options": ["df[score]", "df$score", "df(score)", "score(df)"],
+          "answer": 1,
+          "explanation": "The $ operator accesses a named column from a dataframe or tibble: df$score returns the score column as a vector."
+        },
+        {
+          "id": "m2-q9",
+          "question": "Which function checks if an element is in a vector?",
+          "type": "multiple",
+          "options": ["contains()", "in()", "%in%", "has()"],
+          "answer": 2,
+          "explanation": "%in% is the membership operator. `5 %in% c(1,3,5,7)` returns TRUE because 5 is in the vector."
+        },
+        {
+          "id": "m2-q10",
+          "question": "Given `nothing <- NA`, what does `nothing == NA` return?",
+          "type": "multiple",
+          "options": ["TRUE", "FALSE", "NA", "Error"],
+          "answer": 2,
+          "explanation": "You cannot use == to test for NA. Any comparison with NA returns NA. Use is.na() instead."
+        }
+      ]
+    },
+    {
+      "id": "module-3",
+      "title": "Data Visualization with ggplot2",
+      "content": "# Data Visualization with ggplot2\n\n## The Grammar of Graphics\n\nggplot2 builds plots in **layers**. Every plot starts with `ggplot()` and adds layers with `+`:\n\n```r\nlibrary(tidyverse)\n\nggplot(data = penguins, aes(x = bill_length_mm, y = body_mass_g)) +\n  geom_point()\n```\n\nThe three core components:\n1. **data** — the dataframe\n2. **aes()** — aesthetic mappings (which columns map to x, y, color, etc.)\n3. **geom_*()** — the geometric object (points, bars, lines, etc.)\n\n## Common Geoms\n\n### Scatter Plot\n```r\nggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +\n  geom_point()\n```\n\n### Histogram\n```r\nggplot(penguins, aes(x = body_mass_g)) +\n  geom_histogram(binwidth = 200, fill = \"steelblue\", color = \"white\")\n```\n\n### Bar Chart\n```r\nggplot(penguins, aes(x = species)) +\n  geom_bar()  # counts rows per group automatically\n```\n\n### Line Plot\n```r\nggplot(weather, aes(x = date, y = temp)) +\n  geom_line()\n```\n\n## Aesthetics\n\nMap variables to visual properties inside `aes()`:\n\n```r\nggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g,\n                     color = species, shape = sex)) +\n  geom_point()\n```\n\nSet a fixed value **outside** `aes()` (no column mapping):\n\n```r\ngeom_point(color = \"red\", size = 3, alpha = 0.5)\n```\n\n`alpha` controls transparency (0 = invisible, 1 = opaque).\n\n## Labels and Titles\n\n```r\n+ labs(\n    title = \"Penguin Body Mass by Flipper Length\",\n    x     = \"Flipper Length (mm)\",\n    y     = \"Body Mass (g)\",\n    color = \"Species\"\n  )\n```\n\n## Facets\n\n`facet_wrap()` creates separate panels per group:\n\n```r\nggplot(penguins, aes(x = body_mass_g)) +\n  geom_histogram() +\n  facet_wrap(vars(species))\n```\n\n`facet_grid()` creates a grid by two variables:\n\n```r\nfacet_grid(rows = vars(sex), cols = vars(species))\n```\n\n## Themes\n\nChange the overall look with themes:\n\n```r\n+ theme_minimal()    # clean white background\n+ theme_classic()    # classic axes, no grid\n+ theme_bw()         # black-and-white\n```",
+      "quiz": [
+        {
+          "id": "m3-q1",
+          "question": "Which geom would you use to visualize the distribution of a single continuous variable?",
+          "type": "multiple",
+          "options": ["geom_point()", "geom_bar()", "geom_histogram()", "geom_line()"],
+          "answer": 2,
+          "explanation": "geom_histogram() divides a continuous variable into bins and counts observations in each bin, showing the distribution shape."
+        },
+        {
+          "id": "m3-q2",
+          "question": "What is wrong with this code: `ggplot(penguins, aes(x = species, color = \"blue\")) + geom_bar()`?",
+          "type": "multiple",
+          "options": ["geom_bar() cannot use color", "color inside aes() maps to a variable, not a fixed value", "The data argument is wrong", "Nothing is wrong"],
+          "answer": 1,
+          "explanation": "Inside aes(), values are treated as variable mappings. To set a fixed color, put color = \"blue\" inside geom_bar(), not aes()."
+        },
+        {
+          "id": "m3-q3",
+          "question": "What does `facet_wrap(vars(species))` do?",
+          "type": "multiple",
+          "options": ["Colors each species differently", "Creates a separate plot panel for each species", "Filters to only one species", "Groups rows by species"],
+          "answer": 1,
+          "explanation": "facet_wrap() splits the data by the specified variable and creates a separate panel (subplot) for each unique value."
+        },
+        {
+          "id": "m3-q4",
+          "question": "In `ggplot(data, aes(x = height, y = weight, color = gender))`, what controls the color of points?",
+          "type": "multiple",
+          "options": ["A fixed color applied to all points", "The height variable", "The gender variable", "The weight variable"],
+          "answer": 2,
+          "explanation": "When color is inside aes() and mapped to a variable, each unique value of that variable gets a different color."
+        },
+        {
+          "id": "m3-q5",
+          "question": "You want to add the title 'Species Count' to your plot. Which code is correct?",
+          "type": "multiple",
+          "options": ["+ title('Species Count')", "+ labs(title = 'Species Count')", "+ ggtitle = 'Species Count'", "+ theme(title = 'Species Count')"],
+          "answer": 1,
+          "explanation": "labs() is the ggplot2 function for adding/changing labels including title, x, y, color, fill, and caption."
+        },
+        {
+          "id": "m3-q6",
+          "question": "What does the `alpha` aesthetic control in ggplot2?",
+          "type": "multiple",
+          "options": ["Point size", "Line thickness", "Transparency", "Shape of points"],
+          "answer": 2,
+          "explanation": "alpha controls transparency on a 0 to 1 scale. alpha=0 is fully transparent, alpha=1 is fully opaque."
+        },
+        {
+          "id": "m3-q7",
+          "question": "Which geom is best for showing how a value changes over time?",
+          "type": "multiple",
+          "options": ["geom_bar()", "geom_boxplot()", "geom_line()", "geom_histogram()"],
+          "answer": 2,
+          "explanation": "geom_line() connects data points in order, making it ideal for time series and trends over time."
+        },
+        {
+          "id": "m3-q8",
+          "question": "What does `geom_bar()` count by default?",
+          "type": "multiple",
+          "options": ["The sum of the y variable", "The mean of the y variable", "The number of rows in each x group", "Nothing — you must supply counts"],
+          "answer": 2,
+          "explanation": "By default, geom_bar() uses stat='count', which counts the number of rows (observations) for each category on the x-axis."
+        },
+        {
+          "id": "m3-q9",
+          "question": "How do ggplot2 layers get combined?",
+          "type": "multiple",
+          "options": ["Using %>%", "Using +", "Using ,", "Using &"],
+          "answer": 1,
+          "explanation": "ggplot2 uses the + operator to add layers (geoms, scales, labels, themes) on top of the base ggplot() call."
+        },
+        {
+          "id": "m3-q10",
+          "question": "You want to set all points to size 4 regardless of data. Where does `size = 4` go?",
+          "type": "multiple",
+          "options": ["Inside aes()", "Inside labs()", "Inside the geom function but outside aes()", "Inside theme()"],
+          "answer": 2,
+          "explanation": "Fixed aesthetic values (not mapped to data) go directly inside the geom function: geom_point(size = 4), not inside aes()."
+        }
+      ]
+    },
+    {
+      "id": "module-4",
+      "title": "dplyr: Data Manipulation",
+      "content": "# dplyr: Data Manipulation\n\n## The Pipe: `%>%`\n\nThe pipe (`%>%`) passes the result on the left to the function on the right. It makes chains of operations readable:\n\n```r\nlibrary(tidyverse)\n\n# Without pipe (hard to read)\nfilter(select(penguins, species, body_mass_g), species == \"Adelie\")\n\n# With pipe (much cleaner)\npenguins %>%\n  select(species, body_mass_g) %>%\n  filter(species == \"Adelie\")\n```\n\nNote: `|>` is the native pipe added in R 4.1+ and works identically to `%>%` for most use cases.\n\n## Column Operations\n\n### `select()` — keep or drop columns\n```r\npenguins %>% select(species, body_mass_g)\npenguins %>% select(-island)  # drop island\n```\n\n### `rename()` — rename columns\n```r\npenguins %>% rename(mass = body_mass_g)\n```\n\n### `mutate()` — create or modify columns\n```r\npenguins %>%\n  mutate(\n    mass_kg = body_mass_g / 1000,\n    is_heavy = body_mass_g > 4500\n  )\n```\n\n### `relocate()` — move columns\n```r\npenguins %>% relocate(year, .after = island)\n```\n\n## Row Operations\n\n### `filter()` — keep rows matching a condition\n```r\npenguins %>% filter(species == \"Chinstrap\")\npenguins %>% filter(body_mass_g > 4000 & sex == \"female\")\n```\n\n### `arrange()` — sort rows\n```r\npenguins %>% arrange(body_mass_g)         # ascending\npenguins %>% arrange(desc(body_mass_g))   # descending\n```\n\n### `drop_na()` — remove rows with missing values\n```r\npenguins %>% drop_na(sex)     # drop rows where sex is NA\npenguins %>% drop_na()        # drop any row with any NA\n```\n\n## Summarizing Data\n\n### `summarize()` — reduce to summary stats\n```r\npenguins %>%\n  summarize(\n    avg_mass = mean(body_mass_g, na.rm = TRUE),\n    n        = n()\n  )\n```\n\n### `group_by()` + `summarize()` — stats per group\n```r\npenguins %>%\n  group_by(species) %>%\n  summarize(\n    avg_mass = mean(body_mass_g, na.rm = TRUE),\n    count    = n()\n  )\n```\n\n### `count()` — quick row count per group\n```r\npenguins %>% count(species)\n```\n\n### `slice_min()` / `slice_max()` — extreme rows\n```r\npenguins %>% slice_max(body_mass_g, n = 3)  # top 3 heaviest\npenguins %>% group_by(species) %>% slice_min(body_mass_g, n = 1)\n```\n\n## `case_when()` — conditional column values\n\n```r\npenguins %>%\n  mutate(\n    size_category = case_when(\n      body_mass_g > 5000 ~ \"large\",\n      body_mass_g > 3500 ~ \"medium\",\n      .default           = \"small\"\n    )\n  )\n```\n\nConditions are evaluated in order — the first TRUE match wins.",
+      "quiz": [
+        {
+          "id": "m4-q1",
+          "question": "What does the pipe `%>%` do?",
+          "type": "multiple",
+          "options": ["Assigns the result to a new variable", "Passes the left-hand result as the first argument of the right-hand function", "Filters rows from a dataframe", "Combines two dataframes"],
+          "answer": 1,
+          "explanation": "The pipe passes the output of the left side as the first argument to the function on the right, enabling readable chains of data operations."
+        },
+        {
+          "id": "m4-q2",
+          "question": "Which dplyr verb would you use to keep only rows where `year == 2009`?",
+          "type": "multiple",
+          "options": ["select()", "mutate()", "filter()", "arrange()"],
+          "answer": 2,
+          "explanation": "filter() keeps rows that satisfy a logical condition. select() works on columns, mutate() creates columns, arrange() sorts."
+        },
+        {
+          "id": "m4-q3",
+          "question": "What does `penguins %>% group_by(species) %>% summarize(n = n())` compute?",
+          "type": "multiple",
+          "options": ["The total number of penguins", "The number of penguins per species", "The species of each penguin", "Nothing — n() doesn't work inside summarize"],
+          "answer": 1,
+          "explanation": "group_by(species) splits the data by species, and n() inside summarize() counts rows in each group."
+        },
+        {
+          "id": "m4-q4",
+          "question": "You want to create a new column `bill_ratio = bill_length_mm / bill_depth_mm`. Which verb does this?",
+          "type": "multiple",
+          "options": ["select()", "filter()", "mutate()", "summarize()"],
+          "answer": 2,
+          "explanation": "mutate() creates new columns (or modifies existing ones) based on expressions. It keeps all existing columns."
+        },
+        {
+          "id": "m4-q5",
+          "question": "What is the difference between `summarize()` and `mutate()`?",
+          "type": "multiple",
+          "options": ["summarize() works on rows, mutate() works on columns", "summarize() reduces data to fewer rows; mutate() adds columns while keeping all rows", "They are identical", "mutate() is faster than summarize()"],
+          "answer": 1,
+          "explanation": "summarize() collapses many rows to a single summary row (per group). mutate() adds a column to each existing row without reducing the number of rows."
+        },
+        {
+          "id": "m4-q6",
+          "question": "What does `arrange(desc(price))` do?",
+          "type": "multiple",
+          "options": ["Sorts from lowest to highest price", "Sorts from highest to lowest price", "Removes rows with high prices", "Groups by price"],
+          "answer": 1,
+          "explanation": "desc() reverses the sort order. arrange(desc(price)) sorts rows from highest price to lowest."
+        },
+        {
+          "id": "m4-q7",
+          "question": "What does `drop_na()` (with no arguments) do?",
+          "type": "multiple",
+          "options": ["Removes rows where ALL columns are NA", "Removes rows where ANY column has NA", "Replaces NA with 0", "Does nothing"],
+          "answer": 1,
+          "explanation": "With no arguments, drop_na() removes any row that has at least one NA value in any column."
+        },
+        {
+          "id": "m4-q8",
+          "question": "In `case_when`, if a row matches multiple conditions, which value is assigned?",
+          "type": "multiple",
+          "options": ["The last matching condition", "The first matching condition", "All matching values are returned as a list", "An error is thrown"],
+          "answer": 1,
+          "explanation": "case_when() evaluates conditions in order and assigns the value from the FIRST condition that is TRUE."
+        },
+        {
+          "id": "m4-q9",
+          "question": "What is the output shape of `penguins %>% group_by(species, island) %>% summarize(n = n())`?",
+          "type": "multiple",
+          "options": ["One row", "344 rows (same as penguins)", "One row per unique species-island combination", "One row per species"],
+          "answer": 2,
+          "explanation": "group_by with two variables creates groups for each unique combination. summarize() then collapses each group to one row."
+        },
+        {
+          "id": "m4-q10",
+          "question": "You run `penguins %>% select(-body_mass_g)`. What happens?",
+          "type": "multiple",
+          "options": ["Keeps only the body_mass_g column", "Removes the body_mass_g column", "Filters rows where body_mass_g is NA", "Throws an error"],
+          "answer": 1,
+          "explanation": "The minus sign (-) in select() deselects a column. All other columns are kept."
+        }
+      ]
+    },
+    {
+      "id": "module-5",
+      "title": "Joining & Pivoting Data",
+      "content": "# Joining & Pivoting Data\n\n## Relational Data\n\nReal datasets are often split across multiple tables. **Joins** combine them using a shared **key** column.\n\n## Types of Joins\n\nGiven two tables `A` and `B` with a shared column `id`:\n\n### `inner_join()` — only rows with matches in BOTH tables\n```r\ninner_join(A, B, by = \"id\")\n```\n\n### `left_join()` — all rows from A; NAs where B has no match\n```r\nleft_join(A, B, by = \"id\")\n```\n\n### `right_join()` — all rows from B; NAs where A has no match\n```r\nright_join(A, B, by = \"id\")\n```\n\n### `full_join()` — all rows from BOTH, NAs where no match\n```r\nfull_join(A, B, by = \"id\")\n```\n\n### Quick Memory Aid\n- **inner**: intersection (both must have it)\n- **left**: keep all of A\n- **right**: keep all of B\n- **full**: union (keep everything)\n\n## When Keys Have Different Names\n\n```r\nleft_join(students, grades, by = c(\"student_id\" = \"id\"))\n```\n\n## Pivoting: Reshaping Data\n\nTidy data has one observation per row and one variable per column. Sometimes data isn't tidy.\n\n### `pivot_longer()` — wide to long\n\nTurns multiple columns into two: a name column and a value column.\n\n```r\n# Before: columns q1, q2, q3 each hold a score\nstudents %>%\n  pivot_longer(\n    cols     = c(q1, q2, q3),\n    names_to = \"quiz\",\n    values_to = \"score\"\n  )\n# After: two new columns: quiz (\"q1\",\"q2\",\"q3\") and score\n```\n\n### `pivot_wider()` — long to wide\n\nTurns key-value pairs into separate columns.\n\n```r\n# Before: columns 'measure' and 'value'\ndata %>%\n  pivot_wider(\n    names_from  = measure,\n    values_from = value\n  )\n```\n\n## Why Tidy Data Matters\n\n- ggplot2 expects tidy data (one observation per row)\n- dplyr verbs work naturally on tidy data\n- Makes it easy to group and summarize\n\nA dataset is **wide** when each time point or category is a separate column. It's **long** when each observation is its own row.",
+      "quiz": [
+        {
+          "id": "m5-q1",
+          "question": "You have a table of students and a table of their grades. Some students have no grades yet. Which join keeps ALL students and fills missing grades with NA?",
+          "type": "multiple",
+          "options": ["inner_join()", "right_join(students, grades)", "left_join(students, grades)", "full_join()"],
+          "answer": 2,
+          "explanation": "left_join keeps all rows from the left table (students). Students with no grades get NA in the grade columns."
+        },
+        {
+          "id": "m5-q2",
+          "question": "What does `inner_join(A, B, by = \"id\")` return?",
+          "type": "multiple",
+          "options": ["All rows from A and B", "Only rows where id exists in A but not B", "Only rows where id exists in both A and B", "All rows from A, NA for non-matches"],
+          "answer": 2,
+          "explanation": "inner_join returns only rows where the key column has matching values in both tables — the intersection."
+        },
+        {
+          "id": "m5-q3",
+          "question": "What is the purpose of `pivot_longer()`?",
+          "type": "multiple",
+          "options": ["Converts a long dataset to a wide format", "Converts a wide dataset to a long format", "Filters rows", "Sorts columns"],
+          "answer": 1,
+          "explanation": "pivot_longer() takes multiple columns and collapses them into two: one for the column names and one for the values."
+        },
+        {
+          "id": "m5-q4",
+          "question": "Table A has 5 rows, Table B has 3 rows, all with matching keys. What is the minimum possible row count of `full_join(A, B)`?",
+          "type": "multiple",
+          "options": ["3", "5", "8", "15"],
+          "answer": 1,
+          "explanation": "full_join keeps all rows from both tables. If all of A's rows match B, the result has at least 5 rows (all from A, with B's columns filled in)."
+        },
+        {
+          "id": "m5-q5",
+          "question": "In `pivot_longer(cols = c(jan, feb, mar), names_to = 'month', values_to = 'sales')`, what does `names_to = 'month'` do?",
+          "type": "multiple",
+          "options": ["Filters rows where month equals jan, feb, or mar", "Creates a new column called 'month' containing the old column names", "Renames the columns jan, feb, mar to 'month'", "Counts values per month"],
+          "answer": 1,
+          "explanation": "names_to specifies the name of the new column that will hold the original column names (jan, feb, mar) as values."
+        },
+        {
+          "id": "m5-q6",
+          "question": "Which join should you use if you want ALL rows from both tables, regardless of whether a match exists?",
+          "type": "multiple",
+          "options": ["inner_join()", "left_join()", "right_join()", "full_join()"],
+          "answer": 3,
+          "explanation": "full_join() is the union — it keeps every row from both tables, filling with NA where no match exists."
+        },
+        {
+          "id": "m5-q7",
+          "question": "A dataset has columns: student, test1, test2, test3. After pivot_longer on the test columns, how many columns does the result have?",
+          "type": "multiple",
+          "options": ["2", "3", "4", "5"],
+          "answer": 1,
+          "explanation": "After pivot_longer: student (unchanged) + the new names column + the new values column = 3 columns total."
+        },
+        {
+          "id": "m5-q8",
+          "question": "You join with `left_join(orders, customers, by = \"cust_id\")`. An order has a cust_id not found in customers. What happens?",
+          "type": "multiple",
+          "options": ["That order row is dropped", "An error is thrown", "Customer columns for that row are filled with NA", "The join uses a default customer"],
+          "answer": 2,
+          "explanation": "left_join keeps all rows from the left table. When no match is found in the right table, all right-table columns are set to NA."
+        },
+        {
+          "id": "m5-q9",
+          "question": "What is 'tidy data'?",
+          "type": "multiple",
+          "options": ["Data with no missing values", "Data where each variable has its own column and each observation has its own row", "Data sorted alphabetically", "Data stored in a tibble"],
+          "answer": 1,
+          "explanation": "Tidy data follows: each variable is a column, each observation is a row, each value is a cell. This format works best with ggplot2 and dplyr."
+        },
+        {
+          "id": "m5-q10",
+          "question": "When keys have different names across tables, how do you specify this in a join?",
+          "type": "multiple",
+          "options": ["by = list(\"col1\", \"col2\")", "by = c(\"col_A\" = \"col_B\")", "keys = c(\"col1\", \"col2\")", "match = TRUE"],
+          "answer": 1,
+          "explanation": "Use a named character vector: by = c(\"name_in_A\" = \"name_in_B\") to join on columns with different names."
+        }
+      ]
+    },
+    {
+      "id": "module-6",
+      "title": "Probability Foundations",
+      "content": "# Probability Foundations\n\n## Sample Spaces and Events\n\nA **sample space** (S) is the set of all possible outcomes of a random experiment.\n- Rolling a die: S = {1, 2, 3, 4, 5, 6}\n- Flipping a coin: S = {H, T}\n\nAn **event** is any subset of the sample space.\n- Event A = {rolling an even number} = {2, 4, 6}\n\n## Probability Rules\n\nFor any event A:\n- **P(A) is between 0 and 1**: 0 ≤ P(A) ≤ 1\n- **P(S) = 1**: something in the sample space always happens\n- **Complement**: P(A') = 1 − P(A) where A' is \"not A\"\n\n## Union and Intersection\n\n**Intersection** (A ∩ B): both A AND B occur\n**Union** (A ∪ B): A OR B (or both) occur\n\n**Addition Rule:**\n$$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$$\n\nIf A and B are **mutually exclusive** (can't both happen):\n$$P(A \\cup B) = P(A) + P(B)$$\n\n## Conditional Probability\n\nThe probability of A **given** B has occurred:\n$$P(A|B) = \\frac{P(A \\cap B)}{P(B)}$$\n\nExample: If P(A∩B) = 0.2 and P(B) = 0.5, then P(A|B) = 0.2/0.5 = 0.4\n\n## Independence\n\nEvents A and B are **independent** if knowing B gives no information about A:\n$$P(A|B) = P(A)$$\n\nEquivalently: **P(A ∩ B) = P(A) × P(B)**\n\nThis is the multiplication rule for independent events.\n\n## Bayes' Theorem\n\nFlips conditional probability around:\n$$P(A|B) = \\frac{P(B|A) \\cdot P(A)}{P(B)}$$\n\nUseful when you know P(B|A) but want P(A|B).\n\n## Counting Principles\n\nWhen outcomes are equally likely: P(A) = (# outcomes in A) / (# outcomes in S)\n\nFor ordered selections without replacement:\n$$P(n, k) = \\frac{n!}{(n-k)!}$$\n\nFor unordered selections (combinations):\n$$C(n, k) = \\binom{n}{k} = \\frac{n!}{k!(n-k)!}$$",
+      "quiz": [
+        {
+          "id": "m6-q1",
+          "question": "If P(A) = 0.3, what is P(A')? (A' is the complement of A)",
+          "type": "multiple",
+          "options": ["0.3", "0.7", "0.6", "1.3"],
+          "answer": 1,
+          "explanation": "P(complement) = 1 - P(A) = 1 - 0.3 = 0.7. The event and its complement together cover the entire sample space."
+        },
+        {
+          "id": "m6-q2",
+          "question": "P(A) = 0.4, P(B) = 0.5, P(A∩B) = 0.2. What is P(A∪B)?",
+          "type": "multiple",
+          "options": ["0.9", "0.7", "0.2", "0.6"],
+          "answer": 1,
+          "explanation": "Addition rule: P(A∪B) = P(A) + P(B) - P(A∩B) = 0.4 + 0.5 - 0.2 = 0.7."
+        },
+        {
+          "id": "m6-q3",
+          "question": "Two events A and B are independent with P(A) = 0.3 and P(B) = 0.4. What is P(A∩B)?",
+          "type": "multiple",
+          "options": ["0.7", "0.12", "0.1", "0.3"],
+          "answer": 1,
+          "explanation": "For independent events: P(A∩B) = P(A) × P(B) = 0.3 × 0.4 = 0.12."
+        },
+        {
+          "id": "m6-q4",
+          "question": "P(A∩B) = 0.15 and P(B) = 0.5. What is P(A|B)?",
+          "type": "multiple",
+          "options": ["0.075", "0.30", "0.65", "0.15"],
+          "answer": 1,
+          "explanation": "Conditional probability: P(A|B) = P(A∩B) / P(B) = 0.15 / 0.5 = 0.30."
+        },
+        {
+          "id": "m6-q5",
+          "question": "Which condition is necessary for two events to be mutually exclusive?",
+          "type": "multiple",
+          "options": ["P(A) × P(B) = 0", "P(A∩B) = 0", "P(A|B) = P(A)", "P(A) + P(B) = 1"],
+          "answer": 1,
+          "explanation": "Mutually exclusive events cannot both occur simultaneously, so their intersection has probability 0: P(A∩B) = 0."
+        },
+        {
+          "id": "m6-q6",
+          "question": "A fair die is rolled. What is the probability of rolling a prime number (2, 3, or 5)?",
+          "type": "multiple",
+          "options": ["1/6", "1/3", "1/2", "2/3"],
+          "answer": 2,
+          "explanation": "There are 3 prime numbers (2, 3, 5) out of 6 equally likely outcomes: P = 3/6 = 1/2."
+        },
+        {
+          "id": "m6-q7",
+          "question": "If knowing event B occurred doesn't change P(A), what can we conclude?",
+          "type": "multiple",
+          "options": ["A and B are mutually exclusive", "A and B are independent", "P(A) = P(B)", "A and B are identical"],
+          "answer": 1,
+          "explanation": "Independence means P(A|B) = P(A) — information about B provides no information about A."
+        },
+        {
+          "id": "m6-q8",
+          "question": "In a class of 20 students, 12 like math and 8 like history. If no students like both, what is P(math or history)?",
+          "type": "multiple",
+          "options": ["20/20 = 1", "12/20 = 0.6", "20/20 = 1", "1 (all students like at least one)"],
+          "answer": 0,
+          "explanation": "Since they are mutually exclusive and cover all 20 students: P(math∪history) = 12/20 + 8/20 = 20/20 = 1."
+        },
+        {
+          "id": "m6-q9",
+          "question": "Bayes' theorem is useful for:",
+          "type": "multiple",
+          "options": ["Computing union probabilities", "Reversing conditional probability (finding P(A|B) from P(B|A))", "Testing independence", "Counting sample spaces"],
+          "answer": 1,
+          "explanation": "Bayes' theorem lets you flip the conditioning: P(A|B) = P(B|A)×P(A) / P(B). It's central to medical testing and machine learning."
+        },
+        {
+          "id": "m6-q10",
+          "question": "Two events are mutually exclusive. Can they also be independent (assuming both have positive probability)?",
+          "type": "multiple",
+          "options": ["Yes, always", "Yes, sometimes", "No, never", "Only if P(A) = P(B)"],
+          "answer": 2,
+          "explanation": "If A and B are mutually exclusive with P(A),P(B)>0, then P(A∩B)=0 ≠ P(A)×P(B)>0, so they can't be independent."
+        }
+      ]
+    },
+    {
+      "id": "module-7",
+      "title": "Binomial Distribution",
+      "content": "# Binomial Distribution\n\n## Bernoulli Trials\n\nA **Bernoulli trial** is a single experiment with exactly two outcomes: **success** (probability p) and **failure** (probability 1−p).\n\nExamples:\n- Flipping a coin (heads = success, p = 0.5)\n- A free throw (make = success, p = 0.75)\n- A medical treatment (cured = success, p = 0.3)\n\n## The Binomial Distribution\n\nIf we repeat n **independent** Bernoulli trials, the number of successes X follows a **Binomial(n, p)** distribution.\n\n**Conditions for Binomial:**\n1. Fixed number of trials (n)\n2. Each trial is independent\n3. Same probability of success (p) on each trial\n4. Only two outcomes per trial\n\n## Binomial PMF\n\nThe probability of getting exactly k successes:\n$$P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}$$\n\nIn R, use `dbinom()`:\n\n```r\n# P(X = 3) where X ~ Binomial(10, 0.4)\ndbinom(3, size = 10, prob = 0.4)\n\n# P(X <= 4) — cumulative probability\npbinom(4, size = 10, prob = 0.4)\n\n# P(X >= 5) — complement of cumulative\n1 - pbinom(4, size = 10, prob = 0.4)\n```\n\n## Mean and Variance\n\nFor X ~ Binomial(n, p):\n- **Mean (expected value):** μ = np\n- **Variance:** σ² = np(1−p)\n- **Standard deviation:** σ = √(np(1−p))\n\n**Example:** X ~ Binomial(20, 0.3)\n- Mean = 20 × 0.3 = 6\n- Variance = 20 × 0.3 × 0.7 = 4.2\n- SD = √4.2 ≈ 2.05\n\n## Visualization in R\n\n```r\n# Plot the distribution\ntibble(x = 0:20) %>%\n  mutate(prob = dbinom(x, size = 20, prob = 0.3)) %>%\n  ggplot(aes(x = x, y = prob)) +\n  geom_col() +\n  labs(title = \"Binomial(20, 0.3)\")\n```\n\n## `pbinom()` and `dbinom()` Distinction\n\n- `dbinom(k, n, p)` = P(X = k) — exact probability\n- `pbinom(k, n, p)` = P(X ≤ k) — cumulative probability\n- `pbinom(k, n, p, lower.tail = FALSE)` = P(X > k)",
+      "quiz": [
+        {
+          "id": "m7-q1",
+          "question": "What does `dbinom(5, 10, 0.5)` compute?",
+          "type": "multiple",
+          "options": ["P(X <= 5) for Binomial(10, 0.5)", "P(X = 5) for Binomial(10, 0.5)", "P(X >= 5) for Binomial(10, 0.5)", "The mean of Binomial(10, 0.5)"],
+          "answer": 1,
+          "explanation": "dbinom gives the exact probability at a single value (PMF). dbinom(5, 10, 0.5) = P(X=5) where X~Binomial(10, 0.5)."
+        },
+        {
+          "id": "m7-q2",
+          "question": "X ~ Binomial(15, 0.4). What is E[X]?",
+          "type": "multiple",
+          "options": ["4", "6", "9", "0.4"],
+          "answer": 1,
+          "explanation": "The expected value of a Binomial is E[X] = np = 15 × 0.4 = 6."
+        },
+        {
+          "id": "m7-q3",
+          "question": "How would you compute P(X >= 3) for X ~ Binomial(8, 0.25) in R?",
+          "type": "multiple",
+          "options": ["dbinom(3, 8, 0.25)", "pbinom(3, 8, 0.25)", "1 - pbinom(2, 8, 0.25)", "1 - dbinom(3, 8, 0.25)"],
+          "answer": 2,
+          "explanation": "P(X >= 3) = 1 - P(X <= 2) = 1 - pbinom(2, 8, 0.25). Note: pbinom gives P(X <= k), so we use k=2 to get the complement."
+        },
+        {
+          "id": "m7-q4",
+          "question": "A fair coin is flipped 10 times. What is Var(X) where X = number of heads?",
+          "type": "multiple",
+          "options": ["5", "2.5", "2.236", "10"],
+          "answer": 1,
+          "explanation": "Var(X) = np(1-p) = 10 × 0.5 × 0.5 = 2.5 for Binomial(10, 0.5)."
+        },
+        {
+          "id": "m7-q5",
+          "question": "Which is NOT a required condition for the Binomial distribution?",
+          "type": "multiple",
+          "options": ["Fixed number of trials", "Independent trials", "The same p for each trial", "The trials must be done in sequence"],
+          "answer": 3,
+          "explanation": "Trials don't need to be sequential — they just need to be independent, have fixed n, fixed p, and binary outcomes."
+        },
+        {
+          "id": "m7-q6",
+          "question": "What does `pbinom(4, 10, 0.3)` return?",
+          "type": "multiple",
+          "options": ["P(X = 4)", "P(X <= 4)", "P(X >= 4)", "P(X > 4)"],
+          "answer": 1,
+          "explanation": "pbinom is the cumulative distribution function (CDF). pbinom(4, 10, 0.3) = P(X <= 4) for Binomial(10, 0.3)."
+        },
+        {
+          "id": "m7-q7",
+          "question": "X ~ Binomial(12, 0.5). What is the standard deviation of X?",
+          "type": "multiple",
+          "options": ["6", "3", "1.73", "√3"],
+          "answer": 3,
+          "explanation": "SD = √(np(1-p)) = √(12 × 0.5 × 0.5) = √3 ≈ 1.73."
+        },
+        {
+          "id": "m7-q8",
+          "question": "A student guesses randomly on a 10-question true/false test. What is P(exactly 8 correct)?",
+          "type": "multiple",
+          "options": ["dbinom(8, 10, 0.5)", "pbinom(8, 10, 0.5)", "1 - pbinom(7, 10, 0.5)", "dbinom(8, 10, 0.8)"],
+          "answer": 0,
+          "explanation": "Random guessing on true/false gives p=0.5. P(exactly 8 correct) = dbinom(8, 10, 0.5)."
+        },
+        {
+          "id": "m7-q9",
+          "question": "For Binomial(n, p), as p approaches 0.5, the distribution becomes:",
+          "type": "multiple",
+          "options": ["More right-skewed", "More left-skewed", "More symmetric", "Uniform"],
+          "answer": 2,
+          "explanation": "When p = 0.5, the binomial distribution is perfectly symmetric. As p moves away from 0.5, it becomes skewed."
+        },
+        {
+          "id": "m7-q10",
+          "question": "What is the combinatorial formula in the Binomial PMF, C(n,k), computing?",
+          "type": "multiple",
+          "options": ["The probability of k successes", "The number of ways to arrange k successes in n trials", "The expected number of successes", "The variance of the distribution"],
+          "answer": 1,
+          "explanation": "C(n,k) = n!/(k!(n-k)!) counts the number of ways to choose which k of the n trials are successes, without regard to order."
+        }
+      ]
+    },
+    {
+      "id": "module-8",
+      "title": "Normal Distribution",
+      "content": "# Normal Distribution\n\n## The Bell Curve\n\nThe **normal distribution** is a continuous, symmetric, bell-shaped distribution characterized by:\n- **Mean (μ)**: center of the distribution\n- **Standard deviation (σ)**: spread/width\n\nNotation: X ~ N(μ, σ²)\n\nKey properties:\n- Symmetric about the mean\n- Mean = Median = Mode\n- Total area under the curve = 1\n\n## The 68-95-99.7 Rule (Empirical Rule)\n\nFor any normal distribution:\n- ~**68%** of values fall within 1 SD of the mean (μ ± σ)\n- ~**95%** fall within 2 SDs (μ ± 2σ)\n- ~**99.7%** fall within 3 SDs (μ ± 3σ)\n\n## Z-Scores (Standardization)\n\nA **z-score** measures how many standard deviations a value is from the mean:\n$$z = \\frac{x - \\mu}{\\sigma}$$\n\nThe **standard normal** distribution is N(0, 1) — mean 0, SD 1.\n\n## R Functions for Normal Distribution\n\n```r\n# P(X <= 65) for X ~ N(70, 10^2)\npnorm(65, mean = 70, sd = 10)\n\n# P(X > 80)\npnorm(80, mean = 70, sd = 10, lower.tail = FALSE)\n\n# P(60 <= X <= 80)\npnorm(80, mean = 70, sd = 10) - pnorm(60, mean = 70, sd = 10)\n\n# Find x such that P(X <= x) = 0.90 (90th percentile)\nqnorm(0.90, mean = 70, sd = 10)\n```\n\n- `pnorm()` → probability (area to the left by default)\n- `qnorm()` → quantile (inverse: given probability, find x value)\n- `dnorm()` → density (height of curve, rarely used directly)\n\n## Central Limit Theorem (CLT)\n\nThe **CLT** is one of the most important theorems in statistics:\n\n> If you take many large enough samples from ANY population with mean μ and SD σ, the **sample means** will be approximately normally distributed with:\n> - Mean: μ\n> - Standard error: SE = σ / √n\n\nThis means we can use normal distributions for inference even when the original data isn't normally distributed, as long as n is large enough (typically n ≥ 30).",
+      "quiz": [
+        {
+          "id": "m8-q1",
+          "question": "For X ~ N(50, 9) (mean=50, variance=9), what is the standard deviation?",
+          "type": "multiple",
+          "options": ["9", "3", "50", "√50"],
+          "answer": 1,
+          "explanation": "The notation N(μ, σ²) means variance=9, so the standard deviation is √9 = 3."
+        },
+        {
+          "id": "m8-q2",
+          "question": "What does `pnorm(1.96)` (using default mean=0, sd=1) approximately return?",
+          "type": "multiple",
+          "options": ["0.025", "0.95", "0.975", "1.96"],
+          "answer": 2,
+          "explanation": "pnorm gives the cumulative area to the left. P(Z <= 1.96) ≈ 0.975 for the standard normal distribution."
+        },
+        {
+          "id": "m8-q3",
+          "question": "Heights are normally distributed with mean 68\" and SD 3\". What % of people are between 65\" and 71\"?",
+          "type": "multiple",
+          "options": ["50%", "68%", "95%", "99.7%"],
+          "answer": 1,
+          "explanation": "65\" and 71\" are exactly 1 SD below and above the mean. By the empirical rule, ~68% of values fall within μ ± 1σ."
+        },
+        {
+          "id": "m8-q4",
+          "question": "A student scores 85 on a test with mean 75 and SD 10. What is their z-score?",
+          "type": "multiple",
+          "options": ["8.5", "-1", "1", "10"],
+          "answer": 2,
+          "explanation": "z = (x - μ) / σ = (85 - 75) / 10 = 10/10 = 1. The student is 1 standard deviation above the mean."
+        },
+        {
+          "id": "m8-q5",
+          "question": "How would you compute the 95th percentile of N(100, 15²) in R?",
+          "type": "multiple",
+          "options": ["pnorm(0.95, 100, 15)", "qnorm(0.95, 100, 15)", "dnorm(0.95, 100, 15)", "rnorm(0.95, 100, 15)"],
+          "answer": 1,
+          "explanation": "qnorm() is the quantile function (inverse CDF). qnorm(0.95, mean=100, sd=15) returns the x value where P(X<=x)=0.95."
+        },
+        {
+          "id": "m8-q6",
+          "question": "What does the Central Limit Theorem tell us about sample means?",
+          "type": "multiple",
+          "options": ["Sample means always follow a normal distribution", "For large enough n, sample means are approximately normally distributed", "Sample means equal the population mean", "Larger samples have larger standard errors"],
+          "answer": 1,
+          "explanation": "The CLT states that for large n, sample means are approximately normal with mean μ and standard error σ/√n, regardless of the original distribution."
+        },
+        {
+          "id": "m8-q7",
+          "question": "How do you compute P(X > 90) for X ~ N(80, 100) in R?",
+          "type": "multiple",
+          "options": ["pnorm(90, 80, 10)", "1 - pnorm(90, 80, 10)", "pnorm(90, 80, 100)", "qnorm(0.9, 80, 10)"],
+          "answer": 1,
+          "explanation": "pnorm gives P(X <= x) by default. P(X > 90) = 1 - P(X <= 90) = 1 - pnorm(90, mean=80, sd=10). Note sd=√variance=10."
+        },
+        {
+          "id": "m8-q8",
+          "question": "As sample size n increases, what happens to the standard error SE = σ/√n?",
+          "type": "multiple",
+          "options": ["SE increases", "SE decreases", "SE stays the same", "SE approaches σ"],
+          "answer": 1,
+          "explanation": "As n gets larger, √n increases, making σ/√n smaller. Larger samples produce more precise estimates (smaller SE)."
+        },
+        {
+          "id": "m8-q9",
+          "question": "The normal distribution is useful even for non-normal data when making inferences about means. This is due to:",
+          "type": "multiple",
+          "options": ["The law of large numbers", "The Central Limit Theorem", "Bayes' theorem", "The empirical rule"],
+          "answer": 1,
+          "explanation": "The CLT guarantees that sample means are approximately normal for large n, enabling normal-based inference on non-normal populations."
+        },
+        {
+          "id": "m8-q10",
+          "question": "For a standard normal distribution N(0,1), approximately what percent of values fall below z = -2?",
+          "type": "multiple",
+          "options": ["5%", "2.5%", "16%", "32%"],
+          "answer": 1,
+          "explanation": "By the empirical rule, 95% fall within ±2 SD, leaving 5% outside. By symmetry, 2.5% fall below z=-2."
+        }
+      ]
+    },
+    {
+      "id": "module-9",
+      "title": "Confidence Intervals & t-Tests",
+      "content": "# Confidence Intervals & Hypothesis Testing\n\n## Point Estimates\n\nA **point estimate** is a single number that estimates a population parameter:\n- Sample mean x̄ estimates population mean μ\n- Sample proportion p̂ estimates population proportion p\n\nPoint estimates have uncertainty. We quantify this with **confidence intervals**.\n\n## Confidence Intervals\n\nA **confidence interval** (CI) gives a range of plausible values for the parameter:\n$$\\bar{x} \\pm t^* \\cdot \\frac{s}{\\sqrt{n}}$$\n\nWhere:\n- x̄ = sample mean\n- t* = critical value from t-distribution\n- s = sample standard deviation  \n- n = sample size\n- s/√n = **standard error** (SE)\n\n**Interpreting a 95% CI:** If we repeated the study many times, 95% of constructed intervals would contain the true μ.\n\n## t-Distribution\n\nWhen σ is unknown (usually), we use the **t-distribution** instead of normal. The t-distribution has **heavier tails** and depends on **degrees of freedom** = n − 1.\n\nAs n increases, t approaches normal.\n\n## Hypothesis Testing\n\n**Step 1:** State hypotheses\n- H₀ (null): μ = μ₀ (no effect, status quo)\n- Hₐ (alternative): μ ≠ μ₀ (or > or <)\n\n**Step 2:** Compute test statistic\n$$t = \\frac{\\bar{x} - \\mu_0}{s / \\sqrt{n}}$$\n\n**Step 3:** Find p-value  \n**Step 4:** Decision: if p-value < α (usually 0.05), reject H₀\n\n## In R: `t.test()`\n\n```r\n# One-sample t-test: is the mean different from 5?\nt.test(x, mu = 5)\n\n# 95% confidence interval only\nt.test(x)$conf.int\n\n# Two-sided vs one-sided\nt.test(x, mu = 5, alternative = \"greater\")\nt.test(x, mu = 5, alternative = \"less\")\n```\n\n## Type I and Type II Errors\n\n|  | H₀ is True | H₀ is False |\n|--|--|--|\n| Reject H₀ | **Type I Error** (α) | Correct |\n| Don't Reject H₀ | Correct | **Type II Error** (β) |\n\n- **Type I error rate** = α = significance level (we control this)\n- **Type II error rate** = β; **Power** = 1 − β",
+      "quiz": [
+        {
+          "id": "m9-q1",
+          "question": "A 95% confidence interval for μ is (12.3, 18.7). Which interpretation is correct?",
+          "type": "multiple",
+          "options": ["95% of individual data values fall between 12.3 and 18.7", "There is a 95% probability that μ is between 12.3 and 18.7", "If we repeated the study many times, 95% of such intervals would contain the true μ", "The sample mean is definitely between 12.3 and 18.7"],
+          "answer": 2,
+          "explanation": "The correct interpretation is frequentist: 95% of confidence intervals constructed this way would contain the true parameter. The specific interval either does or doesn't contain μ."
+        },
+        {
+          "id": "m9-q2",
+          "question": "What happens to the width of a 95% CI as sample size n increases?",
+          "type": "multiple",
+          "options": ["It gets wider", "It gets narrower", "It stays the same", "It becomes exactly normal"],
+          "answer": 1,
+          "explanation": "The CI width is proportional to SE = s/√n. As n increases, SE decreases, making the CI narrower and more precise."
+        },
+        {
+          "id": "m9-q3",
+          "question": "You get a p-value of 0.03 with α = 0.05. What is your decision?",
+          "type": "multiple",
+          "options": ["Fail to reject H₀", "Reject H₀", "Accept H₀", "Cannot determine"],
+          "answer": 1,
+          "explanation": "Since p-value (0.03) < α (0.05), we reject the null hypothesis. The result is statistically significant."
+        },
+        {
+          "id": "m9-q4",
+          "question": "What is a Type I error?",
+          "type": "multiple",
+          "options": ["Failing to detect a real effect", "Rejecting H₀ when it is actually true", "Accepting H₁ when it is false", "Using the wrong test statistic"],
+          "answer": 1,
+          "explanation": "A Type I error (false positive) occurs when we reject the null hypothesis even though it is true. Its rate equals the significance level α."
+        },
+        {
+          "id": "m9-q5",
+          "question": "In R, `t.test(x, mu = 10)` tests:",
+          "type": "multiple",
+          "options": ["Whether the population has exactly 10 observations", "Whether the sample mean equals 10", "Whether the population mean μ = 10 (H₀: μ = 10)", "Whether the variance equals 10"],
+          "answer": 2,
+          "explanation": "t.test(x, mu=10) performs a one-sample t-test of H₀: μ = 10 vs Hₐ: μ ≠ 10 using the data in x."
+        },
+        {
+          "id": "m9-q6",
+          "question": "Why do we use the t-distribution instead of the normal distribution for most t-tests?",
+          "type": "multiple",
+          "options": ["The t-distribution is always wider and safer", "Because σ (population SD) is unknown and estimated by s", "Because sample data is always skewed", "The normal distribution doesn't apply to means"],
+          "answer": 1,
+          "explanation": "When we estimate σ with the sample s, we add extra uncertainty. The t-distribution accounts for this with heavier tails, especially for small n."
+        },
+        {
+          "id": "m9-q7",
+          "question": "A 99% CI will be ______ than a 95% CI from the same data.",
+          "type": "multiple",
+          "options": ["Narrower", "Wider", "The same width", "More accurate"],
+          "answer": 1,
+          "explanation": "Higher confidence requires a wider interval to capture more possible values of the true parameter. Higher confidence = larger critical value t* = wider CI."
+        },
+        {
+          "id": "m9-q8",
+          "question": "The degrees of freedom for a one-sample t-test with n=25 observations is:",
+          "type": "multiple",
+          "options": ["25", "24", "26", "12"],
+          "answer": 1,
+          "explanation": "Degrees of freedom for a one-sample t-test = n - 1 = 25 - 1 = 24."
+        },
+        {
+          "id": "m9-q9",
+          "question": "Which is the standard error formula for the sample mean?",
+          "type": "multiple",
+          "options": ["s × √n", "s / √n", "μ / σ", "σ² / n"],
+          "answer": 1,
+          "explanation": "The standard error of the sample mean is SE = s/√n, where s is the sample standard deviation and n is the sample size."
+        },
+        {
+          "id": "m9-q10",
+          "question": "Power (= 1 - β) of a test increases when:",
+          "type": "multiple",
+          "options": ["α decreases", "Sample size decreases", "Effect size increases", "The null hypothesis is true"],
+          "answer": 2,
+          "explanation": "Power increases with larger effect sizes (easier to detect), larger n, or larger α. Larger true effect = more likely to correctly reject H₀."
+        }
+      ]
+    },
+    {
+      "id": "module-10",
+      "title": "Inference for Proportions",
+      "content": "# Inference for Proportions\n\n## Setup\n\nWhen the response variable is binary (success/failure), we work with **proportions** instead of means.\n\n- **Population proportion:** p (unknown parameter we want to estimate)\n- **Sample proportion:** p̂ = (number of successes) / n\n\n## Sampling Distribution of p̂\n\nFor large n, by the CLT:\n$$\\hat{p} \\approx N\\left(p, \\frac{p(1-p)}{n}\\right)$$\n\nStandard error: $SE = \\sqrt{\\frac{p(1-p)}{n}}$\n\n**Conditions for normal approximation:**\n- np ≥ 10 (at least 10 expected successes)\n- n(1-p) ≥ 10 (at least 10 expected failures)\n\n## Confidence Interval for p\n\n$$\\hat{p} \\pm z^* \\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n}}$$\n\nWe use z* (not t*) because we're using the normal approximation:\n- 90% CI: z* = 1.645\n- 95% CI: z* = 1.96\n- 99% CI: z* = 2.576\n\n## Hypothesis Test for p\n\n**H₀: p = p₀** (specific claimed value)\n\nTest statistic:\n$$z = \\frac{\\hat{p} - p_0}{\\sqrt{\\frac{p_0(1-p_0)}{n}}}$$\n\nNote: we use p₀ (not p̂) in the denominator under H₀.\n\n## In R: `prop.test()`\n\n```r\n# 43 successes out of 100 trials; test H0: p = 0.5\nprop.test(x = 43, n = 100, p = 0.5)\n\n# 95% confidence interval for p\nprop.test(x = 43, n = 100)$conf.int\n\n# One-sided test: H_a: p > 0.5\nprop.test(x = 43, n = 100, p = 0.5, alternative = \"greater\")\n```\n\n## Sample Size Planning\n\nTo achieve margin of error m at confidence level z*:\n$$n = \\left(\\frac{z^*}{m}\\right)^2 p(1-p)$$\n\nWhen p is unknown, use p = 0.5 (maximizes variance, gives conservative sample size):\n$$n = \\left(\\frac{z^*}{2m}\\right)^2$$\n\n**Example:** For 95% CI with margin of error ≤ 0.03:\nn = (1.96 / (2 × 0.03))² ≈ (32.67)² ≈ 1068",
+      "quiz": [
+        {
+          "id": "m10-q1",
+          "question": "In a sample of 200, 80 people prefer coffee. What is p̂?",
+          "type": "multiple",
+          "options": ["0.80", "0.40", "80", "0.60"],
+          "answer": 1,
+          "explanation": "p̂ = successes/n = 80/200 = 0.40. The sample proportion is 0.40 or 40%."
+        },
+        {
+          "id": "m10-q2",
+          "question": "What is the standard error of p̂ when p̂ = 0.6 and n = 100?",
+          "type": "multiple",
+          "options": ["0.049", "0.24", "0.36", "0.006"],
+          "answer": 0,
+          "explanation": "SE = √(p̂(1-p̂)/n) = √(0.6×0.4/100) = √(0.24/100) = √0.0024 ≈ 0.049."
+        },
+        {
+          "id": "m10-q3",
+          "question": "For a 95% CI for a proportion, which z* value do you use?",
+          "type": "multiple",
+          "options": ["1.645", "2.576", "1.96", "2.33"],
+          "answer": 2,
+          "explanation": "z* = 1.96 corresponds to a 95% confidence level. This comes from qnorm(0.975) = 1.96 for the standard normal."
+        },
+        {
+          "id": "m10-q4",
+          "question": "In `prop.test(x = 30, n = 100, p = 0.25)`, what is H₀?",
+          "type": "multiple",
+          "options": ["p ≠ 0.25", "p = 30/100", "p = 0.25", "p > 0.25"],
+          "answer": 2,
+          "explanation": "The p = 0.25 argument in prop.test specifies the null hypothesis value. H₀: p = 0.25."
+        },
+        {
+          "id": "m10-q5",
+          "question": "Why is p₀ (not p̂) used in the denominator of the z test statistic?",
+          "type": "multiple",
+          "options": ["p̂ is always unknown", "Under H₀, we assume p = p₀ is the true probability", "p₀ is always larger than p̂", "It makes the test statistic simpler"],
+          "answer": 1,
+          "explanation": "The test statistic is computed assuming H₀ is true. Under H₀, p = p₀, so we use p₀ in the standard error formula."
+        },
+        {
+          "id": "m10-q6",
+          "question": "For the normal approximation to proportion sampling to be valid, which condition must hold?",
+          "type": "multiple",
+          "options": ["n > 30", "np >= 10 AND n(1-p) >= 10", "p > 0.5", "σ is known"],
+          "answer": 1,
+          "explanation": "The normal approximation requires at least 10 expected successes (np) and 10 expected failures (n(1-p)) to be reliable."
+        },
+        {
+          "id": "m10-q7",
+          "question": "You want a 95% CI for p with margin of error at most 0.04, and no prior estimate of p. What sample size do you need?",
+          "type": "multiple",
+          "options": ["600", "625", "1068", "2401"],
+          "answer": 1,
+          "explanation": "n = (z*/(2m))² = (1.96/(2×0.04))² = (24.5)² ≈ 600.25. Round up to 601. Closest answer is 625 (using 0.5 conservative estimate)."
+        },
+        {
+          "id": "m10-q8",
+          "question": "Why do we use z* (not t*) for proportion inference?",
+          "type": "multiple",
+          "options": ["Because proportions are always large", "Because we use the normal approximation (CLT) for p̂", "Because t-distributions don't work for binary data", "Because z* is always larger"],
+          "answer": 1,
+          "explanation": "For proportions, SE = √(p(1-p)/n) is fully specified by p — no extra estimation of variance from data. So we use z* from the normal distribution."
+        },
+        {
+          "id": "m10-q9",
+          "question": "A poll finds p̂ = 0.55, n = 400. The 95% CI is approximately (0.501, 0.599). What does this tell us?",
+          "type": "multiple",
+          "options": ["Exactly 55% of the population supports the issue", "We reject H₀: p = 0.5 at α = 0.05", "We fail to reject H₀: p = 0.5 at α = 0.05", "The result is definitely significant"],
+          "answer": 1,
+          "explanation": "Since 0.5 is NOT contained in the 95% CI (0.501, 0.599), we reject H₀: p = 0.5 at the 5% significance level."
+        },
+        {
+          "id": "m10-q10",
+          "question": "Using p = 0.5 for sample size planning (when p is unknown) gives:",
+          "type": "multiple",
+          "options": ["The smallest possible sample size", "The most optimistic estimate", "The most conservative (largest) sample size", "An exact sample size"],
+          "answer": 2,
+          "explanation": "p(1-p) is maximized at p=0.5, giving p(1-p)=0.25. Using p=0.5 maximizes the required n, ensuring coverage regardless of the true p."
+        }
+      ]
+    }
+  ]
+}
