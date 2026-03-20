@@ -107,7 +107,7 @@
           "options": [
             "x + 5",
             "is.na(x)",
-            "mean(starwars$mass)",
+            "mean(c(1, NA, 3))",
             "x == NA"
           ],
           "answer": [
@@ -120,7 +120,7 @@
         {
           "id": "m1-fb1",
           "type": "fill-blank",
-          "question": "Complete the argument to calculate the average mass of Star Wars characters, ignoring missing values:",
+          "question": "Complete the argument to calculate the mean of a vector while ignoring missing values:\nmean(c(1, 5, NA, 3, NA), ___)",
           "code": "mean(starwars$mass, _____ = TRUE)",
           "blanks": [
             "na.rm = TRUE",
@@ -132,18 +132,20 @@
         {
           "id": "m1-sa2",
           "type": "select-all",
-          "question": "Which of the following will produce an ERROR in R? Select ALL that apply.",
+          "question": "Which of the following are VALID variable names in R? Select ALL that apply.",
           "options": [
-            "starwars$hair_color",
-            "starwars$3",
-            "starwars[1,]",
-            "starwars[,\"hair_color\"]",
-            "mean(starwars$mass != NA)"
+            "my_var2",
+            ".hidden_val",
+            "2ndvar",
+            "MyResult",
+            "TRUE"
           ],
-          "answer": [
-            1
-          ],
-          "explanation": "starwars$3 errors because you cannot use numeric column indexing with $. The $ operator requires a name. starwars[,\"hair_color\"] is valid (bracket notation accepts column names as strings). mean(starwars$mass != NA) returns NA but not an error — != NA always returns NA element-wise, making the whole result NA."
+          "explanation": "starwars$3 errors because you cannot use numeric column indexing with $. The $ operator requires a name. starwars[,\"hair_color\"] is valid (bracket notation accepts column names as strings). mean(starwars$mass != NA) returns NA but not an error — != NA always returns NA element-wise, making the whole result NA.",
+          "answers": [
+            0,
+            1,
+            3
+          ]
         }
       ]
     },
@@ -554,34 +556,33 @@
         {
           "id": "m4-fb1",
           "type": "fill-blank",
-          "question": "Fill in the join function to return only players from 'baseball' who have NOT previously won an award (from the 'past_winners' table, matched on player_id):",
+          "question": "Fill in the dplyr function that collapses grouped rows into summary statistics:\nbirth_data %>% group_by(smoke) %>% ___(avg_weight = mean(bwt))",
           "code": "_____(baseball, past_winners, by = \"player_id\")",
           "blanks": [
-            "anti_join"
+            "summarize",
+            "summarise"
           ],
           "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's the perfect tool for 'find rows that are NOT in another table.' left_join would keep all players with NAs, inner_join would only keep matches — neither is what we want.",
-          "answer": "anti_join"
+          "answer": "summarize"
         },
         {
           "id": "m4-sa2",
           "type": "select-all",
-          "question": "Which of the following about pivot_wider() are TRUE? Select ALL that apply.",
+          "question": "Which of the following dplyr operations keep ALL original rows of the dataframe? Select ALL that apply.",
           "code": "# Long data: child | measurement | value\n# After: pivot_wider(data, names_from=measurement, values_from=value)",
           "options": [
-            "The output has fewer rows than the input",
-            "The output has more columns than the input",
-            "Values from the 'measurement' column become new column names",
-            "Values from the 'value' column are spread across the new columns",
-            "pivot_wider() goes from long format to wide format"
+            "mutate()",
+            "summarize()",
+            "arrange()",
+            "filter()",
+            "select()"
           ],
-          "answer": [
+          "explanation": "All five are true! pivot_wider() converts long data (many rows per subject) to wide data (one row per subject, many columns). It reduces rows (A), adds columns (B), uses names_from values as new column headers (C), and fills those columns with values_from data (D). It goes from long to wide (E).",
+          "answers": [
             0,
-            1,
             2,
-            3,
             4
-          ],
-          "explanation": "All five are true! pivot_wider() converts long data (many rows per subject) to wide data (one row per subject, many columns). It reduces rows (A), adds columns (B), uses names_from values as new column headers (C), and fills those columns with values_from data (D). It goes from long to wide (E)."
+          ]
         }
       ]
     },
