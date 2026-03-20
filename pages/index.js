@@ -29,12 +29,22 @@ const PROJECTS = [
     hasChat: true, isPlaceholder: false,
   },
   {
+    title: "Interactive Learning",
+    tags: ["STAT 240", "Quizzes", "R"],
+    desc: "Course modules for STAT 240 with code windows, syntax highlighting, and AI-powered quiz explanations.",
+    detail: "Interactive lesson pages built around UW-Madison STAT 240. Each module has formatted lecture content, R code windows with syntax highlighting and live output, and a 10-question quiz matching the actual exam format.",
+    highlights: ["10 modules covering the full course", "R syntax highlighting + pre-computed output", "100 quiz questions matching SP26 exam format", "AI explanations for wrong answers (Pro/Ultra)", "Progress tracked per module"],
+    color: "var(--ice)", colorHex: "#00D4FF",
+    link: "/learn",
+    hasChat: false, isPlaceholder: false,
+  },
+  {
     title: "More Coming Soon",
     tags: ["..."],
     desc: "New projects in the works. Check back.",
     detail: "More projects are actively in development. Check back soon.",
     highlights: [],
-    color: "var(--ice)", colorHex: "#00D4FF",
+    color: "var(--amber)", colorHex: "#FFB800",
     hasChat: false, isPlaceholder: true,
   },
 ];
@@ -220,6 +230,11 @@ export default function Home() {
           <a href="/app" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "#000", background: "var(--green)", padding: "5px 12px", borderRadius: 3, textDecoration: "none", fontWeight: 700 }}>
             OPEN APP
           </a>
+          <a href="/learn" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={e => e.target.style.color = "var(--ice)"}
+            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>
+            LEARN
+          </a>
           {["WORK", "ABOUT", "CONTACT"].map(l => (
             <a key={l} href={"#" + l.toLowerCase()}
               onClick={e => {
@@ -312,7 +327,7 @@ export default function Home() {
           <h2 className="reveal" style={{ fontSize: "clamp(2rem, 5vw, 4rem)", fontWeight: 900, marginBottom: "3rem", letterSpacing: "-0.02em" }}>Projects</h2>
           <div className={cardsVisible ? "stagger visible" : "stagger"} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem" }}>
             {PROJECTS.map((p, i) => (
-              <div key={i} className={cardsVisible ? "project-card card-slam" : "project-card"} onClick={() => setSelectedProject(p)} style={{ cursor: "pointer" }}>
+              <div key={i} className={cardsVisible ? "project-card card-slam" : "project-card"} onClick={() => p.link && !p.isPlaceholder ? window.location.href = p.link : setSelectedProject(p)} style={{ cursor: p.isPlaceholder ? "default" : "pointer" }}>
                 <div style={{ fontFamily: "JetBrains Mono", fontSize: "10px", color: p.color, letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
                   {String(i+1).padStart(2, "0")}
                 </div>
