@@ -1,0 +1,30 @@
+{
+  "id": "example",
+  "title": "Example Course",
+  "description": "A placeholder course — replace with your real content.",
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "Introduction",
+      "content": "# Introduction\n\nThis is the first module. Replace this with your real lecture notes.\n\n## Key Concepts\n\n- Concept A\n- Concept B\n- Concept C\n\n## Summary\n\nThis module covers the basics needed to get started.",
+      "quiz": [
+        {
+          "id": "q1",
+          "question": "Which of the following is a key concept from this module?",
+          "type": "multiple",
+          "options": ["Concept A", "Concept X", "Concept Z", "None of the above"],
+          "answer": 0,
+          "explanation": "Concept A is listed as the first key concept in this module."
+        },
+        {
+          "id": "q2",
+          "question": "This is a placeholder course.",
+          "type": "multiple",
+          "options": ["True", "False"],
+          "answer": 0,
+          "explanation": "Yes — replace this course JSON with your real content."
+        }
+      ]
+    }
+  ]
+}
