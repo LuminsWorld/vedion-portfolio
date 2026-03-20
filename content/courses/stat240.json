@@ -100,43 +100,52 @@
           "explanation": "nchar counts characters in a string. 'statistics' has 10 characters: s-t-a-t-i-s-t-i-c-s."
         },
         {
-          "id": "m1-q8",
-          "question": "Consider: `sum(baseball$position == infield)`. What is wrong with this code?",
-          "type": "multiple",
+          "id": "m1-sa1",
+          "type": "select-all",
+          "question": "Which of the following lines of code will return NA? Select ALL that apply.",
+          "code": "# Assume starwars is loaded\nx <- NA\n(A) x + 5\n(B) is.na(x)\n(C) mean(starwars$mass)\n(D) x == NA",
           "options": [
-            "sum() cannot count logical values",
-            "infield should be in quotes: 'infield'",
-            "== should be %in%",
-            "baseball$position returns an error"
+            "(A) x + 5",
+            "(B) is.na(x)",
+            "(C) mean(starwars$mass)",
+            "(D) x == NA"
           ],
-          "answer": 1,
-          "explanation": "infield without quotes is treated as an R object (variable), not the string 'infield'. R will throw 'object not found'. Always quote string values in comparisons."
+          "answer": [
+            0,
+            2,
+            3
+          ],
+          "explanation": "Any arithmetic on NA returns NA (A). mean() on a column with NAs returns NA unless na.rm=TRUE (C). Comparing anything to NA with == returns NA (D). Only is.na() correctly returns TRUE/FALSE for NA values (B)."
         },
         {
-          "id": "m1-q9",
-          "question": "What does `mean(starwars$mass)` return if some mass values are NA?",
-          "type": "multiple",
-          "options": [
-            "The mean of non-NA values",
-            "0",
-            "NA",
-            "An error"
+          "id": "m1-fb1",
+          "type": "fill-blank",
+          "question": "Complete the argument to calculate the average mass of Star Wars characters, ignoring missing values:",
+          "code": "mean(starwars$mass, _____ = TRUE)",
+          "blanks": [
+            "na.rm",
+            "na.rm = TRUE",
+            "na.rm=TRUE",
+            "na.rm =TRUE",
+            "na.rm= TRUE"
           ],
-          "answer": 2,
-          "explanation": "By default, any arithmetic with NA produces NA. To get the mean of non-missing values, use mean(starwars$mass, na.rm = TRUE)."
+          "explanation": "na.rm = TRUE tells mean() to remove NA values before computing the mean. Without it, a single NA in the column makes the whole result NA."
         },
         {
-          "id": "m1-q10",
-          "question": "Which code correctly computes the average of the PIT_AVG column ignoring missing values?",
-          "type": "multiple",
+          "id": "m1-sa2",
+          "type": "select-all",
+          "question": "Which of the following will produce an ERROR in R? Select ALL that apply.",
           "options": [
-            "mean(baseball$PIT_AVG)",
-            "mean(baseball$PIT_AVG != NA)",
-            "mean(baseball$PIT_AVG, na.rm = TRUE)",
-            "mean(na.rm(baseball$PIT_AVG))"
+            "starwars$hair_color",
+            "starwars$3",
+            "starwars[1,]",
+            "starwars[,\"hair_color\"]",
+            "mean(starwars$mass != NA)"
           ],
-          "answer": 2,
-          "explanation": "na.rm = TRUE tells mean() to skip NA values. The other options either return NA or produce errors/incorrect results."
+          "answer": [
+            1
+          ],
+          "explanation": "starwars$3 errors because you cannot use numeric column indexing with $. The $ operator requires a name. starwars[,\"hair_color\"] is valid (bracket notation accepts column names as strings). mean(starwars$mass != NA) returns NA but not an error — != NA always returns NA element-wise, making the whole result NA."
         }
       ]
     },
@@ -237,43 +246,52 @@
           "explanation": "height > 72 is FALSE (60 > 72). height + 6 < 70 is TRUE (66 < 70). FALSE | TRUE = TRUE because OR only needs one condition to be true."
         },
         {
-          "id": "m2-q8",
-          "question": "Given `colors <- c('red','blue','yellow','green','purple')` and `names <- c('Inky','Blinky','Pinky','Clyde')`, what does `paste(colors, names)` return?",
-          "type": "multiple",
+          "id": "m2-sa1",
+          "type": "select-all",
+          "question": "Which of the following expressions evaluate to TRUE? Select ALL that apply.",
+          "code": "x <- c(1, 2, NA, 4)\n# Which of these return TRUE (not NA)?",
           "options": [
-            "An error — vectors have different lengths",
-            "A vector of length 4 — shorter vector wins",
-            "A vector of length 5 — shorter vector is recycled",
-            "A single pasted string of length 1"
+            "is.na(x[3])",
+            "x[3] == NA",
+            "length(x) == 4",
+            "x[3] != NA",
+            "any(is.na(x))"
           ],
-          "answer": 2,
-          "explanation": "paste() recycles the shorter vector. names (length 4) is recycled to match colors (length 5). R gives a warning but still produces a length-5 result."
+          "answer": [
+            0,
+            2,
+            4
+          ],
+          "explanation": "is.na(x[3]) correctly returns TRUE (A). length(x) is 4 regardless of NAs (C). any(is.na(x)) is TRUE because x contains at least one NA (E). Both x[3] == NA and x[3] != NA return NA, not TRUE or FALSE, because comparisons with NA always return NA."
         },
         {
-          "id": "m2-q9",
-          "question": "You want to find colors that start with 'g' OR are at least 5 letters long. Which condition is correct?",
-          "type": "multiple",
-          "options": [
-            "(nchar(colors) >= 5) & (substr(colors, 1, 1) == 'g')",
-            "(length(colors) >= 5) | (substr(colors, 1, 1) == 'g')",
-            "(nchar(colors) >= 5) | (substr(colors, 1, 1) == 'g')",
-            "(nchar(colors) > 5) & (substr(colors, 1, 1) == 'g')"
+          "id": "m2-fb1",
+          "type": "fill-blank",
+          "question": "Fill in the correct operator to check if a value is missing. Using == will NOT work:",
+          "code": "# Correct way to check for NA:\n_____(x)",
+          "blanks": [
+            "is.na",
+            "is.na()"
           ],
-          "answer": 2,
-          "explanation": "nchar() counts characters in each string (not length() which gives vector length). OR (|) is needed for 'either condition'. >= 5 for 'at least 5 letters'."
+          "explanation": "is.na() is the only correct way to test for NA. The == operator returns NA when either side is NA, not TRUE or FALSE."
         },
         {
-          "id": "m2-q10",
-          "question": "What does `5 %in% c(2, 3, 5, 7, 11)` return?",
-          "type": "multiple",
+          "id": "m2-sa2",
+          "type": "select-all",
+          "question": "Given `x <- c(2, TRUE, \"banana\")`, which statements are TRUE? Select ALL that apply.",
           "options": [
-            "1",
-            "TRUE",
-            "5",
-            "FALSE"
+            "class(x) is \"character\"",
+            "class(x) is \"numeric\"",
+            "length(x) is 3",
+            "x[1] is the number 2",
+            "x[2] is the string \"TRUE\""
           ],
-          "answer": 1,
-          "explanation": "%in% returns TRUE if the left value is found anywhere in the right vector. 5 is in the primes vector, so it returns TRUE."
+          "answer": [
+            0,
+            2,
+            4
+          ],
+          "explanation": "When you mix types in c(), R coerces to the most general type: character. So class(x) is \"character\" (A), length is still 3 (C), and x[2] is the string \"TRUE\" not logical TRUE (E). x[1] becomes \"2\" (a string), not the number 2 (D is false)."
         }
       ]
     },
@@ -374,43 +392,52 @@
           "explanation": "geom_smooth() inherits aesthetics from ggplot(). Since aes() is only in geom_point(), geom_smooth() has no x/y to work with. Moving aes() to ggplot() makes it global."
         },
         {
-          "id": "m3-q8",
-          "question": "A teacher wants to show the distribution of test scores divided into intervals [90-100], [80-90], etc. Which geom?",
-          "type": "multiple",
+          "id": "m3-sa1",
+          "type": "select-all",
+          "question": "In the code below, which are VARIABLE aesthetics? Select ALL that apply.",
+          "code": "ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +\n  geom_point(aes(color = species), size = 3, alpha = 0.7)",
           "options": [
-            "geom_bar()",
-            "geom_col()",
-            "geom_density()",
-            "geom_histogram()"
+            "x = flipper_length_mm",
+            "y = body_mass_g",
+            "color = species",
+            "size = 3",
+            "alpha = 0.7"
           ],
-          "answer": 3,
-          "explanation": "geom_histogram() divides a continuous variable into bins/intervals and counts values in each bin — exactly what's needed for score distributions."
+          "answer": [
+            0,
+            1,
+            2
+          ],
+          "explanation": "Variable aesthetics are inside aes() and mapped to a data column: x, y, and color. size=3 and alpha=0.7 are outside aes() and apply the same constant value to every point — those are constant aesthetics."
         },
         {
-          "id": "m3-q9",
-          "question": "You want to color bar interiors based on a Rank column. Which ggplot call is correct?",
-          "type": "multiple",
-          "options": [
-            "ggplot(aes(..., col = Rank))",
-            "ggplot(aes(..., fill = Rank))",
-            "ggplot(aes(...), fill = Rank)",
-            "ggplot(aes(...), col = Rank)"
+          "id": "m3-fb1",
+          "type": "fill-blank",
+          "question": "We want to color the INTERIOR of bars by a variable. Fill in the aesthetic name (not `color`, which colors the border):",
+          "code": "ggplot(data, aes(x = city, _____ = region)) +\n  geom_bar()",
+          "blanks": [
+            "fill",
+            "fill = region"
           ],
-          "answer": 1,
-          "explanation": "fill controls bar interior color. It must be inside aes() because it maps to a data column. col/color controls the outline."
+          "explanation": "fill controls the interior color of bars, rectangles, and polygons. color (or colour) controls the outline/border. For bars, you almost always want fill."
         },
         {
-          "id": "m3-q10",
-          "question": "You want a density curve of BMI for 300 experiment participants. Which geom?",
-          "type": "multiple",
+          "id": "m3-sa2",
+          "type": "select-all",
+          "question": "Which of the following statements about geom_bar() and geom_col() are TRUE? Select ALL that apply.",
           "options": [
-            "geom_histogram()",
-            "geom_bar()",
-            "geom_density()",
-            "geom_col()"
+            "geom_bar() counts rows for each x category automatically",
+            "geom_col() requires both x and y to be specified",
+            "geom_bar() requires a pre-computed y column",
+            "geom_col() counts rows for each x category",
+            "geom_bar() can accept stat='identity' to behave like geom_col()"
           ],
-          "answer": 2,
-          "explanation": "geom_density() draws a smooth kernel density curve for a continuous variable. geom_histogram() would also work but uses bins, not a smooth curve."
+          "answer": [
+            0,
+            1,
+            4
+          ],
+          "explanation": "geom_bar() counts rows by default (A). geom_col() needs you to supply the y values (B). geom_bar(stat='identity') plots y values you provide, making it equivalent to geom_col() (E). C and D have it backwards."
         }
       ]
     },
@@ -511,43 +538,52 @@
           "explanation": "drop_na() with no arguments removes every row that has at least one NA in any column. Use drop_na(col) to only consider a specific column."
         },
         {
-          "id": "m4-q8",
-          "question": "In case_when, a row matches both the first and second conditions. Which value is assigned?",
-          "type": "multiple",
+          "id": "m4-sa1",
+          "type": "select-all",
+          "question": "The baseball dataset has a position column ('infield', 'pitcher', 'outfield'). Which filter() inputs correctly find pitchers with at least one shutout (PIT_SHO > 0)? Select ALL that apply.",
           "options": [
-            "The last matching condition",
-            "The first matching condition",
-            "Both values, as a list",
-            "An error is thrown for ambiguous rows"
+            "position == \"pitcher\" & PIT_SHO > 0",
+            "position == \"pitcher\" & PIT_SHO != 0",
+            "!is.na(PIT_SHO)",
+            "position == \"pitcher\" | PIT_SHO > 0"
           ],
-          "answer": 1,
-          "explanation": "case_when evaluates conditions in order and assigns the first TRUE match. Subsequent conditions are not checked once a match is found."
+          "answer": [
+            0,
+            1
+          ],
+          "explanation": "Both A and B correctly require position to be pitcher AND shutouts to be positive (nonzero). C is wrong — !is.na(PIT_SHO) returns all non-pitchers with NA values filtered out, not pitchers with shutouts. D uses | (OR) which would include all pitchers AND all players with shutouts — too broad."
         },
         {
-          "id": "m4-q9",
-          "question": "Which dplyr operation adds a new column to the dataframe while keeping all original rows and columns?",
-          "type": "multiple",
-          "options": [
-            "select()",
-            "filter()",
-            "mutate()",
-            "summarize()"
+          "id": "m4-fb1",
+          "type": "fill-blank",
+          "question": "Fill in the join function to return only players from 'baseball' who have NOT previously won an award (from the 'past_winners' table, matched on player_id):",
+          "code": "_____(baseball, past_winners, by = \"player_id\")",
+          "blanks": [
+            "anti_join",
+            "anti_join()"
           ],
-          "answer": 2,
-          "explanation": "mutate() creates new columns (or modifies existing ones) while preserving all rows and existing columns. summarize() reduces rows; select() and filter() subset."
+          "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's the perfect tool for 'find rows that are NOT in another table.' left_join would keep all players with NAs, inner_join would only keep matches — neither is what we want."
         },
         {
-          "id": "m4-q10",
-          "question": "You run `penguins %>% select(-body_mass_g)`. What is the result?",
-          "type": "multiple",
+          "id": "m4-sa2",
+          "type": "select-all",
+          "question": "Which of the following about pivot_wider() are TRUE? Select ALL that apply.",
+          "code": "# Long data: child | measurement | value\n# After: pivot_wider(data, names_from=measurement, values_from=value)",
           "options": [
-            "Only the body_mass_g column",
-            "All columns EXCEPT body_mass_g",
-            "Rows where body_mass_g is NA are removed",
-            "An error — cannot use - in select()"
+            "The output has fewer rows than the input",
+            "The output has more columns than the input",
+            "Values from the 'measurement' column become new column names",
+            "Values from the 'value' column are spread across the new columns",
+            "pivot_wider() goes from long format to wide format"
           ],
-          "answer": 1,
-          "explanation": "The minus sign in select() deselects that column. All other columns are retained. This is the standard way to drop one column."
+          "answer": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "explanation": "All five are true! pivot_wider() converts long data (many rows per subject) to wide data (one row per subject, many columns). It reduces rows (A), adds columns (B), uses names_from values as new column headers (C), and fills those columns with values_from data (D). It goes from long to wide (E)."
         }
       ]
     },
@@ -648,43 +684,274 @@
           "explanation": "pivot_wider creates one row per name (3 rows) and one column per measurement value (height + weight = 2), plus the name column = 3 columns total."
         },
         {
-          "id": "m5-q8",
-          "question": "Which join keeps ALL rows from both tables, filling with NA where no match exists?",
-          "type": "multiple",
+          "id": "m5-sa1",
+          "type": "select-all",
+          "question": "The 'students' table has 100 rows and 'grades' has 80 rows (only students who submitted work), joined on student_id. Which statements are TRUE? Select ALL that apply.",
           "options": [
-            "inner_join()",
-            "left_join()",
-            "anti_join()",
-            "full_join()"
+            "inner_join(students, grades) returns 80 rows",
+            "left_join(students, grades) returns 100 rows",
+            "left_join(students, grades) returns 80 rows",
+            "inner_join keeps only rows that have a match in BOTH tables",
+            "anti_join(students, grades) returns the 20 students with no grades"
           ],
-          "answer": 3,
-          "explanation": "full_join() is the union — it keeps every row from both tables, filling with NA where no match exists in the other table."
+          "answer": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "explanation": "inner_join returns only matched rows, so 80 (A). left_join keeps all 100 students from the left table, filling NAs for the 20 with no grades (B). inner_join requires matches in both (D). anti_join(students, grades) returns the 20 students NOT in grades (E). C is wrong — left_join gives 100 rows."
         },
         {
-          "id": "m5-q9",
-          "question": "You have a wide dataset with test scores in columns test1, test2, test3. You want to make it tidy with a column 'test' and a column 'score'. Which operation do you need?",
-          "type": "multiple",
-          "options": [
-            "pivot_wider()",
-            "pivot_longer()",
-            "group_by() + summarize()",
-            "inner_join()"
+          "id": "m5-fb1",
+          "type": "fill-blank",
+          "question": "The 'Major' table uses 'Student_Name' but the 'Language' table uses 'Name'. Complete the join_by() to match them:",
+          "code": "inner_join(Major, Language,\n  by = join_by(Student_Name == _____))",
+          "blanks": [
+            "Name",
+            "Name)"
           ],
-          "answer": 1,
-          "explanation": "pivot_longer() collapses multiple columns (test1, test2, test3) into two: one for column names and one for values — creating tidy long format."
+          "explanation": "join_by() lets you specify a join condition when the key column has different names in each table. join_by(Student_Name == Name) tells R: match rows where Major$Student_Name equals Language$Name."
         },
         {
-          "id": "m5-q10",
-          "question": "What is the key difference between anti_join() and inner_join()?",
-          "type": "multiple",
+          "id": "m5-sa2",
+          "type": "select-all",
+          "question": "Given a wide dataset with columns: Name, English, Chinese, French, Arabic, Spanish — which code correctly pivots to long format with columns Name, Language, Fluent? Select ALL that apply.",
           "options": [
-            "anti_join keeps matches; inner_join removes them",
-            "anti_join keeps rows from A with NO match in B; inner_join keeps rows WITH a match in both",
-            "anti_join keeps all rows from both tables",
-            "They are identical but anti_join is faster"
+            "data %>% select(Name, English:Spanish) %>% pivot_longer(English:Spanish, names_to='Language', values_to='Fluent')",
+            "data %>% pivot_wider(names_from='Language', values_from='Fluent')",
+            "data %>% select(Name, English:Spanish) %>% pivot_longer(cols=c(English,Chinese,French,Arabic,Spanish), names_to='Language', values_to='Fluent')",
+            "data %>% relocate(Name, English:Spanish) %>% pivot_longer(c(English,Spanish), names_to='Language', values_to='Fluent')"
+          ],
+          "answer": [
+            0,
+            2
+          ],
+          "explanation": "Both A and C are correct — they differ only in how cols is specified (range vs explicit list), both work. B uses pivot_wider which goes the wrong direction (long to wide). D uses relocate instead of select (relocate doesn't drop columns), and only pivots English and Spanish, missing the other three languages."
+        }
+      ]
+    },
+    {
+      "id": "exam-midterm1",
+      "title": "Midterm 1 Checkpoint",
+      "isExam": true,
+      "suggestedMinutes": 50,
+      "content": "This checkpoint covers all Midterm 1 material: Base R, ggplot2, dplyr, joins, and pivoting. Questions are formatted to match the actual SP26 exam — mix of select-one, select-all, and fill-in-the-blank.",
+      "quiz": [
+        {
+          "id": "e1-q1",
+          "type": "multiple",
+          "question": "What will this code output?",
+          "code": "sum(baseball$position == infield)",
+          "options": [
+            "The number of infield players",
+            "An error — object 'infield' not found",
+            "NA",
+            "FALSE"
           ],
           "answer": 1,
-          "explanation": "anti_join(A, B) returns only rows from A that do NOT have a match in B — the opposite of inner_join. It's used to find rows unique to A."
+          "explanation": "infield is not in quotes, so R looks for a variable named infield in the environment. Since no such variable exists, it throws an error. The fix is: sum(baseball$position == \"infield\")"
+        },
+        {
+          "id": "e1-q2",
+          "type": "select-all",
+          "question": "Which lines of code correctly return the average BAT_AVG for the baseball dataset, ignoring NA values? Select ALL that apply.",
+          "options": [
+            "mean(baseball$BAT_AVG, na.rm = TRUE)",
+            "mean(baseball$BAT_AVG != NA)",
+            "mean(baseball$BAT_AVG)",
+            "baseball %>% summarize(avg = mean(BAT_AVG, na.rm = TRUE))",
+            "mean(which(!is.na(baseball$BAT_AVG)))"
+          ],
+          "answer": [
+            0,
+            3
+          ],
+          "explanation": "A uses na.rm=TRUE correctly. D uses summarize() with na.rm=TRUE correctly. B uses != NA which returns a vector of NAs, so mean() of that is NA. C returns NA because there are NAs and no na.rm. E returns the mean of the row indices of non-NA values, not the actual batting averages."
+        },
+        {
+          "id": "e1-q3",
+          "type": "fill-blank",
+          "question": "Complete the argument to ignore NAs when calculating mean PIT_AVG:",
+          "code": "mean(baseball$PIT_AVG, _____ = TRUE)",
+          "blanks": [
+            "na.rm",
+            "na.rm = TRUE",
+            "na.rm=TRUE"
+          ],
+          "explanation": "na.rm stands for 'NA remove'. Setting it to TRUE tells mean() to strip NA values before computing the average."
+        },
+        {
+          "id": "e1-q4",
+          "type": "multiple",
+          "question": "A student wants to plot the number of players at each position as a bar chart. They already have the data (baseball has a 'position' column with one row per player). Which geom should they use?",
+          "options": [
+            "geom_col() — they have raw data, counts are pre-computed",
+            "geom_bar() — it will count rows per position automatically",
+            "geom_histogram() — for categorical distributions",
+            "geom_point() with stat='count'"
+          ],
+          "answer": 1,
+          "explanation": "geom_bar() is correct because the data has one row per player — R needs to count rows per position. geom_col() would be used if the dataset already had a 'count' column with pre-aggregated totals."
+        },
+        {
+          "id": "e1-q5",
+          "type": "select-all",
+          "question": "In this code, which are VARIABLE aesthetics? Select ALL that apply.",
+          "code": "ggplot(mendota, aes(x = year, y = duration)) +\n  geom_point(aes(color = century, shape = century), size = 2)",
+          "options": [
+            "x = year",
+            "y = duration",
+            "color = century",
+            "shape = century",
+            "size = 2"
+          ],
+          "answer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "x, y, color, and shape are all inside aes() and mapped to data columns — they are variable aesthetics. size=2 is outside aes(), a fixed constant applied to all points — that is a constant aesthetic."
+        },
+        {
+          "id": "e1-q6",
+          "type": "fill-blank",
+          "question": "Fill in the correct geom to add a horizontal reference line at the mean duration:",
+          "code": "ggplot(mendota, aes(x = year, y = duration)) +\n  geom_point() +\n  _____(yintercept = mean(mendota$duration), color = \"red\")",
+          "blanks": [
+            "geom_hline",
+            "geom_hline()"
+          ],
+          "explanation": "geom_hline() draws a horizontal line at a fixed y value (yintercept). geom_vline() draws a vertical line. Note: color must be in quotes as a constant outside aes(), and we need mendota$duration not just duration since we're outside the ggplot context."
+        },
+        {
+          "id": "e1-q7",
+          "type": "multiple",
+          "question": "The following code produces an error on geom_smooth(). What is the fix?",
+          "code": "states %>%\n  ggplot() +\n  geom_point(aes(x = Income, y = Illiteracy)) +\n  geom_smooth()",
+          "options": [
+            "Move geom_smooth() before geom_point()",
+            "Move aes(x = Income, y = Illiteracy) inside ggplot()",
+            "Add method = 'lm' to geom_smooth()",
+            "Change ggplot() to ggplot(states)"
+          ],
+          "answer": 1,
+          "explanation": "geom_smooth() has no x/y mapping because the aes() is local to geom_point() only. Moving the aes() into ggplot() makes it global — inherited by all layers including geom_smooth()."
+        },
+        {
+          "id": "e1-q8",
+          "type": "select-all",
+          "question": "Which filter() conditions correctly find non-pitchers with more than 70 double plays AND fewer than 10 errors? Select ALL that apply.",
+          "options": [
+            "position %in% c(\"infield\", \"outfield\") & (FIE_DBP > 70 & FIE_ERR < 10)",
+            "position != \"pitcher\" & (FIE_DBP > 70 & FIE_ERR < 10)",
+            "position %in% c(\"infield\", \"outfield\") & (FIE_DBP > 70 | FIE_ERR < 10)",
+            "position != \"pitcher\" | (FIE_DBP > 70 & FIE_ERR < 10)"
+          ],
+          "answer": [
+            0,
+            1
+          ],
+          "explanation": "A and B are equivalent — both correctly exclude pitchers and require BOTH double play and error conditions with &. C uses | (OR) for the stat conditions — that's too loose. D uses | to combine the position and stat conditions — that would include pitchers who meet the stat conditions."
+        },
+        {
+          "id": "e1-q9",
+          "type": "fill-blank",
+          "question": "Complete the join to return only players from baseball who have NOT previously won an award (from past_awardees, joined on id):",
+          "code": "_____(baseball, past_awardees, by = \"id\")",
+          "blanks": [
+            "anti_join",
+            "anti_join()"
+          ],
+          "explanation": "anti_join(x, y) returns all rows from x that have no match in y. It's designed exactly for this use case: 'find records in A that don't appear in B.'"
+        },
+        {
+          "id": "e1-q10",
+          "type": "multiple",
+          "question": "Given the children height/weight data in LONG format (columns: name, measurement, value), complete case_when to convert height to cm and weight to kg:",
+          "code": "data %>%\n  mutate(metric = case_when(\n    measurement == \"height\" ~ value * _____,\n    measurement == \"weight\" ~ value * _____ ))",
+          "options": [
+            "2.54 and 0.45",
+            "0.45 and 2.54",
+            "2.54 and 2.20",
+            "1 and 1"
+          ],
+          "answer": 0,
+          "explanation": "Height in inches × 2.54 = centimeters. Weight in pounds × 0.45 ≈ kilograms. The order matters: the first ~ after measurement == 'height' must use 2.54, and the second after 'weight' must use 0.45."
+        },
+        {
+          "id": "e1-q11",
+          "type": "select-all",
+          "question": "After running pivot_wider(data, names_from=measurement, values_from=value) on the children long-format data, which statements are TRUE? Select ALL that apply.",
+          "options": [
+            "The output has fewer rows than the input",
+            "The output has more columns than the input",
+            "The 'measurement' column disappears",
+            "The 'value' column disappears",
+            "Some original data values are replaced with NA"
+          ],
+          "answer": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "explanation": "pivot_wider() consolidates rows (fewer rows, A), creates new columns from measurement values (more columns, B), removes the names_from column (C), and removes the values_from column (D). No data is lost here — each child has exactly one height and one weight, so no NAs are introduced (E is false)."
+        },
+        {
+          "id": "e1-q12",
+          "type": "multiple",
+          "question": "You want to join the 'Major' and 'Language' tables so that ONLY the 15 students present in BOTH tables are in the result. Which join is correct?",
+          "options": [
+            "left_join(Major, Language, by = join_by(Student_Name == Name))",
+            "inner_join(Major, Language, by = join_by(Student_Name == Name))",
+            "full_join(Major, Language, by = join_by(Student_Name == Name))",
+            "right_join(Language, Major, by = join_by(Name == Student_Name))"
+          ],
+          "answer": 1,
+          "explanation": "inner_join returns only rows with a match in BOTH tables — exactly the 15 common students. left_join would return all 20 students from Major with NAs for the 5 not in Language. full_join returns all students from both. right_join(Language, Major) would return all 20 from Major — same as left_join(Major, Language)."
+        },
+        {
+          "id": "e1-q13",
+          "type": "fill-blank",
+          "question": "Fill in the correct pivot function to go from WIDE format (one column per language) to LONG format (one row per student-language pair):",
+          "code": "Language %>%\n  select(Name, English:Spanish) %>%\n  _____(English:Spanish, names_to = \"Language\", values_to = \"Fluent\")",
+          "blanks": [
+            "pivot_longer",
+            "pivot_longer()"
+          ],
+          "explanation": "pivot_longer() converts wide data to long by stacking columns into rows. Here it takes the five language columns and creates two new columns: Language (the former column names) and Fluent (the TRUE/FALSE values). pivot_wider() goes the opposite direction."
+        },
+        {
+          "id": "e1-q14",
+          "type": "select-all",
+          "question": "Match each scenario to geom_bar. Which scenarios should use geom_bar() (not geom_col, geom_histogram, or others)? Select ALL that apply.",
+          "options": [
+            "Plot the number of penguins on each island — data has one row per penguin",
+            "Plot average salary by department — data has one row per department with pre-computed avg_salary column",
+            "Plot how many flights each airline operated — data has one row per flight with an airline column",
+            "Plot the 7 noble gases and their known isotope counts — data has one row per gas with an isotopes column"
+          ],
+          "answer": [
+            0,
+            2
+          ],
+          "explanation": "geom_bar() counts rows automatically. A and C have one row per observation and need the counting done — geom_bar() is correct. B and D already have pre-computed values (one row = one bar height) — those need geom_col()."
+        },
+        {
+          "id": "e1-q15",
+          "type": "multiple",
+          "question": "What is the class of the following vector?",
+          "code": "x <- c(1, TRUE, \"banana\")",
+          "options": [
+            "\"numeric\"",
+            "\"logical\"",
+            "\"character\"",
+            "\"mixed\""
+          ],
+          "answer": 2,
+          "explanation": "R coerces all elements to the most general type when mixing in c(). The hierarchy is: logical < integer < numeric < character. Since \"banana\" is character, everything becomes character: \"1\", \"TRUE\", \"banana\". There is no \"mixed\" type in R."
         }
       ]
     },

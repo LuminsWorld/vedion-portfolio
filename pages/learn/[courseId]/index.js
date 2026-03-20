@@ -77,15 +77,19 @@ export default function CoursePage({ course }) {
             const done  = completed.includes(mod.id)
             const score = progress.quizScores?.[mod.id]
             const isNext = !done && (i === 0 || completed.includes(course.modules[i - 1]?.id))
+            const isExam = mod.isExam
             return (
               <Link key={mod.id} href={`/learn/${course.id}/${mod.id}`} style={{ textDecoration: 'none' }}>
-                <div style={{ ...s.moduleRow, borderColor: done ? 'rgba(0,255,65,0.2)' : isNext ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)' }}>
-                  <div style={{ ...s.modNum, background: done ? '#00FF41' : isNext ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', color: done ? '#000' : isNext ? '#fff' : 'rgba(255,255,255,0.2)' }}>
-                    {done ? '✓' : i + 1}
+                <div style={{ ...s.moduleRow, borderColor: isExam ? (done ? 'rgba(255,184,0,0.35)' : 'rgba(255,184,0,0.15)') : done ? 'rgba(0,255,65,0.2)' : isNext ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)', background: isExam ? 'rgba(255,184,0,0.03)' : '#0A0A0A' }}>
+                  <div style={{ ...s.modNum, background: isExam ? (done ? '#FFB800' : 'rgba(255,184,0,0.12)') : done ? '#00FF41' : isNext ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', color: isExam ? (done ? '#000' : '#FFB800') : done ? '#000' : isNext ? '#fff' : 'rgba(255,255,255,0.2)', borderRadius: isExam ? 6 : '50%', fontSize: isExam ? 9 : 11 }}>
+                    {isExam ? (done ? '✓' : '!') : (done ? '✓' : i + 1)}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ ...s.modTitle, color: done ? '#fff' : isNext ? '#fff' : 'rgba(255,255,255,0.35)' }}>{mod.title}</p>
-                    <p style={s.modMeta}>{mod.quiz?.length ?? 0} quiz questions{score ? ` · Last score: ${score.score}/${score.total}` : ''}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <p style={{ ...s.modTitle, color: isExam ? '#FFB800' : done ? '#fff' : isNext ? '#fff' : 'rgba(255,255,255,0.35)', margin: 0 }}>{mod.title}</p>
+                      {isExam && <span style={{ fontFamily: 'monospace', fontSize: 8, letterSpacing: '0.15em', color: '#FFB800', background: 'rgba(255,184,0,0.1)', border: '1px solid rgba(255,184,0,0.2)', padding: '2px 6px', borderRadius: 3 }}>CHECKPOINT</span>}
+                    </div>
+                    <p style={s.modMeta}>{isExam ? `${mod.quiz?.length ?? 0} exam questions${mod.suggestedMinutes ? ` · ~${mod.suggestedMinutes} min` : ''}` : `${mod.quiz?.length ?? 0} quiz questions`}{score ? ` · Last score: ${score.score}/${score.total}` : ''}</p>
                   </div>
                   <span style={{ fontFamily: 'monospace', fontSize: 12, color: done ? '#00FF41' : 'rgba(255,255,255,0.15)' }}>
                     {done ? 'DONE' : isNext ? '→' : ''}
