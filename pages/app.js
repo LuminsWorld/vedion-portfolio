@@ -28,6 +28,8 @@ export default function AppPage() {
   const [pickerChatId, setPickerChatId] = useState(null)
   const [attachedFiles, setAttachedFiles] = useState([])   // { name, url, mimeType, size, path, progress }
   const [uploading, setUploading]         = useState(false)
+  const [clearConfirm, setClearConfirm] = useState(false)
+  const [clearing, setClearing]         = useState(false)
   const fileInputRef  = useRef(null)
   const messagesEndRef = useRef(null)
 
@@ -44,6 +46,17 @@ export default function AppPage() {
   }, [])
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault()
+        handleNewChat()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [chats, activeChatId])
 
   async function handleCheckout(itemId) {
     try {
@@ -314,10 +327,35 @@ export default function AppPage() {
                 </div>
               ))}
               <p style={{ ...s.sectionLabel, marginTop: 8 }}>DANGER</p>
-              <button style={{ background: 'none', border: '1px solid rgba(255,45,85,0.2)', borderRadius: 8, color: '#FF2D55', fontFamily: 'monospace', fontSize: 11, padding: '8px 12px', cursor: 'pointer', textAlign: 'left' }}
-                onClick={() => { if (confirm('Delete all chats?')) { setChats([]); setActive(null); setMessages([]) } }}>
-                ⊘ Clear all chats
-              </button>
+              {!clearConfirm ? (
+                <button style={{ background: 'none', border: '1px solid rgba(255,45,85,0.2)', borderRadius: 8, color: '#FF2D55', fontFamily: 'monospace', fontSize: 11, padding: '8px 12px', cursor: 'pointer', textAlign: 'left' }}
+                  onClick={() => setClearConfirm(true)} disabled={clearing}>
+                  ⊘ Clear all chats
+                </button>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', border: '1px solid rgba(255,45,85,0.3)', borderRadius: 8, background: 'rgba(255,45,85,0.04)' }}>
+                  <p style={{ margin: 0, fontFamily: 'monospace', fontSize: 11, color: '#FF2D55' }}>Are you sure? This deletes all chats permanently.</p>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button style={{ background: '#FF2D55', color: '#000', border: 'none', borderRadius: 6, fontFamily: 'monospace', fontSize: 11, fontWeight: 700, padding: '6px 12px', cursor: clearing ? 'default' : 'pointer', opacity: clearing ? 0.5 : 1 }}
+                      disabled={clearing}
+                      onClick={async () => {
+                        setClearing(true)
+                        try {
+                          for (const chat of chats) {
+                            try { await deleteChat(chat.id) } catch {}
+                          }
+                          setChats([]); setActive(null); setMessages([])
+                        } finally { setClearing(false); setClearConfirm(false) }
+                      }}>
+                      {clearing ? 'Clearing...' : 'Yes, clear all'}
+                    </button>
+                    <button style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', fontSize: 11, padding: '6px 12px', cursor: 'pointer' }}
+                      onClick={() => setClearConfirm(false)} disabled={clearing}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -567,6 +605,116 @@ function IconColorPicker({ chat, onUpdate, onClose }) {
   )
 }
 
+// ── Markdown parser (adapted from learn module) ──────────────────────────────
+
+function parseChatContent(text) {
+  const lines = text.split('\n')
+  const blocks = []
+  let i = 0
+  while (i < lines.length) {
+    const line = lines[i]
+    if (line.startsWith('```')) {
+      const lang = line.slice(3).trim().toLowerCase() || ''
+      const codeLines = []
+      i++
+      while (i < lines.length && !lines[i].startsWith('```')) { codeLines.push(lines[i]); i++ }
+      i++
+      blocks.push({ type: 'code', lang, code: codeLines.join('\n') }); continue
+    }
+    if (line.startsWith('> ')) {
+      const calloutLines = []
+      while (i < lines.length && lines[i].startsWith('> ')) { calloutLines.push(lines[i].slice(2)); i++ }
+      blocks.push({ type: 'callout', lines: calloutLines }); continue
+    }
+    if (line.startsWith('# '))   { blocks.push({ type: 'h1', text: line.slice(2) });  i++; continue }
+    if (line.startsWith('## '))  { blocks.push({ type: 'h2', text: line.slice(3) });  i++; continue }
+    if (line.startsWith('### ')) { blocks.push({ type: 'h3', text: line.slice(4) });  i++; continue }
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      const items = []
+      while (i < lines.length && (lines[i].startsWith('- ') || lines[i].startsWith('* '))) { items.push(lines[i].slice(2)); i++ }
+      blocks.push({ type: 'list', items }); continue
+    }
+    if (/^\d+\.\s/.test(line)) {
+      const items = []
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) { items.push(lines[i].replace(/^\d+\.\s/, '')); i++ }
+      blocks.push({ type: 'olist', items }); continue
+    }
+    if (line.trim() === '') { blocks.push({ type: 'br' }); i++; continue }
+    blocks.push({ type: 'para', text: line }); i++
+  }
+  return blocks
+}
+
+function ChatInlineText({ text }) {
+  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g)
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.startsWith('`') && part.endsWith('`'))
+          return <code key={i} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: '0.88em', background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: 4, color: '#ce9178' }}>{part.slice(1, -1)}</code>
+        if (part.startsWith('**') && part.endsWith('**'))
+          return <strong key={i} style={{ color: '#fff', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+        if (part.startsWith('*') && part.endsWith('*'))
+          return <em key={i} style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.85)' }}>{part.slice(1, -1)}</em>
+        return <span key={i}>{part}</span>
+      })}
+    </>
+  )
+}
+
+function ChatCodeBlock({ code, lang }) {
+  const [copied, setCopied] = useState(false)
+  const copy = () => { navigator.clipboard?.writeText(code).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500) }
+  return (
+    <div style={{ margin: '8px 0', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: '#0d1117' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: '#161b22', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em' }}>{lang ? lang.toUpperCase() : 'CODE'}</span>
+        <button onClick={copy} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '2px 8px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', letterSpacing: '0.1em' }}>{copied ? '✓ COPIED' : 'COPY'}</button>
+      </div>
+      <pre style={{ margin: 0, padding: '12px 16px', overflowX: 'auto', fontFamily: 'JetBrains Mono,monospace', fontSize: 12, lineHeight: 1.7, color: '#d4d4d4', whiteSpace: 'pre-wrap' }}>
+        <code>{code}</code>
+      </pre>
+    </div>
+  )
+}
+
+function ChatContentBlock({ block }) {
+  switch (block.type) {
+    case 'h1': return <h3 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 800, fontSize: 16, color: '#fff', margin: '12px 0 4px' }}><ChatInlineText text={block.text} /></h3>
+    case 'h2': return <h4 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 700, fontSize: 14, color: '#fff', margin: '10px 0 4px' }}><ChatInlineText text={block.text} /></h4>
+    case 'h3': return <h5 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 700, fontSize: 13, color: 'rgba(255,255,255,0.9)', margin: '8px 0 4px' }}><ChatInlineText text={block.text} /></h5>
+    case 'para': return <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: '4px 0' }}><ChatInlineText text={block.text} /></p>
+    case 'br': return <div style={{ height: 4 }} />
+    case 'callout': return (
+      <div style={{ margin: '8px 0', padding: '10px 14px', background: 'rgba(0,212,255,0.05)', border: '1px solid rgba(0,212,255,0.2)', borderLeft: '3px solid #00D4FF', borderRadius: '0 6px 6px 0' }}>
+        {block.lines.map((line, i) => <p key={i} style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.8)', margin: i > 0 ? '4px 0 0' : 0, lineHeight: 1.6 }}><ChatInlineText text={line} /></p>)}
+      </div>
+    )
+    case 'list': return (
+      <ul style={{ margin: '4px 0 8px', paddingLeft: 0, listStyle: 'none' }}>
+        {block.items.map((item, i) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '2px 0', fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+            <span style={{ color: '#00FF41', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, flexShrink: 0 }}>›</span>
+            <span><ChatInlineText text={item} /></span>
+          </li>
+        ))}
+      </ul>
+    )
+    case 'olist': return (
+      <ol style={{ margin: '4px 0 8px', paddingLeft: 0, listStyle: 'none', counterReset: 'item' }}>
+        {block.items.map((item, i) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '2px 0', fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+            <span style={{ color: '#00FF41', fontFamily: 'JetBrains Mono,monospace', fontSize: 10, flexShrink: 0, minWidth: 14, textAlign: 'right' }}>{i + 1}.</span>
+            <span><ChatInlineText text={item} /></span>
+          </li>
+        ))}
+      </ol>
+    )
+    case 'code': return <ChatCodeBlock code={block.code} lang={block.lang} />
+    default: return null
+  }
+}
+
 // ── Message Bubble ────────────────────────────────────────────────────────────
 
 function MessageBubble({ msg, accentColor = '#00FF41' }) {
@@ -602,9 +750,13 @@ function MessageBubble({ msg, accentColor = '#00FF41' }) {
         </div>
       )}
       <div style={isUser ? { ...s.bubbleUser, borderColor: `${accentColor}18` } : s.bubbleAI}>
-        <span style={isUser ? s.bubbleTextUser : { ...s.bubbleTextAI, color: accentColor === '#FFFFFF' ? 'rgba(255,255,255,0.9)' : accentColor }}>
-          {msg.content}
-        </span>
+        {isUser ? (
+          <span style={s.bubbleTextUser}>{msg.content}</span>
+        ) : (
+          <div style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>
+            {parseChatContent(msg.content).map((block, i) => <ChatContentBlock key={i} block={block} />)}
+          </div>
+        )}
       </div>
     </div>
   )

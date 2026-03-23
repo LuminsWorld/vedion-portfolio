@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import { getDoc, updateDoc } from '../../../lib/firestore'
+import { getDoc, updateDoc, queryDocs } from '../../../lib/firestore'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', { apiVersion: '2024-04-10' })
 
@@ -44,22 +44,22 @@ async function handleInvoicePaid(invoice) {
   const customerId = invoice.customer
   if (!customerId) return
 
-  // Find user by stripeCustomerId
-  // NOTE: Firestore REST doesn't support query-by-field easily without an index.
-  // For now we use metadata from the subscription
-  const subId = invoice.subscription
-  if (!subId) return
-  const sub = await stripe.subscriptions.retrieve(subId)
-  const uid = sub.metadata?.uid
-  if (!uid) return
+  // Find user by stripeCustomerId stored in Firestore (set during checkout completion).
+  // We cannot rely on subscription.metadata.uid — metadata is only set on the checkout
+  // session, not propagated to the subscription object.
+  const users = await queryDocs('users', [{ field: 'stripeCustomerId', value: customerId }])
+  const user = users[0]
+  if (!user) {
+    console.warn(`[webhook] handleInvoicePaid: no user found for customerId ${customerId}`)
+    return
+  }
 
   const planCredits = { pro: 500, ultra: 1500 }
-  const user = await getDoc(`users/${uid}`)
-  const plan = user?.plan ?? 'free'
+  const plan = user.plan ?? 'free'
   const topUp = planCredits[plan] ?? 0
 
   if (topUp > 0) {
-    await updateDoc(`users/${uid}`, {
+    await updateDoc(`users/${user.id}`, {
       credits: topUp, // Reset to plan allowance each month
       billingCycleEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     })
@@ -67,9 +67,17 @@ async function handleInvoicePaid(invoice) {
 }
 
 async function handleSubscriptionCancelled(sub) {
-  const uid = sub.metadata?.uid
-  if (!uid) return
-  await updateDoc(`users/${uid}`, { plan: 'free', stripeSubscriptionId: null })
+  // Same fix as handleInvoicePaid — uid is not in subscription metadata.
+  // Look up user by stripeCustomerId instead.
+  const customerId = sub.customer
+  if (!customerId) return
+  const users = await queryDocs('users', [{ field: 'stripeCustomerId', value: customerId }])
+  const user = users[0]
+  if (!user) {
+    console.warn(`[webhook] handleSubscriptionCancelled: no user found for customerId ${customerId}`)
+    return
+  }
+  await updateDoc(`users/${user.id}`, { plan: 'free', stripeSubscriptionId: null })
 }
 
 export default async function handler(req, res) {

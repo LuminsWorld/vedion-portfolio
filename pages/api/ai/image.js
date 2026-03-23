@@ -1,9 +1,39 @@
 import { GoogleGenAI } from '@google/genai'
 import { requireAuth } from '../../../lib/authMiddleware'
 import { getDoc, updateDoc, setDoc, serverTimestamp, generateId } from '../../../lib/firestore'
+import { getServiceAccountToken } from '../../../lib/googleAuth'
 import { getCreditCost, canUseModel, IMAGE_MODELS } from '../../../lib/credits'
 
 const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+
+const STORAGE_BUCKET = 'vedion-978cc.firebasestorage.app'
+
+async function uploadImageToStorage(imageBytes, userId) {
+  const timestamp = Date.now()
+  const path = `images/${userId}/${timestamp}.png`
+  const encodedPath = encodeURIComponent(path)
+  const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o?uploadType=media&name=${encodedPath}`
+
+  const token = await getServiceAccountToken()
+  const imageBuffer = Buffer.from(imageBytes, 'base64')
+
+  const res = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'image/png',
+    },
+    body: imageBuffer,
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Firebase Storage upload failed (${res.status}): ${text}`)
+  }
+
+  // Public download URL (no token required — bucket rules control access)
+  return `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/${encodedPath}?alt=media`
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
