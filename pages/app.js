@@ -782,15 +782,24 @@ function ChatInlineText({ text }) {
 function ChatCodeBlock({ code, lang }) {
   const [copied, setCopied] = useState(false)
   const copy = () => { navigator.clipboard?.writeText(code).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1500) }
+  const raw = code.split('\n')
+  const displayLines = raw[raw.length - 1] === '' ? raw.slice(0, -1) : raw
+  const isOutput = lang === 'output' || lang === 'r-out'
+  const lineNumColor = isOutput ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.25)'
   return (
     <div style={{ margin: '8px 0', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: '#0d1117' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: '#161b22', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em' }}>{lang ? lang.toUpperCase() : 'CODE'}</span>
         <button onClick={copy} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '2px 8px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', letterSpacing: '0.1em' }}>{copied ? '✓ COPIED' : 'COPY'}</button>
       </div>
-      <pre style={{ margin: 0, padding: '12px 16px', overflowX: 'auto', fontFamily: 'JetBrains Mono,monospace', fontSize: 12, lineHeight: 1.7, color: '#d4d4d4', whiteSpace: 'pre-wrap' }}>
-        <code>{code}</code>
-      </pre>
+      <div style={{ padding: '12px 0', overflowX: 'auto' }}>
+        {displayLines.map((line, i) => (
+          <div key={i} style={{ display: 'flex', minHeight: 20 }}>
+            <span style={{ width: 40, minWidth: 40, textAlign: 'right', paddingRight: 12, color: lineNumColor, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', userSelect: 'none', lineHeight: '20px', flexShrink: 0 }}>{i + 1}</span>
+            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 12, color: isOutput ? 'rgba(255,255,255,0.7)' : '#d4d4d4', lineHeight: '20px', whiteSpace: 'pre' }}>{line || ' '}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -166,6 +166,42 @@ function InlineText({ text }) {
   )
 }
 
+/* ─── Line-numbered code renderer ─── */
+function CodeLines({ code, lang, highlighted }) {
+  const raw = (highlighted ? code : code).split('\n')
+  const displayLines = raw[raw.length - 1] === '' ? raw.slice(0, -1) : raw
+  const isOutput = lang === 'output' || lang === 'r-out'
+  const lineNumColor = isOutput ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.25)'
+  const textColor = isOutput ? '#00FF41' : '#d4d4d4'
+
+  if (highlighted) {
+    // Split highlighted HTML by newlines — each line is rendered with dangerouslySetInnerHTML
+    const htmlLines = highlightR(code).split('\n')
+    const dispHtml = htmlLines[htmlLines.length - 1] === '' ? htmlLines.slice(0, -1) : htmlLines
+    return (
+      <div style={{ padding: '12px 0', overflowX: 'auto' }}>
+        {dispHtml.map((html, i) => (
+          <div key={i} style={{ display: 'flex', minHeight: 20 }}>
+            <span style={{ width: 40, minWidth: 40, textAlign: 'right', paddingRight: 12, color: lineNumColor, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', userSelect: 'none', lineHeight: '20px', flexShrink: 0 }}>{i + 1}</span>
+            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 13, color: textColor, lineHeight: '20px', whiteSpace: 'pre' }} dangerouslySetInnerHTML={{ __html: html || ' ' }} />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ padding: '12px 0', overflowX: 'auto' }}>
+      {displayLines.map((line, i) => (
+        <div key={i} style={{ display: 'flex', minHeight: 20 }}>
+          <span style={{ width: 40, minWidth: 40, textAlign: 'right', paddingRight: 12, color: lineNumColor, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', userSelect: 'none', lineHeight: '20px', flexShrink: 0 }}>{i + 1}</span>
+          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: isOutput ? 12 : 13, color: textColor, lineHeight: '20px', whiteSpace: 'pre' }}>{line || ' '}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 /* ─── Code window ─── */
 function CodeWindow({ code, lang, output }) {
   const [copied, setCopied] = useState(false)
@@ -187,13 +223,11 @@ function CodeWindow({ code, lang, output }) {
           <button onClick={copy} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '3px 10px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', letterSpacing: '0.1em' }}>{copied ? '✓ COPIED' : 'COPY'}</button>
         </div>
       </div>
-      <pre style={{ margin: 0, padding: '16px 20px', overflowX: 'auto', fontFamily: 'JetBrains Mono,monospace', fontSize: 13, lineHeight: 1.7, color: '#d4d4d4' }}>
-        <code dangerouslySetInnerHTML={{ __html: highlightR(code) }} />
-      </pre>
+      <CodeLines code={code} lang={lang} highlighted={true} />
       {output && showOut && (
-        <div style={{ borderTop: '1px solid rgba(0,255,65,0.15)', background: '#0a0f0a', padding: '12px 20px' }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(0,255,65,0.5)', letterSpacing: '0.15em', marginBottom: 8 }}>OUTPUT</div>
-          <pre style={{ margin: 0, fontFamily: 'JetBrains Mono,monospace', fontSize: 12, color: '#00FF41', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{output}</pre>
+        <div style={{ borderTop: '1px solid rgba(0,255,65,0.15)', background: '#0a0f0a' }}>
+          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(0,255,65,0.5)', letterSpacing: '0.15em', padding: '8px 12px 0 52px' }}>OUTPUT</div>
+          <CodeLines code={output} lang="output" highlighted={false} />
         </div>
       )}
     </div>
