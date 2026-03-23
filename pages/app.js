@@ -7,6 +7,7 @@ import { MODELS, IMAGE_MODELS, CREDIT_PACKS, SUBSCRIPTIONS, PLAN_LIMITS } from '
 import { getMe, listChats, createChat, deleteChat, renameChat, sendMessage, generateImage, checkout, redeemCode } from '../lib/api'
 import ChatIcon, { ICON_KEYS } from '../components/ChatIcon'
 import { uploadFile, validateFiles, TYPE_LABELS } from '../lib/uploadFile'
+import { toast } from '../components/Toast'
 
 const CHAT_COLORS = ['#00FF41','#7B2FFF','#00D4FF','#FFB800','#FF2D55','#FF6B35','#C084FC','#FFFFFF']
 
@@ -30,6 +31,8 @@ export default function AppPage() {
   const [uploading, setUploading]         = useState(false)
   const [clearConfirm, setClearConfirm] = useState(false)
   const [clearing, setClearing]         = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState(null) // ID of chat to confirm deletion
+  const [deletingId, setDeletingId] = useState(null)
   const fileInputRef  = useRef(null)
   const messagesEndRef = useRef(null)
 
@@ -63,7 +66,7 @@ export default function AppPage() {
       const { url } = await checkout(itemId)
       window.location.href = url
     } catch (e) {
-      alert('Checkout failed: ' + (e.error ?? e.message ?? 'Unknown error'))
+      toast.error('Checkout failed: ' + (e.error ?? e.message ?? 'Unknown error'))
     }
   }
 
@@ -71,7 +74,7 @@ export default function AppPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('payment') === 'success') {
-      alert('Payment successful! Your credits/plan have been updated.')
+      toast.success('Payment successful! Your credits/plan have been updated.')
       window.history.replaceState({}, '', '/app')
       // Refresh user data
       getMe().then(setUserData).catch(() => {})
@@ -89,9 +92,9 @@ export default function AppPage() {
     const allFiles = [...attachedFiles.filter(f => f.url).map(f => ({ type: f.mimeType, size: f.size, name: f.name })), ...files]
 
     const errors = validateFiles(allFiles, plan)
-    if (errors.length) { alert(errors.join('\n')); return }
+    if (errors.length) { errors.forEach(err => toast.error(err)); return }
 
-    if (!activeChatId) { alert('Start a chat first.'); return }
+    if (!activeChatId) { toast.warning('Start a chat first.'); return }
 
     setUploading(true)
     const uid = user.uid
@@ -107,7 +110,7 @@ export default function AppPage() {
         setAttachedFiles(prev => prev.map(f => f.tempId === tempId ? { ...f, ...result, progress: 100 } : f))
       } catch (err) {
         setAttachedFiles(prev => prev.filter(f => f.tempId !== tempId))
-        alert(`Upload failed: ${err.message}`)
+        toast.error(`Upload failed: ${err.message}`)
       }
     }
     setUploading(false)
@@ -123,7 +126,7 @@ export default function AppPage() {
       setChats(c => [{ id: chatId, title, icon: 'chat', color: '#00FF41' }, ...c])
       setActive(chatId); setMessages([])
     } catch (e) {
-      alert(e.upgradeRequired ? e.error : `Error: ${e.error ?? e._status}`)
+      toast.error(e.upgradeRequired ? e.error : `Error: ${e.error ?? e._status}`)
     }
   }
 
@@ -138,15 +141,16 @@ export default function AppPage() {
     } catch { setMessages([]) }
   }
 
-  async function handleDelete(e, chatId) {
-    e.stopPropagation()
-    if (!confirm('Delete this chat?')) return
-    try {
-      await deleteChat(chatId)
-      setChats(c => c.filter(x => x.id !== chatId))
-      if (activeChatId === chatId) { setActive(null); setMessages([]) }
-    } catch {}
-  }
+  // The delete logic is now inline with the button to enable micro-interactions.
+  // async function handleDelete(e, chatId) {
+  //   e.stopPropagation()
+  //   if (!confirm('Delete this chat?')) return
+  //   try {
+  //     await deleteChat(chatId)
+  //     setChats(c => c.filter(x => x.id !== chatId))
+  //     if (activeChatId === chatId) { setActive(null); setMessages([]) }
+  //   } catch {}
+  // }
 
   async function handleRename(chatId) {
     if (!renameVal.trim()) { setRenamingId(null); return }
@@ -171,7 +175,7 @@ export default function AppPage() {
   async function handleSend() {
     const text = input.trim()
     if (!text || sending || !activeChatId) return
-    if (uploading) { alert('Wait for uploads to finish.'); return }
+    if (uploading) { toast.warning('Wait for uploads to finish.'); return }
 
     const readyFiles = attachedFiles.filter(f => f.url)
     setInput(''); setAttachedFiles([]); setSending(true)
@@ -196,9 +200,9 @@ export default function AppPage() {
       }
     } catch (e) {
       setMessages(m => m.filter(x => x.id !== tempMsg.id))
-      if (e.upgradeRequired) alert(e.error)
-      else if (e._status === 402) alert('Out of credits. Buy more in Account tab.')
-      else alert(e.error ?? 'Something went wrong.')
+      if (e.upgradeRequired) toast.error(e.error)
+      else if (e._status === 402) toast.warning('Out of credits. Buy more in Account tab.')
+      else toast.error(e.error ?? 'Something went wrong.')
     } finally { setSending(false) }
   }
 
@@ -272,11 +276,43 @@ export default function AppPage() {
                     )}
 
                     <div className="chat-item-actions" style={{ display: 'flex', gap: 1 }}>
-                      <button style={s.actionBtn} title="Rename"
-                        onClick={e => { e.stopPropagation(); setRenamingId(c.id); setRenameVal(c.title) }}>⌇</button>
-                      <button style={{ ...s.actionBtn, color: '#FF2D55' }} title="Delete"
-                        onClick={e => handleDelete(e, c.id)}>⊘</button>
-                    </div>
+                    {deleteConfirm === c.id ? (
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: '#FF2D5522', borderRadius: 6, padding: '2px 6px' }}>
+                        <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#FF2D55' }}>Sure?</span>
+                        <button style={{ ...s.actionBtn, color: '#FF2D55', fontWeight: 700 }}
+                          onClick={async e => {
+                            e.stopPropagation()
+                            setDeletingId(c.id)
+                            try {
+                              await deleteChat(c.id)
+                              setChats(chats.filter(x => x.id !== c.id))
+                              if (activeChatId === c.id) { setActive(null); setMessages([]) }
+                              toast.success('Chat deleted')
+                            } catch {
+                              toast.error('Failed to delete chat')
+                            } finally {
+                              setDeletingId(null)
+                              setDeleteConfirm(null)
+                            }
+                          }}
+                          disabled={deletingId === c.id}>
+                          {deletingId === c.id ? '...' : 'Yes'}
+                        </button>
+                        <button style={{ ...s.actionBtn, color: 'rgba(255,255,255,0.5)' }}
+                          onClick={e => { e.stopPropagation(); setDeleteConfirm(null) }}
+                          disabled={deletingId === c.id}>
+                          No
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button style={s.actionBtn} title="Rename"
+                          onClick={e => { e.stopPropagation(); setRenamingId(c.id); setRenameVal(c.title) }}>⌇</button>
+                        <button style={{ ...s.actionBtn, color: '#FF2D55' }} title="Delete"
+                          onClick={e => { e.stopPropagation(); setDeleteConfirm(c.id) }}>⊘</button>
+                      </>
+                    )}
+                  </div>
                   </div>
                 ))}
               </div>

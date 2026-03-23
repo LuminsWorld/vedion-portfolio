@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import { useEffect, useRef } from 'react';
+import { ToastContainer } from '../components/Toast';
 
 function CustomCursor() {
   const cursorRef = useRef(null);
@@ -97,6 +98,7 @@ export default function App({ Component, pageProps }) {
     <>
       <CustomCursor />
       <Component {...pageProps} />
+      <ToastContainer />
     </>
   );
 }
