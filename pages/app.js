@@ -183,23 +183,75 @@ export default function AppPage() {
     setMessages(m => [...m, tempMsg])
     try {
       const history = messages.slice(-20)
-      let result
+
       if (IMAGE_MODELS.has(model)) {
-        result = await generateImage(activeChatId, text, model)
+        // Image generation — not streaming, keep existing flow
+        const result = await generateImage(activeChatId, text, model)
         setMessages(m => [...m, { id: Date.now() + 1, role: 'assistant', content: result.imageUrl, type: 'image', model }])
+        setUserData(d => d ? { ...d, credits: result.creditsRemaining } : d)
       } else {
-        result = await sendMessage(activeChatId, text, model, history, readyFiles)
-        setMessages(m => [...m, { id: Date.now() + 1, role: 'assistant', content: result.reply, type: 'text', model }])
-      }
-      setUserData(d => d ? { ...d, credits: result.creditsRemaining } : d)
-      const chat = chats.find(c => c.id === activeChatId)
-      if (chat?.title === 'New Chat') {
-        const t = text.slice(0, 40) + (text.length > 40 ? '…' : '')
-        await renameChat(activeChatId, t)
-        setChats(c => c.map(x => x.id === activeChatId ? { ...x, title: t } : x))
+        // Text — streaming fetch
+        const streamingMsgId = Date.now().toString()
+        setMessages(prev => [...prev, {
+          id: streamingMsgId,
+          role: 'assistant',
+          content: '',
+          type: 'text',
+          model,
+          streaming: true,
+        }])
+
+        const response = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await user.getIdToken()}`,
+          },
+          body: JSON.stringify({ chatId: activeChatId, content: text, model, history, files: readyFiles }),
+        })
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({ error: `HTTP ${response.status}` }))
+          setMessages(prev => prev.filter(m => m.id !== streamingMsgId))
+          if (err.upgradeRequired) toast.error(err.error)
+          else if (response.status === 402) toast.warning('Out of credits. Buy more in Account tab.')
+          else toast.error(err.error ?? 'Failed to send message')
+          setSending(false)
+          return
+        }
+
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let fullText = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          const chunk = decoder.decode(value, { stream: true })
+          fullText += chunk
+          setMessages(prev => prev.map(m =>
+            m.id === streamingMsgId ? { ...m, content: fullText } : m
+          ))
+        }
+
+        // Mark streaming done
+        setMessages(prev => prev.map(m =>
+          m.id === streamingMsgId ? { ...m, streaming: false } : m
+        ))
+
+        // Refresh credits from server (deduction happens post-stream on backend)
+        getMe().then(setUserData).catch(() => {})
+
+        // Auto-rename chat if still "New Chat"
+        const chat = chats.find(c => c.id === activeChatId)
+        if (chat?.title === 'New Chat') {
+          const t = text.slice(0, 40) + (text.length > 40 ? '…' : '')
+          renameChat(activeChatId, t).catch(() => {})
+          setChats(c => c.map(x => x.id === activeChatId ? { ...x, title: t } : x))
+        }
       }
     } catch (e) {
-      setMessages(m => m.filter(x => x.id !== tempMsg.id))
+      setMessages(m => m.filter(x => x.id !== tempMsg.id && !x.streaming))
       if (e.upgradeRequired) toast.error(e.error)
       else if (e._status === 402) toast.warning('Out of credits. Buy more in Account tab.')
       else toast.error(e.error ?? 'Something went wrong.')
@@ -466,11 +518,6 @@ export default function AppPage() {
               </div>
             )}
             {messages.map((msg, i) => <MessageBubble key={msg.id ?? i} msg={msg} accentColor={accentColor} />)}
-            {sending && (
-              <div style={s.bubbleAI}>
-                <span style={{ color: accentColor, fontFamily: 'monospace' }}>▋</span>
-              </div>
-            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -815,6 +862,10 @@ function MessageBubble({ msg, accentColor = '#00FF41' }) {
         ) : (
           <div style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>
             {parseChatContent(msg.content).map((block, i) => <ChatContentBlock key={i} block={block} />)}
+            {msg.streaming && (
+              <span style={{ display: 'inline-block', width: '0.55em', marginLeft: 1, verticalAlign: 'middle', animation: 'blink 1s step-start infinite', color: accentColor }}>▋</span>
+            )}
+            <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
           </div>
         )}
       </div>

@@ -96,8 +96,10 @@ export default async function handler(req, res) {
     const { user, error, status } = await requireAuth(req, { requireAccess: true })
     if (error) return res.status(status).json({ error })
 
-    const { chatId, message, model = 'claude-haiku-4-5', history = [], files = [] } = req.body ?? {}
-    if (!chatId || !message) return res.status(400).json({ error: 'Missing chatId or message' })
+    // Accept 'content' (new streaming frontend) or 'message' (legacy)
+    const { chatId, content, message: legacyMessage, model = 'claude-haiku-4-5', history = [], files = [] } = req.body ?? {}
+    const userMessage = content ?? legacyMessage
+    if (!chatId || !userMessage) return res.status(400).json({ error: 'Missing chatId or message' })
     if (IMAGE_MODELS.has(model)) return res.status(400).json({ error: 'Use /api/ai/image for image generation' })
 
     if (!canUseModel(user.plan, model)) {
@@ -125,24 +127,38 @@ export default async function handler(req, res) {
       return res.status(402).json({ error: 'Not enough credits.', creditsNeeded: cost, creditsAvailable: user.credits })
     }
 
-    let reply
+    // ── Start streaming ───────────────────────────────────────────────────
+    res.writeHead(200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Transfer-Encoding': 'chunked',
+      'X-Accel-Buffering': 'no',
+      'Cache-Control': 'no-cache',
+    })
+
+    let fullReply = ''
 
     if (CLAUDE_MODELS.has(model)) {
-      const userContent = await buildClaudeContent(message, files)
+      const userContent = await buildClaudeContent(userMessage, files)
       const messages = [
         ...history.slice(-20).map(m => ({ role: m.role, content: m.content })),
         { role: 'user', content: userContent },
       ]
-      const response = await anthropic.messages.create({
+      const stream = anthropic.messages.stream({
         model: MODEL_IDS[model] ?? model,
         max_tokens: 4096,
         system: 'You are Vedion, a sharp and direct AI assistant.',
         messages,
       })
-      reply = response.content[0].text
+      for await (const chunk of stream) {
+        if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+          const text = chunk.delta.text
+          fullReply += text
+          res.write(text)
+        }
+      }
 
     } else if (GEMINI_MODELS.has(model)) {
-      const userParts = await buildGeminiParts(message, files)
+      const userParts = await buildGeminiParts(userMessage, files)
       const contents = [
         ...history.slice(-20).map(m => ({
           role: m.role === 'assistant' ? 'model' : 'user',
@@ -150,34 +166,50 @@ export default async function handler(req, res) {
         })),
         { role: 'user', parts: userParts },
       ]
-      const response = await genai.models.generateContent({
+      const result = await genai.models.generateContentStream({
         model,
         contents,
         config: { systemInstruction: 'You are Vedion, a sharp and direct AI assistant.' },
       })
-      reply = response.text
+      for await (const chunk of result) {
+        const text = chunk.text
+        if (text) {
+          fullReply += text
+          res.write(text)
+        }
+      }
 
     } else {
-      return res.status(400).json({ error: 'Unknown model' })
+      res.end()
+      return
     }
 
-    const now = serverTimestamp()
-    const userDoc = await getDoc(`users/${user.uid}`)
-    await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
+    res.end()
 
-    const m1 = generateId(), m2 = generateId()
-    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, {
-      role: 'user', content: message, files: files.length ? files.map(f => ({ name: f.name, url: f.url, mimeType: f.mimeType, size: f.size })) : null, model, createdAt: now,
-    })
-    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, {
-      role: 'assistant', content: reply, model, createdAt: now,
-    })
-    await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
+    // ── Post-stream: deduct credits + save to Firestore ───────────────────
+    try {
+      const now = serverTimestamp()
+      const userDoc = await getDoc(`users/${user.uid}`)
+      await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
-    res.json({ reply, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
+      const m1 = generateId(), m2 = generateId()
+      await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, {
+        role: 'user', content: userMessage, files: files.length ? files.map(f => ({ name: f.name, url: f.url, mimeType: f.mimeType, size: f.size })) : null, model, createdAt: now,
+      })
+      await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, {
+        role: 'assistant', content: fullReply, model, createdAt: now,
+      })
+      await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
+    } catch (saveErr) {
+      console.error('Post-stream save error:', saveErr)
+    }
 
   } catch (e) {
     console.error('Chat error:', e)
-    res.status(500).json({ error: e.message })
+    if (!res.headersSent) {
+      res.status(500).json({ error: e.message })
+    } else {
+      res.end()
+    }
   }
 }
