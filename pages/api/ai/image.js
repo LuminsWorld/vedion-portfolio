@@ -63,8 +63,14 @@ export default async function handler(req, res) {
     })
 
     const imageBytes = response.generatedImages[0].image.imageBytes
-    // Return as base64 data URL (no storage needed)
-    const imageUrl = `data:image/png;base64,${imageBytes}`
+
+    // Upload to Firebase Storage — Firestore documents have a 1 MB limit and a
+    // raw base64 image easily exceeds that, causing silent write failures.
+    const storageUrl = await uploadImageToStorage(imageBytes, user.uid)
+
+    // Keep the base64 data URL for the immediate API response so the frontend
+    // can display the image without waiting for a Storage round-trip.
+    const imageDataUrl = `data:image/png;base64,${imageBytes}`
 
     const now = serverTimestamp()
     const userDoc = await getDoc(`users/${user.uid}`)
@@ -72,13 +78,13 @@ export default async function handler(req, res) {
     // Deduct credits
     await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - cost })
 
-    // Save messages
+    // Save messages — persist Storage URL, not base64, to stay within Firestore limits
     const m1 = generateId(), m2 = generateId()
-    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, { role: 'user',      content: prompt,   type: 'text',  createdAt: now })
-    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, { role: 'assistant', content: imageUrl, type: 'image', model, createdAt: now })
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m1}`, { role: 'user',      content: prompt,      type: 'text',  createdAt: now })
+    await setDoc(`users/${user.uid}/chats/${chatId}/messages/${m2}`, { role: 'assistant', content: storageUrl,   type: 'image', model, createdAt: now })
     await updateDoc(`users/${user.uid}/chats/${chatId}`, { updatedAt: now })
 
-    res.json({ imageUrl, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
+    res.json({ imageUrl: imageDataUrl, creditsUsed: cost, creditsRemaining: (userDoc?.credits ?? user.credits) - cost })
 
   } catch (e) {
     console.error('Image gen error:', e)
