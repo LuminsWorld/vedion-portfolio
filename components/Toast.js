@@ -75,7 +75,9 @@ export function ToastContainer() {
 
   useEffect(() => {
     return toast.subscribe(() => {
-      setActiveToasts(toast.getSnapshot())
+      // Spread to create a new array reference — React bails out of
+      // re-rendering if the same mutable array reference is passed to setState.
+      setActiveToasts([...toast.getSnapshot()])
     })
   }, [])
 

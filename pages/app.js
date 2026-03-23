@@ -220,6 +220,16 @@ export default function AppPage() {
           return
         }
 
+        if (!response.body) {
+          // Fallback: streaming not supported — try to read as plain text
+          const text = await response.text()
+          setMessages(prev => prev.map(m =>
+            m.id === streamingMsgId ? { ...m, content: text, streaming: false } : m
+          ))
+          getMe().then(setUserData).catch(() => {})
+          setSending(false)
+          return
+        }
         const reader = response.body.getReader()
         const decoder = new TextDecoder()
         let fullText = ''
