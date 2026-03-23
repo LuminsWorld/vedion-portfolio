@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { getAllCourses } from '../../lib/courseData'
@@ -8,6 +9,8 @@ export async function getStaticProps() {
 }
 
 export default function LearnIndex({ courses }) {
+  const [hoveredCard, setHoveredCard] = useState(null)
+
   return (
     <div style={s.root}>
       <Head><title>Learn — Vedion</title></Head>
@@ -26,7 +29,17 @@ export default function LearnIndex({ courses }) {
         <div style={s.grid}>
           {courses.map(c => (
             <Link key={c.id} href={`/learn/${c.id}`} style={{ textDecoration: 'none' }}>
-              <div style={s.card}>
+              <div
+                style={{
+                  ...s.card,
+                  border: hoveredCard === c.id ? '1px solid #00FF41' : '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: hoveredCard === c.id ? '0 0 20px rgba(0,255,65,0.1)' : 'none',
+                  transform: hoveredCard === c.id ? 'translateY(-2px)' : 'none',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={() => setHoveredCard(c.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
                 <div style={s.cardTop}>
                   <span style={s.cardId}>{c.id.toUpperCase()}</span>
                   <span style={s.cardMods}>{c.moduleCount} modules</span>

@@ -213,6 +213,12 @@ export default function AppPage() {
   const accentColor  = activeChat?.color ?? '#00FF41'
   const needsAccess  = userData && userData.accessGranted !== true
 
+  // Credit color indicator (D5)
+  const planCredits = { free: 20, pro: 500, ultra: 1500 }
+  const maxCredits = planCredits[userData?.plan ?? 'free'] ?? 20
+  const creditPct = userData ? Math.min(1, (userData.credits ?? 0) / maxCredits) : 1
+  const creditColor = creditPct > 0.2 ? '#00FF41' : creditPct > 0.1 ? '#FFB800' : '#FF2D55'
+
   // ── Invite code gate ────────────────────────────────────────────────────
   if (needsAccess) return <AccessGate user={user} onGranted={() => setUserData(d => ({ ...d, accessGranted: true }))} onCheckout={handleCheckout} onSignOut={() => signOut(auth).then(() => router.replace('/'))} />
 
@@ -233,8 +239,23 @@ export default function AppPage() {
       </Head>
       <div style={s.root}>
 
+        {/* ── Mobile overlay backdrop (D3) ─────────────────── */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebar(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.7)',
+              zIndex: 99,
+              display: 'none',
+            }}
+            className="mobile-overlay"
+          />
+        )}
+
         {/* ── Sidebar ─────────────────────────────────────── */}
-        <div style={{ ...s.sidebar, ...(sidebarOpen ? {} : s.sidebarHidden) }}>
+        <div className="app-sidebar" style={{ ...s.sidebar, ...(sidebarOpen ? {} : s.sidebarHidden) }}>
 
           {/* Header */}
           <div style={s.sidebarHeader}>
@@ -428,7 +449,10 @@ export default function AppPage() {
               }
             </span>
             {userData && (
-              <span style={{ ...s.creditsDisplay, color: accentColor }}>{userData.credits} ◈</span>
+              <span style={{ ...s.creditsDisplay, display: 'flex', alignItems: 'center', gap: 5, color: creditColor }}>
+                <span style={{ width: 6, height: 6, borderRadius: 1, background: creditColor, flexShrink: 0, display: 'inline-block' }} />
+                {userData.credits} ◈
+              </span>
             )}
           </div>
 

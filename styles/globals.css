@@ -477,3 +477,16 @@ body { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @keyframes blink {
   0%, 100% { opacity: 1; } 50% { opacity: 0; }
 }
+
+/* ========= APP MOBILE LAYOUT (D3) ========= */
+.mobile-overlay { display: none; }
+@media (max-width: 768px) {
+  .mobile-overlay { display: block !important; }
+  .app-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 100;
+  }
+}
