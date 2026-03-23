@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { getCourse } from '../../../lib/courseData'
 import LearnAccountButton from '../../../components/LearnAccountButton'
+import FlashcardStudy from '../../../components/FlashcardStudy'
 
 export async function getStaticPaths() {
   const { getAllCourses } = await import('../../../lib/courseData')
@@ -457,6 +458,9 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   const [userPlan, setUserPlan] = useState(null)
   const [readProgress, setReadProgress] = useState(0)
   const contentRef = useRef(null)
+  const [flashcardMode, setFlashcardMode] = useState(false)
+  const [flashcardProgress, setFlashcardProgress] = useState(null)
+  const [flashcardLoaded, setFlashcardLoaded] = useState(false)
 
   // Read progress
   useEffect(() => {
@@ -485,6 +489,43 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
     }
     checkPlan()
   }, [])
+
+  // Load flashcard progress for exam pages
+  useEffect(() => {
+    if (!mod?.isExam) return
+    async function loadFlashcards() {
+      try {
+        const { auth } = await import('../../../lib/firebase')
+        const user = auth.currentUser
+        if (!user) { setFlashcardLoaded(true); return }
+        const token = await user.getIdToken()
+        const res = await fetch(`/api/learn/flashcards?courseId=${course.id}&examId=${mod.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        const data = await res.json()
+        setFlashcardProgress(data.progress ?? null)
+      } catch (_) {
+        setFlashcardProgress(null)
+      }
+      setFlashcardLoaded(true)
+    }
+    loadFlashcards()
+  }, [mod?.isExam, mod?.id, course?.id])
+
+  async function saveFlashcardProgress(updatedProgress) {
+    setFlashcardProgress(updatedProgress)
+    try {
+      const { auth } = await import('../../../lib/firebase')
+      const user = auth.currentUser
+      if (!user) return
+      const token = await user.getIdToken()
+      await fetch('/api/learn/flashcards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ courseId: course.id, examId: mod.id, progress: updatedProgress })
+      })
+    } catch (_) {}
+  }
 
   const quiz       = mod.quiz ?? []
   const answered   = quiz.filter(q => isAnswered(q, answers)).length
@@ -604,6 +645,36 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           </div>
         </div>
 
+        {/* ── FLASHCARD STUDY MODE (exam pages) ── */}
+        {mod?.isExam && !flashcardMode && (
+          <div style={{ marginBottom: 40, padding: 24, background: 'rgba(0,255,65,0.04)', border: '1px solid rgba(0,255,65,0.15)', borderRadius: 8 }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 12, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', marginBottom: 8 }}>
+              ADAPTIVE STUDY
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Flashcard Study Mode</div>
+            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginBottom: 16 }}>
+              {flashcardLoaded && flashcardProgress
+                ? `Session ${(flashcardProgress.sessionCount ?? 0) + 1} · Cards sorted by what you need most`
+                : 'Study all exam questions with spaced repetition. Weak topics get prioritized.'}
+            </div>
+            <button
+              onClick={() => setFlashcardMode(true)}
+              style={{ background: '#00FF41', color: '#000', border: 'none', borderRadius: 4, padding: '10px 24px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, cursor: 'pointer', letterSpacing: '0.05em' }}
+            >
+              {flashcardProgress?.sessionCount > 0 ? `CONTINUE STUDYING (SESSION ${(flashcardProgress.sessionCount ?? 0) + 1})` : 'START FLASHCARDS'}
+            </button>
+          </div>
+        )}
+
+        {flashcardMode && (
+          <FlashcardStudy
+            questions={quiz}
+            progress={flashcardProgress}
+            onSaveProgress={saveFlashcardProgress}
+            onClose={() => setFlashcardMode(false)}
+          />
+        )}
+
         {/* ── LESSON ── */}
         {phase === 'lesson' && (
           <div ref={contentRef}>
@@ -634,7 +705,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── EXAM INTRO (isExam, not yet submitted) ── */}
-        {mod.isExam && phase === 'lesson' && (
+        {!flashcardMode && mod.isExam && phase === 'lesson' && (
           <div style={{ textAlign: 'center', padding: '32px 0' }}>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.2em', color: 'rgba(255,184,0,0.6)', marginBottom: 16 }}>READY TO TEST YOUR KNOWLEDGE?</div>
             <button onClick={() => setPhase('quiz')} style={{ background: '#FFB800', color: '#000', border: 'none', borderRadius: 8, padding: '14px 32px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 900, fontSize: 13, letterSpacing: '0.1em', cursor: 'pointer' }}>
@@ -644,7 +715,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── QUIZ / EXAM ── */}
-        {phase === 'quiz' && !submitted && (
+        {!flashcardMode && phase === 'quiz' && !submitted && (
           <div>
             {/* Progress header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, padding: '14px 18px', background: mod.isExam ? 'rgba(255,184,0,0.03)' : 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${mod.isExam ? 'rgba(255,184,0,0.12)' : 'rgba(255,255,255,0.06)'}` }}>
@@ -688,7 +759,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── RESULTS ── */}
-        {phase === 'quiz' && submitted && (
+        {!flashcardMode && phase === 'quiz' && submitted && (
           <div>
             {/* Score card */}
             <div style={{ padding: '28px 24px', borderRadius: 14, border: `1px solid ${score === quiz.length ? 'rgba(0,255,65,0.3)' : score >= quiz.length * 0.7 ? 'rgba(255,184,0,0.3)' : 'rgba(255,45,85,0.3)'}`, background: score === quiz.length ? 'rgba(0,255,65,0.04)' : score >= quiz.length * 0.7 ? 'rgba(255,184,0,0.04)' : 'rgba(255,45,85,0.04)', marginBottom: 28, textAlign: 'center' }}>
