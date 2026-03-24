@@ -91,7 +91,7 @@ function highlightR(code) {
 
   let out = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   const phs = []
-  const ph = t => { const id = `\x00${phs.length}\x00`; phs.push(t); return id }
+  const ph = t => { const id = `\x00p${phs.length}\x00`; phs.push(t); return id }
 
   out = out.replace(COMMENT,  m => ph(`<span style="color:#5a6a5a;font-style:italic">${m}</span>`))
   out = out.replace(STRING,   m => ph(`<span style="color:#ce9178">${m}</span>`))
@@ -100,7 +100,7 @@ function highlightR(code) {
   out = out.replace(NUMBER,   m => ph(`<span style="color:#b5cea8">${m}</span>`))
   out = out.replace(OPERATOR, m => ph(`<span style="color:#569cd6">${m}</span>`))
   out = out.replace(FUNCALL,  (_, fn) => ph(`<span style="color:#dcdcaa">${fn}</span>`))
-  phs.forEach((t, i) => { out = out.replace(`\x00${i}\x00`, t) })
+  phs.forEach((t, i) => { out = out.replaceAll(`\x00p${i}\x00`, t) })
   return out
 }
 
