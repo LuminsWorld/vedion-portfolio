@@ -230,6 +230,11 @@ export default function Home() {
           <a href="/app" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "#000", background: "var(--green)", padding: "5px 12px", borderRadius: 3, textDecoration: "none", fontWeight: 700 }}>
             OPEN APP
           </a>
+          <a href="/shop" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={e => e.target.style.color = "var(--amber)"}
+            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>
+            SHOP
+          </a>
           <a href="/learn" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
             onMouseEnter={e => e.target.style.color = "var(--ice)"}
             onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>
