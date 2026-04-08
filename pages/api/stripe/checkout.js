@@ -7,11 +7,12 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://vedion.cloud'
 
 // Inline product definitions — no pre-created Stripe products needed
 const ITEMS = {
-  credits_100:  { name: '100 Credits',  amount: 299,  mode: 'payment',      meta: { type: 'credits', credits: '100' } },
-  credits_500:  { name: '500 Credits',  amount: 999,  mode: 'payment',      meta: { type: 'credits', credits: '500' } },
-  credits_1200: { name: '1200 Credits', amount: 1999, mode: 'payment',      meta: { type: 'credits', credits: '1200' } },
-  sub_pro:      { name: 'Pro Plan',     amount: 999,  mode: 'subscription', meta: { type: 'subscription', plan: 'pro',   credits: '500' } },
-  sub_ultra:    { name: 'Ultra Plan',   amount: 1999, mode: 'subscription', meta: { type: 'subscription', plan: 'ultra', credits: '1500' } },
+  credits_100:       { name: '100 Credits',             amount: 299,  mode: 'payment',      meta: { type: 'credits', credits: '100' } },
+  credits_500:       { name: '500 Credits',             amount: 999,  mode: 'payment',      meta: { type: 'credits', credits: '500' } },
+  credits_1200:      { name: '1200 Credits',            amount: 1999, mode: 'payment',      meta: { type: 'credits', credits: '1200' } },
+  sub_pro:           { name: 'Pro Plan',                amount: 999,  mode: 'subscription', meta: { type: 'subscription', plan: 'pro',   credits: '500' } },
+  sub_ultra:         { name: 'Ultra Plan',              amount: 1999, mode: 'subscription', meta: { type: 'subscription', plan: 'ultra', credits: '1500' } },
+  screen_share:      { name: 'Vedion Screen Share',     amount: 1999, mode: 'payment',      meta: { type: 'screen_share' } },
 }
 
 export default async function handler(req, res) {

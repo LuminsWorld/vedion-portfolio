@@ -1,5 +1,12 @@
 import Stripe from 'stripe'
-import { getDoc, updateDoc, queryDocs } from '../../../lib/firestore'
+import { getDoc, updateDoc, setDoc, queryDocs } from '../../../lib/firestore'
+import crypto from 'crypto'
+
+function generateLicenseKey() {
+  // Format: VDSS-XXXX-XXXX-XXXX-XXXX
+  const seg = () => crypto.randomBytes(2).toString('hex').toUpperCase()
+  return `VDSS-${seg()}-${seg()}-${seg()}-${seg()}`
+}
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', { apiVersion: '2024-04-10' })
 
@@ -25,7 +32,20 @@ async function handleCheckoutComplete(session) {
   const user = await getDoc(`users/${uid}`)
   const currentCredits = user?.credits ?? 0
 
-  if (type === 'credits') {
+  if (type === 'screen_share') {
+    const licenseKey = generateLicenseKey()
+    await setDoc(`licenses/${licenseKey}`, {
+      uid,
+      email: session.customer_email ?? '',
+      product: 'screen_share',
+      licenseKey,
+      activated: false,
+      machineId: null,
+      createdAt: new Date().toISOString(),
+      stripeSessionId: session.id,
+    })
+    await updateDoc(`users/${uid}`, { screenShareLicense: licenseKey })
+  } else if (type === 'credits') {
     await updateDoc(`users/${uid}`, { credits: currentCredits + credits, accessGranted: true })
   } else if (type === 'subscription') {
     await updateDoc(`users/${uid}`, {
