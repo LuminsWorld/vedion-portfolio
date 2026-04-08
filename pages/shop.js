@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import ChatWidget from "../components/ChatWidget";
 
-const HeroCanvas  = dynamic(() => import("../components/HeroCanvas"),  { ssr: false });
 const ShopCanvas  = dynamic(() => import("../components/ShopCanvas"),  { ssr: false });
 
 const PRODUCTS = [
@@ -70,7 +69,7 @@ export default function Shop() {
   const [navScrolled, setNavScrolled] = useState(false);
   const [glitching, setGlitching] = useState(false);
   const [revealed, setRevealed] = useState(false);
-  const analyserRef = useRef(null);
+  // analyserRef not needed (no audio synth on shop page)
   const glitchTimeout = useRef(null);
   const cardsRef = useRef([]);
 
@@ -181,13 +180,13 @@ export default function Shop() {
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="scanlines" style={{ position: "relative", height: "60svh", minHeight: 400, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", padding: "0 clamp(1.25rem, 6vw, 4rem)", background: "transparent", zIndex: 1 }}>
-        <HeroCanvas analyserRef={analyserRef} />
+      {/* HERO — unified canvas fills full section, icosahedron anchored at bottom */}
+      <section className="scanlines" style={{ position: "relative", height: "100svh", minHeight: 560, display: "flex", flexDirection: "column", justifyContent: "flex-start", padding: "clamp(5rem, 14vw, 9rem) clamp(1.25rem, 6vw, 4rem) 0", background: "transparent", zIndex: 1, overflow: "hidden" }}>
 
-        <div className="orb" style={{ width: "clamp(100px,30vw,320px)", height: "clamp(100px,30vw,320px)", background: "#00FF41", top: "-60px", right: "15%", opacity: 0.6 }} />
-        <div className="orb" style={{ width: "clamp(80px,20vw,220px)", height: "clamp(80px,20vw,220px)", background: "#7B2FFF", bottom: "10%", right: "5%" }} />
+        {/* Unified Three.js canvas — spans full hero height */}
+        <ShopCanvas accentColor={selected?.colorHex ?? "#00FF41"} />
 
+        {/* Text content — sits at top, canvas flows beneath */}
         <div style={{ position: "relative", zIndex: 10, maxWidth: 900, width: "100%" }}>
           <div className="section-label" style={{ marginBottom: "1.25rem" }}>VEDION TOOLS — 2026</div>
           <h1
@@ -201,32 +200,16 @@ export default function Shop() {
             Software built for developers. One-time purchases. No fluff.
           </p>
         </div>
-      </section>
 
-      {/* THREE.JS PRODUCT SHOWCASE */}
-      <section style={{ position: "relative", zIndex: 2, height: "420px", background: "#000", borderTop: "1px solid rgba(255,255,255,0.05)", overflow: "hidden" }}>
-        <ShopCanvas accentColor={selected?.colorHex ?? "#00FF41"} />
-        {/* Overlay label */}
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", pointerEvents: "none", zIndex: 2 }}>
-          <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", letterSpacing: "0.4em", color: selected?.color ?? "var(--green)", marginBottom: "1rem", opacity: 0.7 }}>
+        {/* AES label near the shield at the bottom */}
+        <div style={{ position: "absolute", bottom: "clamp(3rem, 8vw, 6rem)", left: 0, right: 0, display: "flex", justifyContent: "center", zIndex: 10, pointerEvents: "none" }}>
+          <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", letterSpacing: "0.4em", color: selected?.color ?? "var(--green)", opacity: 0.6 }}>
             AES-256 · ENCRYPTED · REAL-TIME
           </div>
-          <div style={{
-            fontFamily: "JetBrains Mono",
-            fontSize: "clamp(0.6rem, 1.5vw, 0.85rem)",
-            color: "rgba(255,255,255,0.12)",
-            letterSpacing: "0.2em",
-            textAlign: "center",
-            maxWidth: 420,
-            lineHeight: 2,
-          }}>
-            {["FRAME_001 → ENCRYPT → SEND", "FRAME_002 → ENCRYPT → SEND", "FRAME_003 → ENCRYPT → SEND"].map((l, i) => (
-              <div key={i} style={{ animation: `scrollLine ${2 + i * 0.4}s ${i * 0.6}s infinite alternate ease-in-out` }}>{l}</div>
-            ))}
-          </div>
         </div>
-        {/* Bottom fade */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(transparent, #000)", zIndex: 3 }} />
+
+        {/* Gradient fade at bottom — blends hero into next section */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 160, background: "linear-gradient(transparent, #000)", zIndex: 5, pointerEvents: "none" }} />
       </section>
 
       {/* PRODUCT GRID + DETAIL PANEL */}
