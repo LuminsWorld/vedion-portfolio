@@ -186,6 +186,11 @@ export default function Shop() {
         {/* Unified Three.js canvas — spans full hero height */}
         <ShopCanvas accentColor={selected?.colorHex ?? "#00FF41"} />
 
+        {/* CSS color orbs — same as portfolio hero for visual depth */}
+        <div className="orb" style={{ width: "clamp(200px,45vw,520px)", height: "clamp(200px,45vw,520px)", background: "#7B2FFF", top: "-80px", right: "8%", opacity: 0.55 }} />
+        <div className="orb" style={{ width: "clamp(120px,28vw,340px)", height: "clamp(120px,28vw,340px)", background: "#00D4FF", bottom: "15%", right: "22%", opacity: 0.4 }} />
+        <div className="orb" style={{ width: "clamp(80px,18vw,220px)",  height: "clamp(80px,18vw,220px)",  background: "#00FF41", top: "30%",   left: "3%",  opacity: 0.3 }} />
+
         {/* Text content — sits at top, canvas flows beneath */}
         <div style={{ position: "relative", zIndex: 10, maxWidth: 900, width: "100%" }}>
           <div className="section-label" style={{ marginBottom: "1.25rem" }}>VEDION TOOLS — 2026</div>
