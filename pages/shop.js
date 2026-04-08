@@ -3,7 +3,8 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import ChatWidget from "../components/ChatWidget";
 
-const HeroCanvas = dynamic(() => import("../components/HeroCanvas"), { ssr: false });
+const HeroCanvas  = dynamic(() => import("../components/HeroCanvas"),  { ssr: false });
+const ShopCanvas  = dynamic(() => import("../components/ShopCanvas"),  { ssr: false });
 
 const PRODUCTS = [
   {
@@ -202,8 +203,34 @@ export default function Shop() {
         </div>
       </section>
 
+      {/* THREE.JS PRODUCT SHOWCASE */}
+      <section style={{ position: "relative", zIndex: 2, height: "420px", background: "#000", borderTop: "1px solid rgba(255,255,255,0.05)", overflow: "hidden" }}>
+        <ShopCanvas accentColor={selected?.colorHex ?? "#00FF41"} />
+        {/* Overlay label */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", pointerEvents: "none", zIndex: 2 }}>
+          <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", letterSpacing: "0.4em", color: selected?.color ?? "var(--green)", marginBottom: "1rem", opacity: 0.7 }}>
+            AES-256 · ENCRYPTED · REAL-TIME
+          </div>
+          <div style={{
+            fontFamily: "JetBrains Mono",
+            fontSize: "clamp(0.6rem, 1.5vw, 0.85rem)",
+            color: "rgba(255,255,255,0.12)",
+            letterSpacing: "0.2em",
+            textAlign: "center",
+            maxWidth: 420,
+            lineHeight: 2,
+          }}>
+            {["FRAME_001 → ENCRYPT → SEND", "FRAME_002 → ENCRYPT → SEND", "FRAME_003 → ENCRYPT → SEND"].map((l, i) => (
+              <div key={i} style={{ animation: `scrollLine ${2 + i * 0.4}s ${i * 0.6}s infinite alternate ease-in-out` }}>{l}</div>
+            ))}
+          </div>
+        </div>
+        {/* Bottom fade */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(transparent, #000)", zIndex: 3 }} />
+      </section>
+
       {/* PRODUCT GRID + DETAIL PANEL */}
-      <section style={{ position: "relative", zIndex: 2, padding: "clamp(3rem, 8vw, 6rem) clamp(1.25rem, 5vw, 2rem)", background: "#000", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <section style={{ position: "relative", zIndex: 2, padding: "clamp(3rem, 8vw, 6rem) clamp(1.25rem, 5vw, 2rem)", background: "#000" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(1.5rem, 4vw, 3rem)" }}>
 
           {/* LEFT — Product cards */}
@@ -405,6 +432,10 @@ export default function Shop() {
         @keyframes panelFadeIn {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scrollLine {
+          from { opacity: 0.06; }
+          to   { opacity: 0.22; }
         }
         @media (max-width: 768px) {
           section > div[style*="grid-template-columns: 1fr 1fr"] {
