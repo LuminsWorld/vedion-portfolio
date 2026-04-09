@@ -1,147 +1,190 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-const COLORS = [0x00FF41, 0x7B2FFF, 0x00D4FF, 0xFFB800, 0xFF2D55];
+const PARTICLE_COUNT = 2000;
+const GREEN = 0x39ff8b;
+const PINK = 0xeb0071;
 
-export default function HeroCanvas({ analyserRef }) {
-  const mountRef = useRef(null);
+export default function HeroCanvas() {
+  const containerRef = useRef(null);
+  const sceneRef = useRef(null);
+  const rendererRef = useRef(null);
+  const particlesRef = useRef(null);
+  const particlesAltRef = useRef(null);
+  const scrollAmplitudeRef = useRef(0);
+  const timeRef = useRef(0);
 
   useEffect(() => {
-    const mount = mountRef.current;
-    if (!mount) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const W = mount.clientWidth || window.innerWidth;
-    const H = mount.clientHeight || window.innerHeight;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-
-    const canvas = renderer.domElement;
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0px';
-    canvas.style.left = '0px';
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '0';
-    mount.appendChild(canvas);
-
+    // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
-    camera.position.z = 30;
+    scene.background = new THREE.Color(0x04040a);
+    sceneRef.current = scene;
 
-    const COUNT = 2000;
-    const geo = new THREE.BufferGeometry();
-    const pos = new Float32Array(COUNT * 3);
-    const orig = new Float32Array(COUNT * 3);
-    const col = new Float32Array(COUNT * 3);
+    // Camera
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    camera.position.z = 50;
 
-    for (let i = 0; i < COUNT; i++) {
-      const x = (Math.random() - 0.5) * 80;
-      const y = (Math.random() - 0.5) * 60;
-      const z = (Math.random() - 0.5) * 40;
-      pos[i*3] = orig[i*3] = x;
-      pos[i*3+1] = orig[i*3+1] = y;
-      pos[i*3+2] = orig[i*3+2] = z;
-      const c = new THREE.Color(COLORS[i % COLORS.length]);
-      col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
-    }
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x04040a, 1);
+    container.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    // Create waveform particle system (green layer)
+    const createWaveform = (color, phaseOffset = 0) => {
+      const geometry = new THREE.BufferGeometry();
+      const positions = [];
+      const colors = [];
 
-    const mat = new THREE.PointsMaterial({
-      size: 0.25,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.9,
-      sizeAttenuation: true,
-    });
+      const waveSpacing = 100 / PARTICLE_COUNT;
+      
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const x = (i / PARTICLE_COUNT - 0.5) * 100;
+        const y = Math.sin((i / PARTICLE_COUNT) * Math.PI * 2 + phaseOffset) * 15;
+        const z = 0;
+        
+        positions.push(x, y, z);
+        
+        // Slight opacity variation per particle
+        const colorObj = new THREE.Color(color);
+        colors.push(colorObj.r, colorObj.g, colorObj.b);
+      }
 
-    const particles = new THREE.Points(geo, mat);
-    scene.add(particles);
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colors), 3));
 
-    // Mouse NDC — smooth target for parallax tilt
-    let targetMouseX = 0;
-    let targetMouseY = 0;
-    let currentTiltX = 0;
-    let currentTiltY = 0;
+      const material = new THREE.PointsMaterial({
+        size: 1.2,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true,
+      });
 
-    const onMouseMove = (e) => {
-      const rect = mount.getBoundingClientRect();
-      targetMouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      targetMouseY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+      
+      return { geometry, material, points, originalPositions: new Float32Array(positions) };
     };
 
-    const onTouchMove = (e) => {
-      if (!e.touches[0]) return;
-      onMouseMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+    const waveformGreen = createWaveform(GREEN, 0);
+    const waveformPink = createWaveform(PINK, Math.PI);
+    
+    particlesRef.current = waveformGreen;
+    particlesAltRef.current = waveformPink;
+
+    // Scroll listener to increase amplitude
+    let scrollProgress = 0;
+    const handleScroll = () => {
+      const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+      scrollProgress = Math.min(window.scrollY / windowHeight, 1);
+      scrollAmplitudeRef.current = scrollProgress * 0.8;
     };
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    let time = 0;
-    let frameId;
-
+    // Animation loop
+    let animationFrameId;
     const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      time += 0.005;
+      animationFrameId = requestAnimationFrame(animate);
+      timeRef.current += 0.01;
 
-      let beat = (Math.sin(time * 1.5) * 0.5 + 0.5) * 0.15;
-      if (analyserRef?.current) {
-        const data = new Uint8Array(analyserRef.current.frequencyBinCount);
-        analyserRef.current.getByteFrequencyData(data);
-        const bass = data.slice(0, 8).reduce((a, b) => a + b, 0) / 8;
-        beat = Math.min(bass / 120, 1);
+      // Update green waveform
+      const greenPositions = waveformGreen.geometry.attributes.position.array;
+      const greenOriginal = waveformGreen.originalPositions;
+      
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const x = greenOriginal[i * 3];
+        const baseY = greenOriginal[i * 3 + 1];
+        const z = greenOriginal[i * 3 + 2];
+        
+        // Oscillating wave with scroll-based amplitude
+        const amplitude = 15 + scrollAmplitudeRef.current * 30;
+        const waveY = Math.sin((i / PARTICLE_COUNT) * Math.PI * 2 + timeRef.current) * amplitude;
+        
+        greenPositions[i * 3] = x;
+        greenPositions[i * 3 + 1] = baseY + waveY;
+        greenPositions[i * 3 + 2] = z;
       }
+      waveformGreen.geometry.attributes.position.needsUpdate = true;
 
-      const pa = particles.geometry.attributes.position;
-      for (let i = 0; i < COUNT; i++) {
-        pa.array[i*3]   = orig[i*3]   + Math.sin(time + i * 0.01) * (0.5 + beat * 2);
-        pa.array[i*3+1] = orig[i*3+1] + Math.cos(time + i * 0.013) * (0.5 + beat * 2);
-        pa.array[i*3+2] = orig[i*3+2] + Math.sin(time * 0.7 + i * 0.007) * 0.3;
+      // Update pink waveform (offset)
+      const pinkPositions = waveformPink.geometry.attributes.position.array;
+      const pinkOriginal = waveformPink.originalPositions;
+      
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const x = pinkOriginal[i * 3];
+        const baseY = pinkOriginal[i * 3 + 1];
+        const z = pinkOriginal[i * 3 + 2];
+        
+        const amplitude = 15 + scrollAmplitudeRef.current * 30;
+        const waveY = Math.sin((i / PARTICLE_COUNT) * Math.PI * 2 + Math.PI + timeRef.current * 0.8) * amplitude;
+        
+        pinkPositions[i * 3] = x;
+        pinkPositions[i * 3 + 1] = baseY + waveY;
+        pinkPositions[i * 3 + 2] = z - 5;
       }
-      pa.needsUpdate = true;
+      waveformPink.geometry.attributes.position.needsUpdate = true;
 
-      // Smooth lerp toward mouse — very gentle parallax tilt
-      currentTiltX += (targetMouseY * 0.15 - currentTiltX) * 0.04;
-      currentTiltY += (targetMouseX * 0.2  - currentTiltY) * 0.04;
-
-      particles.rotation.x = currentTiltX;
-      particles.rotation.y = time * 0.04 + currentTiltY;
+      // Subtle camera pull-back on scroll
+      const cameraZ = 50 + scrollAmplitudeRef.current * 30;
+      camera.position.z = cameraZ;
 
       renderer.render(scene, camera);
     };
+
     animate();
 
-    const onResize = () => {
-      const W = mount.clientWidth || window.innerWidth;
-      const H = mount.clientHeight || window.innerHeight;
-      camera.aspect = W / H;
+    // Handle window resize
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+      
+      camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(W, H);
-      canvas.style.width = W + 'px';
-      canvas.style.height = H + 'px';
+      renderer.setSize(newWidth, newHeight);
     };
-    window.addEventListener('resize', onResize);
 
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
     return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+      
       renderer.dispose();
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      waveformGreen.geometry.dispose();
+      waveformGreen.material.dispose();
+      waveformPink.geometry.dispose();
+      waveformPink.material.dispose();
+      
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
   return (
     <div
-      ref={mountRef}
-      style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}
+      ref={containerRef}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }}
     />
   );
 }
