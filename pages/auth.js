@@ -204,7 +204,7 @@ export default function AuthPage() {
                 <input id="email-reset" style={s.input} type="email" placeholder="email@example.com"
                   value={email} onChange={e => setEmail(e.target.value)} required />
                 {error && <p style={s.error}>{error}</p>}
-                {resetSuccess && <p style={{ ...s.success, marginTop: '12px' }}>CHECK YOUR EMAIL ✓</p>}
+                {resetSuccess && <p style={{ ...s.success, marginTop: '12px' }}>CHECK YOUR EMAIL</p>}
                 <button style={s.btn} type="submit" disabled={loading}>
                   {loading ? <span className="spinner">◌</span> : 'SEND RESET EMAIL'}
                 </button>

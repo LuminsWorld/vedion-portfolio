@@ -366,14 +366,13 @@ export default function Shop() {
           </h2>
           <div className="stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.25rem" }}>
             {[
-              { step: "01", icon: "🖥", title: "Capture", desc: "Screen or custom region captured locally. Only what you select — nothing more.", color: "var(--green)" },
-              { step: "02", icon: "🔒", title: "Encrypt", desc: "Frame encrypted with AES-256 before it leaves your machine.", color: "var(--amber)" },
-              { step: "03", icon: "🤖", title: "Analyze", desc: "Sent to your AI provider — Gemini, Claude, GPT-4o, or Vedion directly.", color: "var(--violet)" },
-              { step: "04", icon: "💬", title: "Respond", desc: "AI response posts to your Discord channel in real time.", color: "var(--ice)" },
+              { step: "01", title: "Capture", desc: "Screen or custom region captured locally. Only what you select — nothing more.", color: "var(--green)" },
+              { step: "02", title: "Encrypt", desc: "Frame encrypted with AES-256 before it leaves your machine.", color: "var(--amber)" },
+              { step: "03", title: "Analyze", desc: "Sent to your AI provider — Gemini, Claude, GPT-4o, or Vedion directly.", color: "var(--violet)" },
+              { step: "04", title: "Respond", desc: "AI response posts to your Discord channel in real time.", color: "var(--ice)" },
             ].map((s, i) => (
               <div key={i} className="project-card" style={{ padding: "1.5rem", position: "relative" }}>
-                <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", color: s.color, letterSpacing: "0.25em", marginBottom: "1rem" }}>{s.step}</div>
-                <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>{s.icon}</div>
+                <div style={{ fontFamily: "JetBrains Mono", fontSize: "28px", fontWeight: 700, color: s.color, letterSpacing: "0.05em", marginBottom: "1rem", lineHeight: 1 }}>{s.step}</div>
                 <div style={{ fontWeight: 700, marginBottom: "0.5rem" }}>{s.title}</div>
                 <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{s.desc}</div>
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${s.color}, transparent)`, opacity: 0.3 }} />

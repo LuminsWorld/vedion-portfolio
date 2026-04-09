@@ -439,7 +439,7 @@ export default function FlashcardStudy({ questions, progress: initialProgress, o
                       border: `1px solid ${isCorrectOpt ? 'rgba(0,255,65,0.3)' : 'rgba(255,255,255,0.04)'}`,
                     }}>
                       <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, fontWeight: 700, color: isCorrectOpt ? '#00FF41' : 'rgba(255,255,255,0.2)', minWidth: 16 }}>
-                        {isCorrectOpt ? '✓' : String.fromCharCode(65 + i)}
+                        {isCorrectOpt ? '+' : String.fromCharCode(65 + i)}
                       </span>
                       <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: isCorrectOpt ? '#00FF41' : 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}><InlineText text={opt} /></span>
                     </div>
@@ -459,7 +459,7 @@ export default function FlashcardStudy({ questions, progress: initialProgress, o
                       border: `1px solid ${isCorrectOpt ? 'rgba(0,255,65,0.3)' : 'rgba(255,255,255,0.04)'}`,
                     }}>
                       <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, fontWeight: 700, color: isCorrectOpt ? '#00FF41' : 'rgba(255,255,255,0.2)', minWidth: 16 }}>
-                        {isCorrectOpt ? '✓' : '·'}
+                        {isCorrectOpt ? '+' : ' '}
                       </span>
                       <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: isCorrectOpt ? '#00FF41' : 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}><InlineText text={opt} /></span>
                     </div>
@@ -492,7 +492,7 @@ export default function FlashcardStudy({ questions, progress: initialProgress, o
                 borderRadius: 6, padding: '10px 20px', fontFamily: 'JetBrains Mono,monospace', fontSize: 13,
                 cursor: 'pointer', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em',
               }}>
-                ✗ MISSED
+                MISSED
               </button>
               <button onClick={() => handleRating(1)} style={{
                 background: 'rgba(255,184,0,0.15)', border: '1px solid #FFB800', color: '#FFB800',
@@ -506,7 +506,7 @@ export default function FlashcardStudy({ questions, progress: initialProgress, o
                 borderRadius: 6, padding: '10px 20px', fontFamily: 'JetBrains Mono,monospace', fontSize: 13,
                 cursor: 'pointer', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em',
               }}>
-                ✓ GOT IT
+                GOT IT
               </button>
             </div>
           </div>

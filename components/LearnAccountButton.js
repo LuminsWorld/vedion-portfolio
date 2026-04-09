@@ -135,7 +135,7 @@ export default function LearnAccountButton() {
               <Link href="/app" onClick={() => setOpen(false)} style={{ display: 'block', padding: '8px 16px', fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#7B2FFF', textDecoration: 'none', transition: 'all 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(123,47,255,0.06)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
-                ✦ Upgrade for AI Explanations
+                Upgrade for AI Explanations
               </Link>
             )}
           </div>

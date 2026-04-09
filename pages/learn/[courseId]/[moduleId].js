@@ -221,7 +221,7 @@ function CodeWindow({ code, lang, output }) {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {output && <button onClick={() => setShowOut(o => !o)} style={{ background: showOut ? 'rgba(0,255,65,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${showOut ? 'rgba(0,255,65,0.3)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 4, padding: '3px 10px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: showOut ? '#00FF41' : 'rgba(255,255,255,0.4)', cursor: 'pointer', letterSpacing: '0.1em' }}>{showOut ? '▶ OUTPUT' : '▷ OUTPUT'}</button>}
-          <button onClick={copy} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '3px 10px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', letterSpacing: '0.1em' }}>{copied ? '✓ COPIED' : 'COPY'}</button>
+          <button onClick={copy} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '3px 10px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', letterSpacing: '0.1em' }}>{copied ? 'COPIED' : 'COPY'}</button>
         </div>
       </div>
       <CodeLines code={code} lang={lang} highlighted={true} />
@@ -327,7 +327,7 @@ function CheckboxOption({ label, text, checked, state, onChange, disabled }) {
   return (
     <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 16px', borderRadius: 8, border: `1px solid ${c.border}`, background: c.bg, cursor: disabled ? 'default' : 'pointer', transition: 'all 0.15s' }}>
       <div style={{ width: 22, height: 22, borderRadius: 4, border: `1px solid ${c.border}`, background: checked ? c.border : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, transition: 'all 0.15s' }}>
-        {checked && <span style={{ color: state === 'wrong' ? '#FF2D55' : '#000', fontSize: 11, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+        {checked && <span style={{ color: state === 'wrong' ? '#FF2D55' : '#000', fontSize: 11, fontWeight: 900, lineHeight: 1 }}>+</span>}
       </div>
       <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 14, lineHeight: 1.55, color: 'rgba(255,255,255,0.8)' }}>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, fontWeight: 700, color: c.border, marginRight: 8 }}>{label}</span>
@@ -355,7 +355,7 @@ function QuizQuestion({ q, qi, answers, submitted, onAnswer }) {
           <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#00FF41', letterSpacing: '0.2em', background: 'rgba(0,255,65,0.06)', padding: '3px 8px', borderRadius: 4 }}>Q{qi + 1}</span>
           {qType === 'select-all' && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,184,0,0.8)', letterSpacing: '0.1em', background: 'rgba(255,184,0,0.06)', border: '1px solid rgba(255,184,0,0.15)', padding: '3px 8px', borderRadius: 4 }}>SELECT ALL</span>}
           {qType === 'fill-blank' && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(0,212,255,0.8)', letterSpacing: '0.1em', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)', padding: '3px 8px', borderRadius: 4 }}>FILL IN</span>}
-          {submitted && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: correct ? '#00FF41' : '#FF2D55', letterSpacing: '0.1em', background: correct ? 'rgba(0,255,65,0.08)' : 'rgba(255,45,85,0.08)', padding: '3px 8px', borderRadius: 4 }}>{correct ? '✓ CORRECT' : '✗ WRONG'}</span>}
+          {submitted && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: correct ? '#00FF41' : '#FF2D55', letterSpacing: '0.1em', background: correct ? 'rgba(0,255,65,0.08)' : 'rgba(255,45,85,0.08)', padding: '3px 8px', borderRadius: 4 }}>{correct ? 'CORRECT' : 'WRONG'}</span>}
         </div>
       </div>
 
@@ -791,7 +791,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                         {isPro ? (
                           explanations[q.id] ? (
                             <div style={{ width: '100%', marginTop: 4, padding: '12px 14px', background: 'rgba(123,47,255,0.06)', border: '1px solid rgba(123,47,255,0.2)', borderRadius: 8 }}>
-                              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.15em', color: '#7B2FFF', marginBottom: 6 }}>✦ AI EXPLANATION</div>
+                              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.15em', color: '#7B2FFF', marginBottom: 6 }}>AI EXPLANATION</div>
                               <div style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
                                 {explanations[q.id].split('\n').filter(Boolean).map((line, i) => (
                                   <p key={i} style={{ margin: i > 0 ? '6px 0 0' : 0 }}><InlineText text={line} /></p>
@@ -800,7 +800,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                             </div>
                           ) : (
                             <button onClick={() => getAIExplanation(q)} disabled={loadingExp[q.id]} style={{ background: 'rgba(123,47,255,0.08)', border: '1px solid rgba(123,47,255,0.25)', borderRadius: 6, padding: '7px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7B2FFF', cursor: 'pointer', letterSpacing: '0.1em' }}>
-                              {loadingExp[q.id] ? '✦ Thinking...' : '✦ Explain with AI'}
+                              {loadingExp[q.id] ? 'Thinking...' : 'Explain with AI'}
                             </button>
                           )
                         ) : (

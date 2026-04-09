@@ -165,7 +165,7 @@ export default function ProjectModal({ project, onClose, analyserRef }) {
             onClick={onClose}
             style={{ background: 'transparent', border: `1px solid rgba(255,255,255,0.15)`, color: 'rgba(255,255,255,0.5)', width: 28, height: 28, borderRadius: '4px', cursor: 'pointer', fontFamily: 'JetBrains Mono', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
           >
-            ✕
+            x
           </button>
         </div>
 

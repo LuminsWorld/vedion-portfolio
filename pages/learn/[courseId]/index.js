@@ -82,7 +82,7 @@ export default function CoursePage({ course }) {
               <Link key={mod.id} href={`/learn/${course.id}/${mod.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{ ...s.moduleRow, borderColor: isExam ? (done ? 'rgba(255,184,0,0.35)' : 'rgba(255,184,0,0.15)') : done ? 'rgba(0,255,65,0.2)' : isNext ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)', background: isExam ? 'rgba(255,184,0,0.03)' : '#0A0A0A' }}>
                   <div style={{ ...s.modNum, background: isExam ? (done ? '#FFB800' : 'rgba(255,184,0,0.12)') : done ? '#00FF41' : isNext ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', color: isExam ? (done ? '#000' : '#FFB800') : done ? '#000' : isNext ? '#fff' : 'rgba(255,255,255,0.2)', borderRadius: isExam ? 6 : '50%', fontSize: isExam ? 9 : 11 }}>
-                    {isExam ? (done ? '✓' : '!') : (done ? '✓' : i + 1)}
+                    {isExam ? (done ? '+' : '!') : (done ? '+' : i + 1)}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
