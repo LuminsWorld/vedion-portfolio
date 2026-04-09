@@ -295,27 +295,55 @@ function isCorrect(q, answers) {
 
 // ─── Content Parser (simplified) ───
 
+function inlineFormat(text) {
+  // Bold **text**, inline `code`, links
+  const parts = []
+  let rest = text
+  const patterns = [
+    { re: /\*\*(.+?)\*\*/g, render: (m, i) => <strong key={i} style={{ color: 'var(--text)', fontWeight: 700 }}>{m[1]}</strong> },
+    { re: /`([^`]+)`/g,     render: (m, i) => <code key={i} style={{ background: 'rgba(57,255,139,0.08)', color: 'var(--green)', fontFamily: 'JetBrains Mono', fontSize: 13, padding: '2px 6px', borderRadius: 3, border: '1px solid rgba(57,255,139,0.2)' }}>{m[1]}</code> },
+  ]
+  // Simple sequential split — handles bold + code inline
+  const result = []
+  let remaining = text
+  let key = 0
+  const combined = /\*\*(.+?)\*\*|`([^`]+)`/g
+  let last = 0, match
+  while ((match = combined.exec(text)) !== null) {
+    if (match.index > last) result.push(text.slice(last, match.index))
+    if (match[0].startsWith('**')) result.push(<strong key={key++} style={{ color: 'var(--text)', fontWeight: 700 }}>{match[1]}</strong>)
+    else result.push(<code key={key++} style={{ background: 'rgba(57,255,139,0.08)', color: 'var(--green)', fontFamily: 'JetBrains Mono', fontSize: 13, padding: '2px 6px', borderRadius: 3, border: '1px solid rgba(57,255,139,0.15)' }}>{match[2]}</code>)
+    last = match.index + match[0].length
+  }
+  if (last < text.length) result.push(text.slice(last))
+  return result.length ? result : text
+}
+
 function parseContent(text) {
   const lines = text.split('\n')
   const blocks = []
   let i = 0
   while (i < lines.length) {
     const line = lines[i]
-    if (line.startsWith('# ')) {
-      blocks.push({ type: 'h1', text: line.slice(2) })
+    // Fenced code block
+    if (line.trim().startsWith('```')) {
+      const lang = line.trim().slice(3).trim() || 'code'
+      const codeLines = []
+      i++
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i])
+        i++
+      }
+      blocks.push({ type: 'code', lang, text: codeLines.join('\n') })
       i++
       continue
     }
-    if (line.startsWith('## ')) {
-      blocks.push({ type: 'h2', text: line.slice(3) })
-      i++
-      continue
-    }
-    if (line.trim() === '') {
-      blocks.push({ type: 'br' })
-      i++
-      continue
-    }
+    if (line.startsWith('### ')) { blocks.push({ type: 'h3', text: line.slice(4) }); i++; continue }
+    if (line.startsWith('## '))  { blocks.push({ type: 'h2', text: line.slice(3) }); i++; continue }
+    if (line.startsWith('# '))   { blocks.push({ type: 'h1', text: line.slice(2) }); i++; continue }
+    if (line.startsWith('- ') || line.startsWith('* ')) { blocks.push({ type: 'li', text: line.slice(2) }); i++; continue }
+    if (/^\d+\. /.test(line))    { blocks.push({ type: 'oli', text: line.replace(/^\d+\. /, '') }); i++; continue }
+    if (line.trim() === '')      { blocks.push({ type: 'br' }); i++; continue }
     blocks.push({ type: 'para', text: line })
     i++
   }
@@ -323,27 +351,42 @@ function parseContent(text) {
 }
 
 function ContentBlock({ block }) {
+  const body = typeof block.text === 'string' ? inlineFormat(block.text) : block.text
   switch (block.type) {
     case 'h1':
-      return (
-        <h1 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 900, fontSize: 'clamp(1.4rem,3vw,1.9rem)', color: 'var(--text)', margin: '32px 0 12px', letterSpacing: '-0.02em' }}>
-          {block.text}
-        </h1>
-      )
+      return <h1 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 900, fontSize: 'clamp(1.5rem,3vw,2rem)', color: 'var(--text)', margin: '36px 0 14px', letterSpacing: '-0.02em' }}>{body}</h1>
     case 'h2':
-      return (
-        <h2 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 700, fontSize: 'clamp(1.1rem,2.5vw,1.35rem)', color: 'var(--text)', margin: '28px 0 10px', letterSpacing: '-0.01em', paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
-          {block.text}
-        </h2>
-      )
+      return <h2 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 700, fontSize: 'clamp(1.1rem,2.5vw,1.4rem)', color: 'var(--text)', margin: '30px 0 12px', letterSpacing: '-0.01em', paddingBottom: 10, borderBottom: '1px solid var(--border)' }}>{body}</h2>
+    case 'h3':
+      return <h3 style={{ fontFamily: 'Inter,sans-serif', fontWeight: 600, fontSize: 'clamp(1rem,2vw,1.15rem)', color: 'var(--text)', margin: '22px 0 8px' }}>{body}</h3>
     case 'para':
+      return <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.85, margin: '8px 0' }}>{body}</p>
+    case 'li':
       return (
-        <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.8, margin: '6px 0' }}>
-          {block.text}
-        </p>
+        <div style={{ display: 'flex', gap: 10, margin: '5px 0', paddingLeft: 8 }}>
+          <span style={{ color: 'var(--green)', fontFamily: 'JetBrains Mono', fontSize: 13, marginTop: 2, flexShrink: 0 }}>-</span>
+          <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.75, margin: 0 }}>{body}</p>
+        </div>
+      )
+    case 'oli':
+      return <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.85, margin: '5px 0 5px 24px' }}>{body}</p>
+    case 'code':
+      return (
+        <div style={{ margin: '18px 0', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(57,255,139,0.15)' }}>
+          {block.lang && block.lang !== 'code' && (
+            <div style={{ background: 'rgba(57,255,139,0.08)', padding: '6px 14px', fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--green)', letterSpacing: '0.1em', borderBottom: '1px solid rgba(57,255,139,0.12)' }}>
+              {block.lang.toUpperCase()}
+            </div>
+          )}
+          <pre style={{ background: '#080810', padding: '16px', margin: 0, overflowX: 'auto' }}>
+            <code style={{ fontFamily: 'JetBrains Mono', fontSize: 13, color: '#a8f0c6', lineHeight: 1.7 }}>
+              {block.text}
+            </code>
+          </pre>
+        </div>
       )
     case 'br':
-      return <div style={{ height: 6 }} />
+      return <div style={{ height: 10 }} />
     default:
       return null
   }

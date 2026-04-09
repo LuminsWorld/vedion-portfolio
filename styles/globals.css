@@ -422,3 +422,32 @@ a.cta:hover {
     -webkit-tap-highlight-color: transparent;
   }
 }
+
+/* ── Glitch text ── */
+@keyframes glitch-1 {
+  0%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); color:var(--pink); }
+  20%{ clip-path:inset(30% 0 50% 0); transform:translate(-4px,2px); color:var(--pink); }
+  40%{ clip-path:inset(70% 0 10% 0); transform:translate(4px,-2px); color:var(--green); }
+  60%{ clip-path:inset(10% 0 80% 0); transform:translate(-2px,4px); color:var(--pink); }
+  80%{ clip-path:inset(50% 0 30% 0); transform:translate(2px,-4px); color:var(--violet); }
+}
+@keyframes glitch-2 {
+  0%,100%{ clip-path:inset(0 0 100% 0); transform:translate(0); color:var(--violet); }
+  20%{ clip-path:inset(60% 0 20% 0); transform:translate(6px,-2px); color:var(--violet); }
+  40%{ clip-path:inset(20% 0 60% 0); transform:translate(-6px,2px); color:var(--violet); }
+  60%{ clip-path:inset(40% 0 40% 0); transform:translate(3px,3px); color:var(--pink); }
+  80%{ clip-path:inset(10% 0 70% 0); transform:translate(-3px,-3px); color:var(--green); }
+}
+@keyframes glitch-base {
+  0%,90%,100%{ transform:translate(0); }
+  91%{ transform:translate(-2px,1px); }
+  92%{ transform:translate(2px,-1px); }
+  93%{ transform:translate(0); }
+}
+.glitch-text { position:relative; animation:glitch-base 4s infinite; }
+.glitch-text::before, .glitch-text::after {
+  content:attr(data-text); position:absolute; top:0; left:0;
+  width:100%; overflow:hidden;
+}
+.glitch-text::before { animation:glitch-1 4s infinite; }
+.glitch-text::after  { animation:glitch-2 4s infinite 0.1s; }

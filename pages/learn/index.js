@@ -14,7 +14,7 @@ function ProgressRing({ progress = 0 }) {
   const offset = circumference - (progress / 100) * circumference
 
   return (
-    <svg width="110" height="110" viewBox="0 0 110 110" style={{ transform: 'rotate(-90deg)' }}>
+    <svg width="110" height="110" viewBox="0 0 110 110">
       <circle cx="55" cy="55" r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" />
       <circle
         cx="55"
@@ -25,23 +25,29 @@ function ProgressRing({ progress = 0 }) {
         strokeWidth="3"
         strokeDasharray={circumference}
         strokeDashoffset={offset}
+        transform="rotate(-90 55 55)"
         style={{ transition: 'stroke-dashoffset 0.8s ease' }}
       />
       <text
         x="55"
         y="55"
         textAnchor="middle"
-        dy="0.3em"
-        fontSize="20"
+        dominantBaseline="central"
+        fontSize="18"
         fontWeight="700"
         fill="var(--green)"
         fontFamily="JetBrains Mono"
-        style={{ pointerEvents: 'none' }}
       >
         {Math.round(progress)}%
       </text>
     </svg>
   )
+}
+
+
+const COURSE_IMAGES = {
+  stat240: '/assets/gen/course_stats.png',
+  example: '/assets/gen/course_datascience.png',
 }
 
 export default function LearnIndex({ courses }) {
@@ -86,7 +92,7 @@ export default function LearnIndex({ courses }) {
                     background: `linear-gradient(135deg, var(--green-dim), rgba(75,16,160,0.15))`,
                     borderRadius: '8px 8px 0 0',
                     marginBottom: 16,
-                    backgroundImage: `url(/assets/gen/course_${c.id}.png)`,
+                    backgroundImage: COURSE_IMAGES[c.id] ? `url(${COURSE_IMAGES[c.id]})` : undefined,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     position: 'relative',
@@ -113,7 +119,7 @@ export default function LearnIndex({ courses }) {
                   </div>
                 </div>
 
-                <span style={s.startBtn}>START →</span>
+                <span style={s.startBtn}>START</span>
               </div>
             </Link>
           ))}

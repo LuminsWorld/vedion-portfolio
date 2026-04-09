@@ -35,7 +35,7 @@ const PROJECTS = [
     tags: ['R', 'Statistics', 'Education'],
     year: 2025,
     link: '/learn',
-    image: '/assets/gen/project_learn.png',
+    image: '/assets/gen/project_ai.png',
   },
 ];
 
@@ -119,7 +119,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Austin Tessmer | Data Science & Design</title>
+        <title>Vedion — Austin Tessmer</title>
         <meta name="description" content="Austin Tessmer - Data Science student at UW-Madison. Building at the intersection of data, code, and design." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -155,6 +155,8 @@ export default function Home() {
           paddingRight: 'clamp(1.25rem, 6vw, 4rem)',
           paddingTop: '80px',
           overflow: 'hidden',
+          left: 0,
+          width: '100vw',
         }}
         className="scanlines"
       >
@@ -165,13 +167,17 @@ export default function Home() {
             DATA SCIENCE STUDENT
           </div>
 
-          <h1 className="hero-text" style={{ marginBottom: '1.5rem' }}>
-            Austin<br />
-            <span className="highlight-green">Tessmer</span>
+          <h1
+            className="glitch-text hero-text"
+            data-text="VEDION"
+            style={{ marginBottom: '1.5rem', letterSpacing: '-0.04em' }}
+          >
+            <span className="highlight-green">VEDION</span>
           </h1>
 
-          <p className="hero-subtitle" style={{ maxWidth: '600px', marginBottom: '2rem' }}>
-            Data Science student at UW-Madison. Building at the intersection of <span className="highlight-green">data</span>, code, and design.
+          <p className="hero-subtitle" style={{ maxWidth: '560px', marginBottom: '2rem' }}>
+            Data Science student at UW-Madison. Building at the intersection of{' '}
+            <span className="highlight-green">data</span>, code, and design.
           </p>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
@@ -180,14 +186,7 @@ export default function Home() {
             }}>
               VIEW WORK
             </button>
-            <a
-              className="cta"
-              href="https://vedion.cloud"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              VEDION.CLOUD &rarr;
-            </a>
+            <a className="cta" href="#contact">GET IN TOUCH</a>
           </div>
 
           <div className="scroll-indicator">SCROLL</div>
