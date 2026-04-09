@@ -4,9 +4,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { auth } from "../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import ChatWidget from "../components/ChatWidget";
 
-const ShopCanvas = dynamic(() => import("../components/ShopCanvas"), { ssr: false });
 
 const PRODUCTS = [
   {
@@ -314,7 +312,7 @@ export default function Shop() {
           }}
         />
 
-        <ShopCanvas accentColor={selected?.colorHex ?? "#39ff8b"} />
+        <div style={{position:"absolute",inset:0,backgroundImage:"url(/assets/gen/shop_hero.png)",backgroundSize:"cover",backgroundPosition:"center",opacity:0.15,zIndex:0}}/>
 
         {/* Color orbs */}
         <div
@@ -735,7 +733,7 @@ export default function Shop() {
                         }
                       }}
                     >
-                      {buyLoading ? "REDIRECTING..." : "PURCHASE →"}
+                      {buyLoading ? "REDIRECTING..." : "PURCHASE"}
                     </button>
                     {error && (
                       <div
@@ -968,7 +966,6 @@ export default function Shop() {
         </a>
       </footer>
 
-      <ChatWidget />
 
       <style>{`
         @keyframes panelFadeIn {

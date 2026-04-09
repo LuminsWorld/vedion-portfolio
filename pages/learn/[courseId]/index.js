@@ -163,7 +163,7 @@ export default function CoursePage({ course }) {
                     {/* Type indicator */}
                     <div
                       style={{
-                        color: isExam ? '#FFB800' : done ? 'var(--green)' : 'var(--text-muted)',
+                        color: isExam ? var(--amber) : done ? 'var(--green)' : 'var(--text-muted)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -178,7 +178,7 @@ export default function CoursePage({ course }) {
                         <p
                           style={{
                             ...s.modTitle,
-                            color: isExam ? '#FFB800' : done ? 'var(--text)' : isNext ? 'var(--text)' : 'var(--text-muted)',
+                            color: isExam ? var(--amber) : done ? 'var(--text)' : isNext ? 'var(--text)' : 'var(--text-muted)',
                             margin: 0,
                           }}
                         >
@@ -190,7 +190,7 @@ export default function CoursePage({ course }) {
                               fontFamily: 'JetBrains Mono',
                               fontSize: 8,
                               letterSpacing: '0.15em',
-                              color: '#FFB800',
+                              color: var(--amber),
                               background: 'rgba(255,184,0,0.1)',
                               border: '1px solid rgba(255,184,0,0.2)',
                               padding: '2px 6px',

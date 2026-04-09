@@ -521,7 +521,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
             ← {course.title.split(':')[0].trim()}
           </Link>
           <span style={{ color: 'rgba(255,255,255,0.1)' }}>/</span>
-          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: mod.isExam ? '#FFB800' : 'var(--text-dim)', letterSpacing: '0.1em' }}>
+          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: mod.isExam ? var(--amber) : 'var(--text-dim)', letterSpacing: '0.1em' }}>
             {mod.title}
           </span>
         </div>
@@ -580,7 +580,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                   style={{
                     fontFamily: 'JetBrains Mono,monospace',
                     fontSize: 10,
-                    color: '#FFB800',
+                    color: var(--amber),
                     letterSpacing: '0.2em',
                     background: 'rgba(255,184,0,0.08)',
                     border: '1px solid rgba(255,184,0,0.25)',
@@ -655,7 +655,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                       borderRadius: 2,
                       background: m.isExam
                         ? i === modIndex
-                          ? '#FFB800'
+                          ? var(--amber)
                           : 'rgba(255,184,0,0.3)'
                         : i < modIndex
                           ? 'var(--green)'
@@ -774,7 +774,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
               <button
                 onClick={() => setPhase('quiz')}
                 style={{
-                  background: '#FFB800',
+                  background: var(--amber),
                   color: '#000',
                   border: 'none',
                   borderRadius: 8,
@@ -811,7 +811,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                     style={{
                       fontFamily: 'JetBrains Mono,monospace',
                       fontSize: 9,
-                      color: mod.isExam ? '#FFB800' : 'var(--green)',
+                      color: mod.isExam ? var(--amber) : 'var(--green)',
                       letterSpacing: '0.2em',
                       marginBottom: 4,
                     }}
@@ -850,7 +850,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                 disabled={!allAnswered}
                 style={{
                   marginTop: 28,
-                  background: allAnswered ? (mod.isExam ? '#FFB800' : 'var(--green)') : 'rgba(255,255,255,0.05)',
+                  background: allAnswered ? (mod.isExam ? var(--amber) : 'var(--green)') : 'rgba(255,255,255,0.05)',
                   color: allAnswered ? '#000' : 'var(--text-muted)',
                   border: 'none',
                   borderRadius: 7,
@@ -911,7 +911,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                       score === quiz.length
                         ? 'var(--green)'
                         : score >= (quiz.length * 0.7)
-                          ? '#FFB800'
+                          ? var(--amber)
                           : '#FF2D55',
                     lineHeight: 1,
                   }}

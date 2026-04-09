@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import ChatWidget from '../components/ChatWidget';
 
 const HeroCanvas = dynamic(() => import('../components/HeroCanvas'), { ssr: false });
 
@@ -134,6 +133,7 @@ export default function Home() {
           HOME
         </span>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <a href="/shop">SHOP</a>
           <a href="/learn">LEARN</a>
           <a href="#work">WORK</a>
           <a href="#about">ABOUT</a>
@@ -186,11 +186,11 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              VEDION.CLOUD →
+              VEDION.CLOUD &rarr;
             </a>
           </div>
 
-          <div className="scroll-indicator">↓ SCROLL</div>
+          <div className="scroll-indicator">SCROLL</div>
         </div>
       </section>
 
@@ -469,7 +469,6 @@ export default function Home() {
         </div>
       </footer>
 
-      <ChatWidget />
     </>
   );
 }
