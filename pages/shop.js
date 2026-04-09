@@ -147,13 +147,17 @@ export default function Shop() {
 
   async function handleBuy() {
     if (!selected || selected.status !== "available") return;
+    if (!user) { router.push("/auth?next=/shop"); return; }
     setBuyLoading(true);
     setError("");
     try {
+      const token = await user.getIdToken();
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({ itemId: selected.itemId }),
       });
       const data = await res.json();
@@ -170,6 +174,15 @@ export default function Shop() {
   }
 
   if (loading) {
+    return (
+      <div style={{ background: '#04040a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: 'rgba(57,255,139,0.5)', letterSpacing: '0.3em' }}>
+          VERIFYING
+        </div>
+      </div>
+    )
+  }
+  if (false) {
     return (
       <div
         style={{
@@ -294,10 +307,9 @@ export default function Shop() {
           justifyContent: "flex-start",
           padding: "clamp(5rem, 14vw, 9rem) clamp(1.25rem, 6vw, 4rem) 0",
           background: "var(--bg)",
-          backgroundImage: "url(/assets/gen/hero_bg.png)",
+          backgroundImage: "url(/assets/gen/shop_hero.png)",
           backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
+          backgroundPosition: "center top",
           zIndex: 1,
           overflow: "hidden",
         }}
@@ -306,13 +318,12 @@ export default function Shop() {
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(4,4,10,0.8)",
+            background: "rgba(4,4,10,0.6)",
             zIndex: 1,
             pointerEvents: "none",
           }}
         />
 
-        <div style={{position:"absolute",inset:0,backgroundImage:"url(/assets/gen/shop_hero.png)",backgroundSize:"cover",backgroundPosition:"center",opacity:0.15,zIndex:0}}/>
 
         {/* Color orbs */}
         <div

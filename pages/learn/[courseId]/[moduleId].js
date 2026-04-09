@@ -564,7 +564,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
             ← {course.title.split(':')[0].trim()}
           </Link>
           <span style={{ color: 'rgba(255,255,255,0.1)' }}>/</span>
-          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: mod.isExam ? var(--amber) : 'var(--text-dim)', letterSpacing: '0.1em' }}>
+          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: mod.isExam ? 'var(--amber)' : 'var(--text-dim)', letterSpacing: '0.1em' }}>
             {mod.title}
           </span>
         </div>
@@ -623,7 +623,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                   style={{
                     fontFamily: 'JetBrains Mono,monospace',
                     fontSize: 10,
-                    color: var(--amber),
+                    color: 'var(--amber)',
                     letterSpacing: '0.2em',
                     background: 'rgba(255,184,0,0.08)',
                     border: '1px solid rgba(255,184,0,0.25)',
@@ -698,7 +698,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                       borderRadius: 2,
                       background: m.isExam
                         ? i === modIndex
-                          ? var(--amber)
+                          ? 'var(--amber)'
                           : 'rgba(255,184,0,0.3)'
                         : i < modIndex
                           ? 'var(--green)'
@@ -817,7 +817,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
               <button
                 onClick={() => setPhase('quiz')}
                 style={{
-                  background: var(--amber),
+                  background: 'var(--amber)',
                   color: '#000',
                   border: 'none',
                   borderRadius: 8,
@@ -854,7 +854,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                     style={{
                       fontFamily: 'JetBrains Mono,monospace',
                       fontSize: 9,
-                      color: mod.isExam ? var(--amber) : 'var(--green)',
+                      color: mod.isExam ? 'var(--amber)' : 'var(--green)',
                       letterSpacing: '0.2em',
                       marginBottom: 4,
                     }}
@@ -888,12 +888,82 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                 </div>
               </div>
 
+
+              {/* Questions */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginBottom: 28 }}>
+                {quiz.map((q, qi) => {
+                  const qId = q.id ?? `q${qi}`
+                  const isMulti = q.type === 'multi'
+                  return (
+                    <div
+                      key={qId}
+                      style={{
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 10,
+                        padding: '20px 22px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }}>
+                          Q{qi + 1}
+                        </span>
+                        <p style={{ fontFamily: 'Inter,sans-serif', fontSize: 15, color: 'var(--text)', lineHeight: 1.65, margin: 0, fontWeight: 500 }}>
+                          {q.question}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingLeft: 24 }}>
+                        {(q.options ?? []).map((opt, oi) => {
+                          const optId = opt.id ?? `opt${oi}`
+                          const sel = isMulti
+                            ? Array.isArray(answers[qId]) && answers[qId].includes(optId)
+                            : answers[qId] === optId
+                          return (
+                            <button
+                              key={optId}
+                              onClick={() => {
+                                if (isMulti) {
+                                  const prev = Array.isArray(answers[qId]) ? answers[qId] : []
+                                  setAnswers(a => ({
+                                    ...a,
+                                    [qId]: sel ? prev.filter(x => x !== optId) : [...prev, optId],
+                                  }))
+                                } else {
+                                  setAnswers(a => ({ ...a, [qId]: optId }))
+                                }
+                              }}
+                              style={{
+                                textAlign: 'left',
+                                background: sel ? 'rgba(57,255,139,0.1)' : 'rgba(255,255,255,0.02)',
+                                border: sel ? '1px solid var(--green)' : '1px solid var(--border)',
+                                borderRadius: 7,
+                                padding: '11px 16px',
+                                fontFamily: 'Inter,sans-serif',
+                                fontSize: 14,
+                                color: sel ? 'var(--green)' : 'var(--text-dim)',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                                width: '100%',
+                              }}
+                            >
+                              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, marginRight: 10, opacity: 0.5 }}>
+                                {String.fromCharCode(65 + oi)}
+                              </span>
+                              {opt.text ?? opt}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
               <button
                 onClick={submitQuiz}
                 disabled={!allAnswered}
                 style={{
                   marginTop: 28,
-                  background: allAnswered ? (mod.isExam ? var(--amber) : 'var(--green)') : 'rgba(255,255,255,0.05)',
+                  background: allAnswered ? (mod.isExam ? 'var(--amber)' : 'var(--green)') : 'rgba(255,255,255,0.05)',
                   color: allAnswered ? '#000' : 'var(--text-muted)',
                   border: 'none',
                   borderRadius: 7,
@@ -954,7 +1024,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                       score === quiz.length
                         ? 'var(--green)'
                         : score >= (quiz.length * 0.7)
-                          ? var(--amber)
+                          ? 'var(--amber)'
                           : '#FF2D55',
                     lineHeight: 1,
                   }}
