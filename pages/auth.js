@@ -18,7 +18,7 @@ export default function AuthPage() {
   const cardRef = useRef(null)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, u => { if (u) router.replace('/app') })
+    const unsub = onAuthStateChanged(auth, u => { if (u) router.replace('/') })
     return unsub
   }, [])
 
@@ -43,7 +43,7 @@ export default function AuthPage() {
     try {
       if (mode === 'login') await signInWithEmailAndPassword(auth, email, pass)
       else await createUserWithEmailAndPassword(auth, email, pass)
-      router.replace('/app')
+      router.replace('/')
     } catch (e) { setError(e.message) }
     finally { setLoading(false) }
   }
@@ -52,7 +52,7 @@ export default function AuthPage() {
     setError(''); setLoading(true)
     try {
       await signInWithPopup(auth, googleProvider)
-      router.replace('/app')
+      router.replace('/')
     } catch (e) { setError(e.message) }
     finally { setLoading(false) }
   }

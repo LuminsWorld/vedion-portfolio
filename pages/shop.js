@@ -168,9 +168,6 @@ export default function Shop() {
         <a href="/" style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.3em", color: "var(--green)", textDecoration: "none" }}>VEDION</a>
         <div style={{ display: "flex", gap: "clamp(1rem, 4vw, 2rem)", alignItems: "center" }}>
           <span style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "#000", background: "var(--green)", padding: "5px 12px", borderRadius: 3, fontWeight: 700 }}>SHOP</span>
-          <a href="/app" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
-            onMouseEnter={e => e.target.style.color = "var(--green)"}
-            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>APP</a>
           <a href="/learn" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
             onMouseEnter={e => e.target.style.color = "var(--ice)"}
             onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>LEARN</a>

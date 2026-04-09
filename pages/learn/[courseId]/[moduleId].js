@@ -804,9 +804,6 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                             </button>
                           )
                         ) : (
-                          <Link href="/app" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'rgba(123,47,255,0.6)', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '7px 0', letterSpacing: '0.05em' }}>
-                            ✦ AI explanations — Pro/Ultra only
-                          </Link>
                         )}
                         {expError[q.id] && <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#FF2D55', margin: 0 }}>{expError[q.id]}</p>}
                       </div>
