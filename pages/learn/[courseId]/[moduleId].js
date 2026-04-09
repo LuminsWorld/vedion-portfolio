@@ -803,8 +803,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
                               {loadingExp[q.id] ? 'Thinking...' : 'Explain with AI'}
                             </button>
                           )
-                        ) : (
-                        )}
+                        ) : null}
                         {expError[q.id] && <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#FF2D55', margin: 0 }}>{expError[q.id]}</p>}
                       </div>
                     )}
