@@ -175,10 +175,13 @@ export default function Shop() {
 
   if (loading) {
     return (
-      <div style={{ background: '#04040a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: 'rgba(57,255,139,0.5)', letterSpacing: '0.3em' }}>
-          VERIFYING
+      <div style={{ background: '#04040a', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#39ff8b', animation: 'pulse 1.2s ease-in-out infinite' }}/>
+          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 14, color: '#39ff8b', letterSpacing: '0.3em', fontWeight: 700 }}>VEDION</span>
         </div>
+        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'rgba(240,240,240,0.2)', letterSpacing: '0.25em' }}>VERIFYING SESSION</div>
+        <style>{`@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }`}</style>
       </div>
     )
   }

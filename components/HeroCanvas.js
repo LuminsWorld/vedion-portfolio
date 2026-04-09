@@ -11,15 +11,24 @@ export default function HeroCanvas() {
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 2000);
-    camera.position.set(0, 0, 80);
+    // WebGL availability check — fail gracefully on headless/unsupported
+    const testCanvas = document.createElement('canvas');
+    const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+    if (!gl) return;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x04040a, 1);
-    el.appendChild(renderer.domElement);
+    let scene, camera, renderer;
+    try {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 2000);
+      camera.position.set(0, 0, 80);
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x04040a, 1);
+      el.appendChild(renderer.domElement);
+    } catch(e) {
+      return; // No WebGL — canvas just won't render, page still works
+    }
 
     // ── Wave layers ──────────────────────────────────────────────────
     const LAYERS = [

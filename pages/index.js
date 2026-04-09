@@ -164,7 +164,7 @@ export default function Home() {
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '900px', width: '100%' }}>
           <div className="section-label" style={{ marginBottom: '1.25rem' }}>
-            DATA SCIENCE STUDENT
+            AUSTIN TESSMER — PORTFOLIO 2026
           </div>
 
           <h1

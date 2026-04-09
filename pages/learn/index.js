@@ -85,34 +85,36 @@ export default function LearnIndex({ courses }) {
                 onMouseLeave={() => setHoveredCard(null)}
               >
                 {/* Cover image or fallback */}
-                <div
-                  style={{
-                    width: '100%',
-                    height: 160,
-                    background: `linear-gradient(135deg, var(--green-dim), rgba(75,16,160,0.15))`,
-                    borderRadius: '8px 8px 0 0',
-                    marginBottom: 16,
-                    backgroundImage: COURSE_IMAGES[c.id] ? `url(${COURSE_IMAGES[c.id]})` : undefined,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    position: 'relative',
-                  }}
-                >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: 'rgba(4,4,10,0.3)',
-                      borderRadius: '8px 8px 0 0',
-                      pointerEvents: 'none',
-                    }}
-                  />
+                <div style={{
+                  width: '100%', height: 160,
+                  borderRadius: '8px 8px 0 0', marginBottom: 16,
+                  overflow: 'hidden', position: 'relative',
+                  background: 'linear-gradient(135deg, rgba(57,255,139,0.1), rgba(75,16,160,0.2))',
+                }}>
+                  {COURSE_IMAGES[c.id] && (
+                    <img
+                      src={COURSE_IMAGES[c.id]}
+                      alt={c.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.85 }}
+                    />
+                  )}
+                  {!COURSE_IMAGES[c.id] && (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="32" height="32" viewBox="0 0 16 16" fill="none">
+                        <rect x="1" y="1" width="14" height="10" rx="1" stroke="rgba(57,255,139,0.3)" strokeWidth="1.2"/>
+                        <line x1="4" y1="11" x2="4" y2="13" stroke="rgba(57,255,139,0.3)" strokeWidth="1.2"/>
+                        <line x1="12" y1="11" x2="12" y2="13" stroke="rgba(57,255,139,0.3)" strokeWidth="1.2"/>
+                        <line x1="2.5" y1="13" x2="13.5" y2="13" stroke="rgba(57,255,139,0.3)" strokeWidth="1.2"/>
+                      </svg>
+                    </div>
+                  )}
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(4,4,10,0.25)', pointerEvents: 'none' }}/>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
                   <div>
                     <h2 style={s.cardTitle}>{c.title}</h2>
-                    <p style={s.cardMeta}>{c.moduleCount} modules</p>
+                    <p style={s.cardMeta}>{c.moduleCount} {c.moduleCount === 1 ? 'module' : 'modules'}</p>
                   </div>
                   <div style={{ flexShrink: 0 }}>
                     <ProgressRing progress={0} />
