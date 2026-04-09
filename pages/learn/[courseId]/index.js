@@ -99,7 +99,7 @@ export default function CoursePage({ course }) {
             style={{
               width: '100%',
               height: 240,
-              background: `linear-gradient(135deg, var(--green-dim), rgba(75,16,160,0.15))`,
+              background: `linear-gradient(135deg, 'var(--green-dim)', rgba(75,16,160,0.15))`,
               borderRadius: 12,
               marginBottom: 32,
               backgroundImage: `url(/assets/gen/course_${course.id}.png)`,
@@ -163,7 +163,7 @@ export default function CoursePage({ course }) {
                     {/* Type indicator */}
                     <div
                       style={{
-                        color: isExam ? var(--amber) : done ? 'var(--green)' : 'var(--text-muted)',
+                        color: isExam ? 'var(--amber)' : done ? 'var(--green)' : 'var(--text-muted)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -178,7 +178,7 @@ export default function CoursePage({ course }) {
                         <p
                           style={{
                             ...s.modTitle,
-                            color: isExam ? var(--amber) : done ? 'var(--text)' : isNext ? 'var(--text)' : 'var(--text-muted)',
+                            color: isExam ? 'var(--amber)' : done ? 'var(--text)' : isNext ? 'var(--text)' : 'var(--text-muted)',
                             margin: 0,
                           }}
                         >
@@ -190,7 +190,7 @@ export default function CoursePage({ course }) {
                               fontFamily: 'JetBrains Mono',
                               fontSize: 8,
                               letterSpacing: '0.15em',
-                              color: var(--amber),
+                              color: 'var(--amber)',
                               background: 'rgba(255,184,0,0.1)',
                               border: '1px solid rgba(255,184,0,0.2)',
                               padding: '2px 6px',
