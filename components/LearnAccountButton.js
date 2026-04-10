@@ -126,13 +126,9 @@ export default function LearnAccountButton() {
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
               All Courses
             </Link>
-            <Link href="/app" onClick={() => setOpen(false)} style={{ display: 'block', padding: '8px 16px', fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'all 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#fff' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
-              AI Chat ↗
-            </Link>
+
             {plan === 'free' && (
-              <Link href="/app" onClick={() => setOpen(false)} style={{ display: 'block', padding: '8px 16px', fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#7B2FFF', textDecoration: 'none', transition: 'all 0.15s' }}
+              <Link href="/shop" onClick={() => setOpen(false)} style={{ display: 'block', padding: '8px 16px', fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#7B2FFF', textDecoration: 'none', transition: 'all 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(123,47,255,0.06)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
                 Upgrade for AI Explanations

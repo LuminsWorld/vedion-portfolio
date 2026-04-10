@@ -4,6 +4,8 @@ import Head from "next/head";
 import ChatWidget from "../components/ChatWidget";
 import { auth } from "../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { SUBSCRIPTIONS } from "../lib/credits";
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth";
 
 const ShopCanvas  = dynamic(() => import("../components/ShopCanvas"),  { ssr: false });
 
@@ -69,6 +71,14 @@ export default function Shop() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPass, setAuthPass] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authWorking, setAuthWorking] = useState(false);
+  const [activeTab, setActiveTab] = useState('products'); // 'products' | 'subscriptions' 
   const [navScrolled, setNavScrolled] = useState(false);
   const [glitching, setGlitching] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -78,10 +88,36 @@ export default function Shop() {
 
   // Auth state
   useEffect(() => {
-    if (!auth) return;
-    const unsub = onAuthStateChanged(auth, u => setUser(u));
+    if (!auth) { setAuthLoading(false); return; }
+    const unsub = onAuthStateChanged(auth, u => { setUser(u); setAuthLoading(false); });
     return unsub;
   }, []);
+
+  // Auth handlers
+  async function handleGoogleSignIn() {
+    if (!auth) return;
+    setAuthWorking(true); setAuthError('');
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      setShowAuthModal(false);
+    } catch (e) { setAuthError(e.message); }
+    setAuthWorking(false);
+  }
+
+  async function handleEmailAuth() {
+    if (!auth || !authEmail || !authPass) return;
+    setAuthWorking(true); setAuthError('');
+    try {
+      if (authMode === 'login') {
+        await signInWithEmailAndPassword(auth, authEmail, authPass);
+      } else {
+        await createUserWithEmailAndPassword(auth, authEmail, authPass);
+      }
+      setShowAuthModal(false);
+    } catch (e) { setAuthError(e.message.replace('Firebase: ', '').replace(/ \(auth\/.*\)\.?/, '')); }
+    setAuthWorking(false);
+  }
 
   // Nav scroll blur
   useEffect(() => {
@@ -136,7 +172,7 @@ export default function Shop() {
 
   async function handleBuy() {
     if (!selected || selected.status !== "available") return;
-    if (!user) { setError("Sign in to purchase."); return; }
+    if (!user) { setShowAuthModal(true); return; }
     setLoading(true);
     setError("");
     try {
@@ -185,6 +221,11 @@ export default function Shop() {
           <a href="/" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.2s" }}
             onMouseEnter={e => e.target.style.color = "rgba(255,255,255,0.8)"}
             onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.5)"}>BACK</a>
+          {!authLoading && (user ? (
+            <span style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.15em", color: "var(--green)", opacity: 0.7 }}>{user.email?.split('@')[0]?.toUpperCase()}</span>
+          ) : (
+            <button onClick={() => setShowAuthModal(true)} style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, padding: "4px 10px", cursor: "pointer" }}>SIGN IN</button>
+          ))}
         </div>
       </nav>
 
@@ -231,8 +272,16 @@ export default function Shop() {
 
           {/* LEFT — Product cards */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div className="section-label reveal" style={{ marginBottom: "0.75rem" }}>PRODUCTS</div>
-            {PRODUCTS.map((p, i) => (
+            {/* Tabs */}
+            <div style={{ display: "flex", gap: 0, marginBottom: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              {["products", "subscriptions"].map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)} style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", padding: "10px 20px", background: "none", border: "none", borderBottom: activeTab === tab ? "2px solid var(--green)" : "2px solid transparent", color: activeTab === tab ? "var(--green)" : "rgba(255,255,255,0.35)", cursor: "pointer", textTransform: "uppercase", transition: "all 0.15s", marginBottom: -1 }}>
+                  {tab}
+                </button>
+              ))}
+            </div>
+            <div className="section-label reveal" style={{ marginBottom: "0.75rem" }}>{activeTab === "subscriptions" ? "PLANS" : "PRODUCTS"}</div>
+            {activeTab === "products" ? PRODUCTS.map((p, i) => (
               <div
                 key={p.id}
                 className="shop-card"
@@ -274,7 +323,36 @@ export default function Shop() {
 
                 <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)", lineHeight: 1.6, marginTop: "0.75rem", marginBottom: 0 }}>{p.tagline}</p>
               </div>
-            ))}
+            )) : (
+              /* Subscription plans */
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {SUBSCRIPTIONS.map((plan, i) => (
+                  <div key={plan.id} className="project-card" style={{ padding: "1.5rem", border: `1px solid ${plan.color}33`, background: `${plan.color}05`, borderRadius: 12, position: "relative" }}>
+                    <div style={{ position: "absolute", top: 0, right: 0, width: 50, height: 50, borderBottom: `1px solid ${plan.color}33`, borderLeft: `1px solid ${plan.color}33`, borderRadius: "0 12px 0 0" }} />
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                      <div>
+                        <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", letterSpacing: "0.3em", color: plan.color, marginBottom: 6 }}>0{i+2}</div>
+                        <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 4 }}>{plan.label}</div>
+                        <div style={{ fontFamily: "JetBrains Mono", fontSize: "11px", color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em" }}>SUBSCRIPTION</div>
+                      </div>
+                      <div style={{ fontFamily: "JetBrains Mono", fontSize: 22, fontWeight: 700, color: plan.color }}>{plan.priceLabel}</div>
+                    </div>
+                    <ul style={{ listStyle: "none", margin: "0 0 1.25rem", padding: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+                      {plan.perks.map((perk, j) => (
+                        <li key={j} style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ width: 4, height: 4, borderRadius: "50%", background: plan.color, flexShrink: 0, display: "inline-block" }} />
+                          {perk}
+                        </li>
+                      ))}
+                    </ul>
+                    <button onClick={() => !user && setShowAuthModal(true)}
+                      style={{ width: "100%", padding: "12px", fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.2em", background: `${plan.color}18`, border: `1px solid ${plan.color}66`, borderRadius: 6, color: plan.color, cursor: "pointer" }}>
+                      {user ? `GET ${plan.label.toUpperCase()}` : "SIGN IN TO SUBSCRIBE"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* RIGHT — Detail panel */}
@@ -422,6 +500,38 @@ export default function Shop() {
       </footer>
 
       <ChatWidget />
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div onClick={() => setShowAuthModal(false)} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem" }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "2rem", width: "100%", maxWidth: 400 }}>
+            {/* Tabs */}
+            <div style={{ display: "flex", gap: 0, marginBottom: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              {["login","signup"].map(m => (
+                <button key={m} onClick={() => { setAuthMode(m); setAuthError(''); }} style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", padding: "8px 16px", background: "none", border: "none", borderBottom: authMode === m ? "2px solid var(--green)" : "2px solid transparent", color: authMode === m ? "var(--green)" : "rgba(255,255,255,0.35)", cursor: "pointer", marginBottom: -1, textTransform: "uppercase" }}>
+                  {m === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+                </button>
+              ))}
+            </div>
+            {/* Google */}
+            <button onClick={handleGoogleSignIn} disabled={authWorking} style={{ width: "100%", padding: "11px", fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.15em", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "rgba(255,255,255,0.8)", cursor: "pointer", marginBottom: "1rem" }}>
+              CONTINUE WITH GOOGLE
+            </button>
+            <div style={{ fontFamily: "JetBrains Mono", fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)", textAlign: "center", marginBottom: "1rem" }}>OR</div>
+            {/* Email/pass */}
+            <input type="email" placeholder="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)}
+              style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", marginBottom: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, fontFamily: "JetBrains Mono", fontSize: 12, color: "#fff", outline: "none" }} />
+            <input type="password" placeholder="password" value={authPass} onChange={e => setAuthPass(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
+              style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", marginBottom: "1rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, fontFamily: "JetBrains Mono", fontSize: 12, color: "#fff", outline: "none" }} />
+            {authError && <div style={{ fontFamily: "JetBrains Mono", fontSize: 11, color: "#FF2D55", marginBottom: "0.75rem" }}>{authError}</div>}
+            <button onClick={handleEmailAuth} disabled={authWorking || !authEmail || !authPass}
+              style={{ width: "100%", padding: "12px", fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.2em", background: authWorking ? "rgba(0,255,65,0.1)" : "var(--green)", border: "none", borderRadius: 6, color: "#000", fontWeight: 700, cursor: authWorking ? "default" : "pointer" }}>
+              {authWorking ? "..." : authMode === "login" ? "SIGN IN" : "CREATE ACCOUNT"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes panelFadeIn {
