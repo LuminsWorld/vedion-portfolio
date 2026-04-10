@@ -10,10 +10,20 @@ export default function HeroCanvas({ analyserRef }) {
     const mount = mountRef.current;
     if (!mount) return;
 
+    // Fail gracefully on devices without WebGL
+    try {
+      const testCanvas = document.createElement('canvas');
+      const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
+      if (!gl) return;
+    } catch (e) { return; }
+
     const W = mount.clientWidth || window.innerWidth;
     const H = mount.clientHeight || window.innerHeight;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (e) { return; }
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
@@ -133,8 +143,8 @@ export default function HeroCanvas({ analyserRef }) {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('touchmove', onTouchMove);
-      renderer.dispose();
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      if (renderer) renderer.dispose();
+      if (canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
     };
   }, []);
 
