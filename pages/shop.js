@@ -66,12 +66,20 @@ export default function Shop() {
   const [selected, setSelected] = useState(PRODUCTS[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
   const [navScrolled, setNavScrolled] = useState(false);
   const [glitching, setGlitching] = useState(false);
   const [revealed, setRevealed] = useState(false);
   // analyserRef not needed (no audio synth on shop page)
   const glitchTimeout = useRef(null);
   const cardsRef = useRef([]);
+
+  // Auth state
+  useEffect(() => {
+    if (!auth) return;
+    const unsub = onAuthStateChanged(auth, u => setUser(u));
+    return unsub;
+  }, []);
 
   // Nav scroll blur
   useEffect(() => {
@@ -126,13 +134,14 @@ export default function Shop() {
 
   async function handleBuy() {
     if (!selected || selected.status !== "available") return;
+    if (!user) { setError("Sign in to purchase."); return; }
     setLoading(true);
     setError("");
     try {
+      const token = await user.getIdToken();
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ itemId: selected.itemId }),
       });
       const data = await res.json();
