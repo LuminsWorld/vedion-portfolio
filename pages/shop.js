@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import ChatWidget from "../components/ChatWidget";
+import { auth } from "../lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const ShopCanvas  = dynamic(() => import("../components/ShopCanvas"),  { ssr: false });
 
