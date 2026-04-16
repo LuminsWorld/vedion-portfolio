@@ -9,6 +9,10 @@ import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPass
 
 const ShopCanvas  = dynamic(() => import("../components/ShopCanvas"),  { ssr: false });
 
+// ─── SET TO false WHEN SHOP IS READY TO GO LIVE ───────────────────────────
+const SHOP_DISABLED = true;
+// ──────────────────────────────────────────────────────────────────────────
+
 const PRODUCTS = [
   {
     id: "screen_share",
@@ -193,6 +197,41 @@ export default function Shop() {
       setError("Network error. Try again.");
       setLoading(false);
     }
+  }
+
+  if (SHOP_DISABLED) {
+    return (
+      <>
+        <Head>
+          <title>Shop — Vedion</title>
+          <meta name="description" content="Vedion shop — coming soon." />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <div style={{ background: "#000", minHeight: "100svh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", position: "relative", overflow: "hidden" }}>
+          {/* Nav */}
+          <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "1.25rem clamp(1.25rem, 5vw, 2rem)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <a href="/" style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.3em", color: "var(--green)", textDecoration: "none" }}>VEDION</a>
+            <a href="/" style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}>BACK</a>
+          </nav>
+          {/* BG orbs */}
+          <div className="orb" style={{ width: 500, height: 500, background: "#7B2FFF", top: "-150px", right: "-100px", opacity: 0.3 }} />
+          <div className="orb" style={{ width: 300, height: 300, background: "#00FF41", bottom: "10%", left: "-50px", opacity: 0.15 }} />
+          {/* Content */}
+          <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+            <div style={{ fontFamily: "JetBrains Mono", fontSize: "10px", letterSpacing: "0.4em", color: "var(--green)", marginBottom: "1.5rem", opacity: 0.7 }}>SHOP</div>
+            <h1 style={{ fontFamily: "JetBrains Mono", fontSize: "clamp(2.5rem, 8vw, 5rem)", fontWeight: 900, letterSpacing: "-0.03em", margin: "0 0 1.5rem", lineHeight: 1 }}>
+              COMING<br /><span style={{ color: "var(--green)" }}>SOON</span>
+            </h1>
+            <p style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(13px, 2vw, 15px)", color: "rgba(255,255,255,0.4)", maxWidth: 400, lineHeight: 1.7, margin: "0 auto 2.5rem" }}>
+              Products are being finalized. Check back shortly.
+            </p>
+            <a href="/" style={{ fontFamily: "JetBrains Mono", fontSize: "11px", letterSpacing: "0.2em", color: "#000", background: "var(--green)", padding: "12px 28px", borderRadius: 4, textDecoration: "none", fontWeight: 700 }}>
+              BACK TO HOME
+            </a>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (
