@@ -545,7 +545,27 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
     } catch (_) {}
   }
 
-  const quiz       = mod.quiz ?? []
+  // ─── Exam colour helpers (orange = midterm, purple = final) ───
+  // ─── Active quiz: random 20 from pool (re-shuffled each visit) ───
+  const [activeQuiz, setActiveQuiz]   = useState([])
+  const [quizReady,  setQuizReady]    = useState(false)
+
+  useEffect(() => {
+    if (!mod.isExam) { setQuizReady(true); return }
+    const pool = mod.flashQuiz ?? mod.quiz ?? []
+    if (pool.length === 0) { setActiveQuiz([]); setQuizReady(true); return }
+    const shuffled = [...pool].sort(() => Math.random() - 0.5)
+    setActiveQuiz(shuffled.slice(0, Math.min(20, shuffled.length)))
+    setQuizReady(true)
+  }, [mod.id])
+
+  // ─── Exam colour helpers (orange = midterm, purple = final) ───
+  const isFinalExam    = mod.isExam && mod.examKind === 'final'
+  const examColorSolid = isFinalExam ? '#A855F7' : '#FFB800'
+  const ec = (a) => isFinalExam ? `rgba(168,85,247,${a})` : `rgba(255,184,0,${a})`
+  const examLabel      = isFinalExam ? 'FINAL' : 'EXAM CHECKPOINT'
+
+  const quiz       = (quizReady && mod.isExam) ? activeQuiz : (mod.quiz ?? [])
   const answered   = quiz.filter(q => isAnswered(q, answers)).length
   const allAnswered = answered === quiz.length
   const score      = quiz.filter(q => isCorrect(q, answers)).length
@@ -602,7 +622,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
       )}
 
       {/* Nav */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px clamp(1rem,4vw,2rem)', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)', borderBottom: `1px solid ${mod.isExam ? 'rgba(255,184,0,0.15)' : 'rgba(255,255,255,0.06)'}` }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px clamp(1rem,4vw,2rem)', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)', borderBottom: `1px solid ${mod.isExam ? ec(0.15) : 'rgba(255,255,255,0.06)'}` }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Link href={`/learn/${course.id}`} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', letterSpacing: '0.15em', display: 'flex', alignItems: 'center', gap: 6, transition: 'color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.color = '#fff'}
@@ -611,7 +631,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           </Link>
           <span style={{ color: 'rgba(255,255,255,0.1)' }}>/</span>
           {mod.isExam
-            ? <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#FFB800', letterSpacing: '0.1em' }}>{mod.title}</span>
+            ? <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: examColorSolid, letterSpacing: '0.1em' }}>{mod.title}</span>
             : <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>{mod.title}</span>
           }
         </div>
@@ -619,7 +639,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em' }}>{modIndex + 1} / {totalMods}</span>
           {phase === 'lesson' && quiz.length > 0 && (
             <button onClick={() => setPhase('quiz')} style={{ background: 'var(--green,#00FF41)', color: '#000', border: 'none', borderRadius: 5, padding: '6px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', cursor: 'pointer' }}>
-              {mod.isExam ? 'START EXAM' : 'TAKE QUIZ'}
+              {mod.isExam ? 'START' : 'TAKE QUIZ'}
             </button>
           )}
           <LearnAccountButton />
@@ -629,10 +649,10 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
       <div style={{ maxWidth: 820, margin: '0 auto', padding: 'clamp(2rem,5vw,3rem) clamp(1rem,4vw,2rem)' }}>
 
         {/* Module header */}
-        <div style={{ marginBottom: 40, paddingBottom: 32, borderBottom: `1px solid ${mod.isExam ? 'rgba(255,184,0,0.12)' : 'rgba(255,255,255,0.06)'}` }}>
+        <div style={{ marginBottom: 40, paddingBottom: 32, borderBottom: `1px solid ${mod.isExam ? ec(0.12) : 'rgba(255,255,255,0.06)'}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
             {mod.isExam ? (
-              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#FFB800', letterSpacing: '0.2em', background: 'rgba(255,184,0,0.08)', border: '1px solid rgba(255,184,0,0.25)', padding: '4px 12px', borderRadius: 4 }}>
+              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: examColorSolid, letterSpacing: '0.2em', background: ec(0.08), border: `1px solid ${ec(0.25)}`, padding: '4px 12px', borderRadius: 4 }}>
                 EXAM CHECKPOINT
               </span>
             ) : (
@@ -657,7 +677,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {course.modules.map((m, i) => (
               <Link key={m.id} href={`/learn/${course.id}/${m.id}`} style={{ textDecoration: 'none' }}>
-                <div title={m.title} style={{ height: m.isExam ? 5 : 3, width: i === modIndex ? 24 : 12, borderRadius: 2, background: m.isExam ? (i === modIndex ? '#FFB800' : 'rgba(255,184,0,0.3)') : (i < modIndex ? '#00FF41' : i === modIndex ? '#00FF41' : 'rgba(255,255,255,0.1)'), opacity: i === modIndex ? 1 : 0.5, transition: 'all 0.3s', cursor: 'pointer' }} />
+                <div title={m.title} style={{ height: m.isExam ? 5 : 3, width: i === modIndex ? 24 : 12, borderRadius: 2, background: m.isExam ? (i === modIndex ? examColorSolid : ec(0.3)) : (i < modIndex ? '#00FF41' : i === modIndex ? '#00FF41' : 'rgba(255,255,255,0.1)'), opacity: i === modIndex ? 1 : 0.5, transition: 'all 0.3s', cursor: 'pointer' }} />
               </Link>
             ))}
           </div>
@@ -725,8 +745,8 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         {/* ── EXAM INTRO (isExam, not yet submitted) ── */}
         {!flashcardMode && mod.isExam && phase === 'lesson' && (
           <div style={{ textAlign: 'center', padding: '32px 0' }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.2em', color: 'rgba(255,184,0,0.6)', marginBottom: 16 }}>READY TO TEST YOUR KNOWLEDGE?</div>
-            <button onClick={() => setPhase('quiz')} style={{ background: '#FFB800', color: '#000', border: 'none', borderRadius: 8, padding: '14px 32px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 900, fontSize: 13, letterSpacing: '0.1em', cursor: 'pointer' }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.2em', color: ec(0.6), marginBottom: 16 }}>{isFinalExam ? 'READY FOR YOUR FINAL REVIEW?' : 'READY TO TEST YOUR KNOWLEDGE?'}</div>
+            <button onClick={() => setPhase('quiz')} style={{ background: examColorSolid, color: '#000', border: 'none', borderRadius: 8, padding: '14px 32px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 900, fontSize: 13, letterSpacing: '0.1em', cursor: 'pointer' }}>
               START EXAM →
             </button>
           </div>
@@ -736,9 +756,9 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         {!flashcardMode && phase === 'quiz' && !submitted && (
           <div>
             {/* Progress header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, padding: '14px 18px', background: mod.isExam ? 'rgba(255,184,0,0.03)' : 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${mod.isExam ? 'rgba(255,184,0,0.12)' : 'rgba(255,255,255,0.06)'}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, padding: '14px 18px', background: mod.isExam ? ec(0.03) : 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${mod.isExam ? ec(0.12) : 'rgba(255,255,255,0.06)'}` }}>
               <div>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: mod.isExam ? '#FFB800' : '#00FF41', letterSpacing: '0.2em', marginBottom: 4 }}>{mod.isExam ? 'EXAM CHECKPOINT' : 'QUIZ'}</div>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: mod.isExam ? examColorSolid : '#00FF41', letterSpacing: '0.2em', marginBottom: 4 }}>{mod.isExam ? examLabel : 'QUIZ'}</div>
                 <div style={{ fontFamily: 'Inter,sans-serif', fontWeight: 700, fontSize: 16 }}>{mod.title}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -764,8 +784,8 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
             </div>
 
             <div style={{ marginTop: 28, display: 'flex', gap: 10, alignItems: 'center' }}>
-              <button onClick={submitQuiz} disabled={!allAnswered} style={{ background: allAnswered ? (mod.isExam ? '#FFB800' : '#00FF41') : 'rgba(255,255,255,0.05)', color: allAnswered ? '#000' : 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 7, padding: '12px 28px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 900, fontSize: 12, letterSpacing: '0.1em', cursor: allAnswered ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
-                {mod.isExam ? 'SUBMIT EXAM' : 'SUBMIT → SCORE'}
+              <button onClick={submitQuiz} disabled={!allAnswered} style={{ background: allAnswered ? (mod.isExam ? examColorSolid : '#00FF41') : 'rgba(255,255,255,0.05)', color: allAnswered ? '#000' : 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 7, padding: '12px 28px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 900, fontSize: 12, letterSpacing: '0.1em', cursor: allAnswered ? 'pointer' : 'not-allowed', transition: 'all 0.2s' }}>
+                {mod.isExam ? 'SUBMIT' : 'SUBMIT → SCORE'}
               </button>
               {!mod.isExam && (
                 <button onClick={() => setPhase('lesson')} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', borderRadius: 7, padding: '12px 18px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, cursor: 'pointer', letterSpacing: '0.1em' }}>
@@ -781,7 +801,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           <div>
             {/* Score card */}
             <div style={{ padding: '28px 24px', borderRadius: 14, border: `1px solid ${score === quiz.length ? 'rgba(0,255,65,0.3)' : score >= quiz.length * 0.7 ? 'rgba(255,184,0,0.3)' : 'rgba(255,45,85,0.3)'}`, background: score === quiz.length ? 'rgba(0,255,65,0.04)' : score >= quiz.length * 0.7 ? 'rgba(255,184,0,0.04)' : 'rgba(255,45,85,0.04)', marginBottom: 28, textAlign: 'center' }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.25em', color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>{mod.isExam ? 'EXAM COMPLETE' : 'QUIZ COMPLETE'}</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.25em', color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>{mod.isExam ? (isFinalExam ? 'FINAL COMPLETE' : 'EXAM COMPLETE') : 'QUIZ COMPLETE'}</div>
               <div style={{ fontFamily: 'Inter,sans-serif', fontWeight: 900, fontSize: 'clamp(2.5rem,8vw,4rem)', letterSpacing: '-0.04em', color: score === quiz.length ? '#00FF41' : score >= quiz.length * 0.7 ? '#FFB800' : '#FF2D55', lineHeight: 1 }}>
                 {score}<span style={{ fontSize: '0.4em', opacity: 0.5, fontWeight: 400 }}>/{quiz.length}</span>
               </div>

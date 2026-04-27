@@ -962,6 +962,29 @@
           "answer": 2,
           "explanation": "R coerces all elements to the most general type when mixing in c(). The hierarchy is: logical < integer < numeric < character. Since \"banana\" is character, everything becomes character: \"1\", \"TRUE\", \"banana\". There is no \"mixed\" type in R."
         }
+      ],
+      "examKind": "midterm",
+      "poolFrom": [
+        {
+          "moduleId": "module-1",
+          "count": 10
+        },
+        {
+          "moduleId": "module-2",
+          "count": 10
+        },
+        {
+          "moduleId": "module-3",
+          "count": 10
+        },
+        {
+          "moduleId": "module-4",
+          "count": 10
+        },
+        {
+          "moduleId": "module-5",
+          "count": 10
+        }
       ]
     },
     {
@@ -1615,6 +1638,29 @@
           ],
           "answer": 3,
           "explanation": "pnorm() gives P(X ≤ x) by default. For P(X > 75) we need the upper tail. Both 1 - pnorm(75, ...) and pnorm(75, ..., lower.tail=FALSE) are equivalent and correct. lower.tail=FALSE is slightly more numerically stable for extreme tails but both work here."
+        }
+      ],
+      "examKind": "midterm",
+      "poolFrom": [
+        {
+          "moduleId": "module-6",
+          "count": 10
+        },
+        {
+          "moduleId": "module-7",
+          "count": 10
+        },
+        {
+          "moduleId": "module-8",
+          "count": 10
+        },
+        {
+          "moduleId": "module-9",
+          "count": 10
+        },
+        {
+          "moduleId": "module-10",
+          "count": 10
         }
       ]
     },
@@ -2524,7 +2570,8 @@
           "moduleId": "module-13",
           "count": 7
         }
-      ]
+      ],
+      "examKind": "final"
     },
     {
       "id": "exam-final",
@@ -2838,7 +2885,8 @@
           "moduleId": "module-13",
           "count": 8
         }
-      ]
+      ],
+      "examKind": "final"
     }
   ]
 }
