@@ -653,7 +653,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
             {mod.isExam ? (
               <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: examColorSolid, letterSpacing: '0.2em', background: ec(0.08), border: `1px solid ${ec(0.25)}`, padding: '4px 12px', borderRadius: 4 }}>
-                EXAM CHECKPOINT
+                {examLabel}
               </span>
             ) : (
               <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00FF41', letterSpacing: '0.2em', background: 'rgba(0,255,65,0.08)', border: '1px solid rgba(0,255,65,0.2)', padding: '3px 10px', borderRadius: 4 }}>
