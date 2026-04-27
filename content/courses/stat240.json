@@ -2306,7 +2306,7 @@
     {
       "id": "exam-final-new",
       "title": "Inference Review Checkpoint",
-      "content": "# Inference Review Checkpoint\n\nThis checkpoint covers modules 9 through 13: confidence intervals, hypothesis testing, inference for proportions and means, and linear regression.\n\nWork through each question. The flashcard mode lets you drill weak spots using a spaced-repetition algorithm that prioritizes questions you get wrong.\n\n## What This Covers\n\n- **Module 9:** Confidence intervals, hypothesis testing fundamentals, p-values, Type I/II errors\n- **Module 10:** Single and two-proportion inference, z-tests, prop.test()\n- **Module 11:** Single mean inference, t-distribution, t.test()\n- **Module 12:** Two-sample and paired t-tests, pooled vs Welch, var.equal\n- **Module 13:** Correlation, linear regression, assumptions, inference on slope, prediction vs confidence intervals\n\n> **Exam note:** The final exam is 75% inference (Ch 7-15). Use this checkpoint to identify and drill your weak areas before the exam.",
+      "content": "# Inference Review Checkpoint\n\nThis checkpoint drills modules 9 through 13 -- confidence intervals, hypothesis testing, proportion inference, mean inference (single and two-sample), and linear regression.\n\nQuestions are pulled from each module's question bank alongside this deck's own questions, so the pool is larger than what you see here.\n\n> Use Flashcard mode to surface weak spots with spaced repetition. Cards you get wrong are shown more often.",
       "quiz": [
         {
           "id": "ef-new-q1",
@@ -2453,62 +2453,83 @@
         },
         {
           "id": "ef-new-q12",
-          "question": "cor(x, y) = -0.72. Which statement is correct?",
-          "type": "multiple",
-          "options": [
-            "x causes y to decrease",
-            "R-squared = 0.52; 52% of variance in y is explained by x",
-            "The relationship between x and y is nonlinear",
-            "As x increases, y always decreases"
-          ],
-          "answer": 1,
-          "explanation": "R-squared = r^2 = (-0.72)^2 = 0.5184, meaning about 52% of the variance in y is explained by the linear relationship with x. Correlation does not imply causation, and it measures linear association only."
+          "type": "fill-blank",
+          "question": "For a one-sample t-test with n = 24, the degrees of freedom is ___.",
+          "blanks": [
+            "23"
+          ]
         },
         {
           "id": "ef-new-q13",
-          "question": "You get a p-value of 0.048 at alpha = 0.05. A colleague says this 'proves the null is false'. What is wrong with this statement?",
-          "type": "multiple",
-          "options": [
-            "Nothing -- rejecting H0 does prove it is false",
-            "p-value must be less than 0.01 to prove anything",
-            "A p-value shows how extreme the data is under H0, not the probability H0 is false",
-            "The p-value is too close to 0.05 to draw any conclusion"
-          ],
-          "answer": 2,
-          "explanation": "The p-value is P(data this extreme | H0 is true) -- it is not the probability that H0 is false. Rejecting H0 means the data is unlikely under H0, not that H0 is definitively proven false. Statistical significance is not proof."
+          "type": "fill-blank",
+          "question": "The formula for the standard error of a sample mean is ___. (Write in the form s/sqrt(n))",
+          "blanks": [
+            "s/sqrt(n)",
+            "s / sqrt(n)"
+          ]
         },
         {
           "id": "ef-new-q14",
-          "question": "For prop.test(x = 40, n = 100), what is H0 by default?",
-          "type": "multiple",
+          "type": "select-all",
+          "question": "Which of the following are true about Welch's t-test? Select ALL that apply.",
           "options": [
-            "p = 0.40",
-            "p = 0.50",
-            "p = 0",
-            "p = 1"
+            "It uses a pooled standard deviation",
+            "It is the default t.test() behavior in R (var.equal = FALSE)",
+            "It uses the Welch-Satterthwaite approximation for degrees of freedom",
+            "It requires equal variances in both groups"
           ],
-          "answer": 1,
-          "explanation": "When no p argument is specified, prop.test() defaults to H0: p = 0.5. To test a different null value, use prop.test(x, n, p = your_value)."
+          "answer": [
+            1,
+            2
+          ],
+          "explanation": "Welch's test does NOT pool SDs and does NOT require equal variances. It IS the R default (var.equal=FALSE) and DOES use the Welch-Satterthwaite formula for df."
         },
         {
           "id": "ef-new-q15",
-          "question": "A 95% CI for (mu1 - mu2) is (-2.1, 8.5). At alpha = 0.05, do you reject H0: mu1 = mu2?",
-          "type": "multiple",
+          "type": "select-all",
+          "question": "A 95% CI for (mu1 - mu2) is (1.2, 8.4). Select ALL correct conclusions.",
           "options": [
-            "Yes, reject H0",
-            "No, fail to reject H0",
-            "Yes, because the interval is mostly positive",
-            "Cannot determine from a CI"
+            "We reject H0: mu1 = mu2 at alpha = 0.05",
+            "We are 95% confident the difference in means is between 1.2 and 8.4",
+            "The difference is not statistically significant",
+            "mu1 is likely larger than mu2"
           ],
-          "answer": 1,
-          "explanation": "H0: mu1 = mu2 means mu1 - mu2 = 0. Since 0 is inside the CI (-2.1, 8.5), we fail to reject H0 at alpha = 0.05. There is not sufficient evidence of a difference."
+          "answer": [
+            0,
+            1,
+            3
+          ],
+          "explanation": "0 is not inside (1.2, 8.4) so we reject H0 at alpha=0.05. The CI interpretation is correct. Since the entire interval is positive, mu1 is likely larger than mu2. The difference IS significant."
+        }
+      ],
+      "isExam": true,
+      "poolFrom": [
+        {
+          "moduleId": "module-9",
+          "count": 5
+        },
+        {
+          "moduleId": "module-10",
+          "count": 5
+        },
+        {
+          "moduleId": "module-11",
+          "count": 7
+        },
+        {
+          "moduleId": "module-12",
+          "count": 7
+        },
+        {
+          "moduleId": "module-13",
+          "count": 7
         }
       ]
     },
     {
       "id": "exam-final",
       "title": "Final Exam Review",
-      "content": "# Final Exam Review\n\nThis is the cumulative final exam review deck covering all content from modules 1 through 13.\n\n**Exam:** Thursday, May 7, 2026 | 7:25 PM - 9:25 PM | CHEM S429\n**Format:** 2-hour paper/pen test\n**Allowed:** WISC ID, pens/pencils, 3-page cheatsheet\n**Weight:** 75% inference (Ch 7-15), 25% prior material\n\n## Topics Covered\n\n- **Modules 1-5:** R fundamentals, ggplot2, dplyr, joins and pivots\n- **Modules 6-8:** Probability, binomial distribution, normal distribution\n- **Module 9:** CI and hypothesis testing fundamentals\n- **Module 10:** Proportion inference (single and two-proportion)\n- **Module 11:** Single mean inference (t-test)\n- **Module 12:** Two-sample and paired inference\n- **Module 13:** Linear regression and inference\n\n> **Strategy:** Work through all questions once. The flashcard system tracks which questions you get wrong and surfaces them more often. Focus your remaining study time on the categories where your score is lowest.",
+      "content": "# Final Exam Review\n\nThis deck pulls questions from all modules (1-13) with heavier weight on inference and regression. The flashcard pool is larger than the quiz -- use Flashcard mode for full coverage.\n\n> Inference (Ch 7-15) is 75% of the final exam. Spend most of your time on modules 9-13.",
       "quiz": [
         {
           "id": "ef-q1",
@@ -2707,68 +2728,115 @@
         },
         {
           "id": "ef-q16",
-          "question": "What is a Type II error?",
-          "type": "multiple",
-          "options": [
-            "Rejecting H0 when it is true (false positive)",
-            "Failing to reject H0 when it is false (false negative)",
-            "Using the wrong significance level alpha",
-            "Computing the wrong test statistic"
-          ],
-          "answer": 1,
-          "explanation": "A Type II error (false negative) is failing to reject H0 when H0 is actually false. Its probability is beta (not alpha). Power = 1 - beta = probability of correctly detecting a real effect."
+          "type": "fill-blank",
+          "question": "In R, `qt(0.975, df = 19)` gives the t* critical value for a ___% confidence interval with n = 20.",
+          "blanks": [
+            "95"
+          ]
         },
         {
           "id": "ef-q17",
-          "question": "You fit lm(y ~ x) and call predict(mod, newdata=tibble(x=10), interval='prediction'). This gives:",
-          "type": "multiple",
-          "options": [
-            "A CI for the mean of y when x = 10",
-            "A PI for a new individual y value when x = 10",
-            "The residual at x = 10",
-            "The slope of the regression line"
-          ],
-          "answer": 1,
-          "explanation": "interval='prediction' gives a prediction interval for a new individual observation at x = 10. This is wider than interval='confidence', which estimates where the mean of y falls when x = 10."
+          "type": "fill-blank",
+          "question": "The pooled standard deviation formula is: s_p = sqrt(((n1-1)*s1^2 + (n2-1)*s2^2) / ___). Fill in the denominator.",
+          "blanks": [
+            "n1 + n2 - 2",
+            "n1+n2-2"
+          ]
         },
         {
           "id": "ef-q18",
-          "question": "A paired t-test has n = 12 pairs. What are the degrees of freedom?",
-          "type": "multiple",
+          "type": "select-all",
+          "question": "Which of the following are correct interpretations of a 95% confidence interval (42, 58) for mu? Select ALL that apply.",
           "options": [
-            "22",
-            "11",
-            "10",
-            "23"
+            "We are 95% confident the true mean is between 42 and 58",
+            "95% of sample means will fall between 42 and 58",
+            "If we repeated the sampling many times, 95% of constructed intervals would contain the true mean",
+            "There is a 95% probability that mu is between 42 and 58"
           ],
-          "answer": 1,
-          "explanation": "A paired t-test computes differences for each pair and runs a one-sample t-test on those differences. df = n - 1 = 12 - 1 = 11."
+          "answer": [
+            0,
+            2
+          ],
+          "explanation": "Option A is the standard short form interpretation. Option C is the precise frequentist interpretation. Option B confuses CI with sampling distribution. Option D is wrong -- mu is fixed; probability only applies to the procedure, not the specific interval."
         },
         {
           "id": "ef-q19",
-          "question": "Which R code correctly creates a 99% CI for a single mean from a vector x?",
-          "type": "multiple",
+          "type": "select-all",
+          "question": "Which conditions must hold for the normal approximation to p-hat to be valid? Select ALL that apply.",
           "options": [
-            "t.test(x, conf.level = 0.99)",
-            "t.test(x, alpha = 0.01)",
-            "prop.test(x, conf.level = 0.99)",
-            "t.test(x, mu = 0.99)"
+            "np >= 10",
+            "n >= 30",
+            "n(1-p) >= 10",
+            "The population must be normally distributed"
           ],
-          "answer": 0,
-          "explanation": "t.test(x, conf.level = 0.99) produces a 99% CI and hypothesis test for the mean. The conf.level argument controls the confidence level (default is 0.95)."
+          "answer": [
+            0,
+            2
+          ],
+          "explanation": "The normal approximation for proportions requires np >= 10 AND n(1-p) >= 10. The n >= 30 rule applies to means (CLT). The population does not need to be normal -- the approximation applies to p-hat, not the raw data."
         },
         {
           "id": "ef-q20",
-          "question": "A residual plot shows a funnel/megaphone shape (spread increases as x increases). Which assumption is violated?",
-          "type": "multiple",
-          "options": [
-            "Linearity",
-            "Normality of residuals",
-            "Constant variance (homoscedasticity)",
-            "Independence of observations"
-          ],
-          "answer": 2,
-          "explanation": "A megaphone or funnel shape in the residual plot indicates that residual variance changes with x -- constant variance (homoscedasticity) is violated. A curved pattern indicates linearity violation."
+          "type": "fill-blank",
+          "question": "For regression inference, the degrees of freedom for testing the slope is n minus ___.",
+          "blanks": [
+            "2"
+          ]
+        }
+      ],
+      "isExam": true,
+      "poolFrom": [
+        {
+          "moduleId": "module-1",
+          "count": 3
+        },
+        {
+          "moduleId": "module-2",
+          "count": 3
+        },
+        {
+          "moduleId": "module-3",
+          "count": 3
+        },
+        {
+          "moduleId": "module-4",
+          "count": 3
+        },
+        {
+          "moduleId": "module-5",
+          "count": 3
+        },
+        {
+          "moduleId": "module-6",
+          "count": 3
+        },
+        {
+          "moduleId": "module-7",
+          "count": 3
+        },
+        {
+          "moduleId": "module-8",
+          "count": 3
+        },
+        {
+          "moduleId": "module-9",
+          "count": 6
+        },
+        {
+          "moduleId": "module-10",
+          "count": 6
+        },
+        {
+          "moduleId": "module-11",
+          "count": 8
+        },
+        {
+          "moduleId": "module-12",
+          "count": 8
+        },
+        {
+          "moduleId": "module-13",
+          "count": 8
         }
       ]
     }

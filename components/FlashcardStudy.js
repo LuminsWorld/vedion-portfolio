@@ -44,9 +44,9 @@ export const QUESTION_TOPICS = {
   'ef-new-q9':  { module: 'module-13', label: 'Module 13 · Linear Regression' },
   'ef-new-q10': { module: 'module-13', label: 'Module 13 · Linear Regression' },
   'ef-new-q11': { module: 'module-12', label: 'Module 12 · Two-Sample & Paired' },
-  'ef-new-q12': { module: 'module-13', label: 'Module 13 · Linear Regression' },
-  'ef-new-q13': { module: 'module-9',  label: 'Module 9 · CI & Hypothesis Testing' },
-  'ef-new-q14': { module: 'module-10', label: 'Module 10 · Proportion Inference' },
+  'ef-new-q12': { module: 'module-11', label: 'Module 11 · Single Mean Inference' },
+  'ef-new-q13': { module: 'module-11', label: 'Module 11 · Single Mean Inference' },
+  'ef-new-q14': { module: 'module-12', label: 'Module 12 · Two-Sample & Paired' },
   'ef-new-q15': { module: 'module-12', label: 'Module 12 · Two-Sample & Paired' },
   // exam-final: Cumulative all modules 1-13
   'ef-q1':  { module: 'module-4',  label: 'Module 4 · dplyr' },
@@ -64,10 +64,10 @@ export const QUESTION_TOPICS = {
   'ef-q13': { module: 'module-13', label: 'Module 13 · Linear Regression' },
   'ef-q14': { module: 'module-10', label: 'Module 10 · Proportion Inference' },
   'ef-q15': { module: 'module-5',  label: 'Module 5 · Joins & Pivots' },
-  'ef-q16': { module: 'module-9',  label: 'Module 9 · CI & Hypothesis Testing' },
-  'ef-q17': { module: 'module-13', label: 'Module 13 · Linear Regression' },
-  'ef-q18': { module: 'module-12', label: 'Module 12 · Two-Sample & Paired' },
-  'ef-q19': { module: 'module-11', label: 'Module 11 · Single Mean Inference' },
+  'ef-q16': { module: 'module-11', label: 'Module 11 · Single Mean Inference' },
+  'ef-q17': { module: 'module-12', label: 'Module 12 · Two-Sample & Paired' },
+  'ef-q18': { module: 'module-9',  label: 'Module 9 · CI & Hypothesis Testing' },
+  'ef-q19': { module: 'module-10', label: 'Module 10 · Proportion Inference' },
   'ef-q20': { module: 'module-13', label: 'Module 13 · Linear Regression' },
 }
 

@@ -18,8 +18,26 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const course = getCourse(params.courseId)
   if (!course) return { notFound: true }
-  const mod = course.modules.find(m => m.id === params.moduleId)
+  let mod = course.modules.find(m => m.id === params.moduleId)
   if (!mod) return { notFound: true }
+
+  // Build pooled quiz for exam modules that declare poolFrom
+  if (mod.poolFrom && course.modules) {
+    const quizPool = [...(mod.quiz ?? [])]   // own questions first
+    const flashPool = [...(mod.quiz ?? [])]  // own questions first
+
+    mod.poolFrom.forEach(({ moduleId, count }) => {
+      const src = course.modules.find(m => m.id === moduleId)
+      if (!src?.quiz) return
+      // Flash pool gets all questions from this source module
+      flashPool.push(...src.quiz)
+      // Quiz pool gets the first `count` questions (deterministic)
+      quizPool.push(...src.quiz.slice(0, count))
+    })
+
+    mod = { ...mod, quiz: quizPool, flashQuiz: flashPool }
+  }
+
   const modIndex = course.modules.findIndex(m => m.id === params.moduleId)
   const prevMod  = course.modules[modIndex - 1] ?? null
   const nextMod  = course.modules[modIndex + 1] ?? null
@@ -668,7 +686,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
 
         {flashcardMode && (
           <FlashcardStudy
-            questions={quiz}
+            questions={mod.flashQuiz ?? quiz}
             progress={flashcardProgress}
             onSaveProgress={saveFlashcardProgress}
             onClose={() => setFlashcardMode(false)}
