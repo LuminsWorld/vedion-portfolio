@@ -927,7 +927,9 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
                   {aiExplanation && (
                     <div style={{ padding:'14px 16px', background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:8, borderLeft:'3px solid #A855F7' }}>
                       <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'rgba(168,85,247,0.7)', letterSpacing:'0.15em', marginBottom:8 }}>AI EXPLANATION</div>
-                      <p style={{ fontFamily:'Inter,sans-serif', fontSize:13, color:'rgba(255,255,255,0.75)', margin:0, lineHeight:1.75 }}>{aiExplanation}</p>
+                      <p style={{ fontFamily:'Inter,sans-serif', fontSize:13, color:'rgba(255,255,255,0.75)', margin:0, lineHeight:1.75 }}>
+                    <InlineText text={aiExplanation.replace(/^#+\s*\w+\s*/,'').trim()} />
+                  </p>
                     </div>
                   )}
                 </div>
