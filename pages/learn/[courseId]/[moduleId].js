@@ -153,6 +153,11 @@ function parseContent(text) {
       while (i < lines.length && lines[i].startsWith('> ')) { calloutLines.push(lines[i].slice(2)); i++ }
       blocks.push({ type: 'callout', lines: calloutLines }); continue
     }
+    if (line.startsWith('$$')) {
+      const formulaLines = []
+      while (i < lines.length && lines[i].startsWith('$$')) { formulaLines.push(lines[i].slice(2).trim()); i++ }
+      blocks.push({ type: 'formula', lines: formulaLines }); continue
+    }
     if (line.startsWith('# '))   { blocks.push({ type: 'h1', text: line.slice(2) });  i++; continue }
     if (line.startsWith('## '))  { blocks.push({ type: 'h2', text: line.slice(3) });  i++; continue }
     if (line.startsWith('### ')) { blocks.push({ type: 'h3', text: line.slice(4) });  i++; continue }
@@ -308,6 +313,13 @@ function ContentBlock({ block }) {
           </li>
         ))}
       </ul>
+    )
+    case 'formula': return (
+      <div style={{ margin: '20px 0', padding: '18px 28px', background: 'rgba(0,255,65,0.04)', border: '1px solid rgba(0,255,65,0.18)', borderRadius: 8, textAlign: 'center' }}>
+        {block.lines.map((line, i) => (
+          <div key={i} style={{ marginTop: i > 0 ? 10 : 0, fontFamily: 'JetBrains Mono,monospace', fontSize: 16, color: '#7fff9a', letterSpacing: '0.04em', lineHeight: 1.6 }}>{line}</div>
+        ))}
+      </div>
     )
     case 'code': return <CodeWindow code={block.code} lang={block.lang} output={block.output} />
     case 'table': return <TableBlock rows={block.rows} />
