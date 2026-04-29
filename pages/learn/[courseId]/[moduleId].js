@@ -173,6 +173,17 @@ function parseContent(text) {
 }
 
 /* ─── Inline text renderer ─── */
+/* Render overline letters (x̄ ȳ d̄) with CSS overline to avoid font offset issues */
+function renderOverline(str) {
+  const MAP = { 'x̄': 'x', 'ȳ': 'y', 'd̄': 'd' }
+  const tokens = str.split(/(x̄|ȳ|d̄)/g)
+  return tokens.map((tok, i) =>
+    MAP[tok]
+      ? <span key={i} style={{ textDecoration: 'overline', textDecorationColor: 'currentcolor' }}>{MAP[tok]}</span>
+      : tok
+  )
+}
+
 function InlineText({ text }) {
   const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g)
   return (
@@ -181,10 +192,10 @@ function InlineText({ text }) {
         if (part.startsWith('`') && part.endsWith('`'))
           return <code key={i} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: '0.88em', background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: 4, color: '#ce9178' }}>{part.slice(1, -1)}</code>
         if (part.startsWith('**') && part.endsWith('**'))
-          return <strong key={i} style={{ color: '#fff', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+          return <strong key={i} style={{ color: '#fff', fontWeight: 700 }}>{renderOverline(part.slice(2, -2))}</strong>
         if (part.startsWith('*') && part.endsWith('*'))
-          return <em key={i} style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.85)' }}>{part.slice(1, -1)}</em>
-        return <span key={i}>{part}</span>
+          return <em key={i} style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.85)' }}>{renderOverline(part.slice(1, -1))}</em>
+        return <span key={i}>{renderOverline(part)}</span>
       })}
     </>
   )
@@ -317,7 +328,7 @@ function ContentBlock({ block }) {
     case 'formula': return (
       <div style={{ margin: '20px 0', padding: '18px 28px', background: 'rgba(0,255,65,0.04)', border: '1px solid rgba(0,255,65,0.18)', borderRadius: 8, textAlign: 'center' }}>
         {block.lines.map((line, i) => (
-          <div key={i} style={{ marginTop: i > 0 ? 10 : 0, fontFamily: 'JetBrains Mono,monospace', fontSize: 16, color: '#7fff9a', letterSpacing: '0.04em', lineHeight: 1.6 }}>{line}</div>
+          <div key={i} style={{ marginTop: i > 0 ? 10 : 0, fontFamily: 'JetBrains Mono,monospace', fontSize: 16, color: '#7fff9a', letterSpacing: '0.04em', lineHeight: 1.6 }}>{renderOverline(line)}</div>
         ))}
       </div>
     )
