@@ -652,12 +652,12 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
 
       {/* ── 3D FLIP CARD ── */}
       <div style={{ perspective:'1200px', marginBottom:20 }}>
-        {/* Wrapper: fixed height during animation only */}
-        <div style={{
+        {/* key=q.id forces clean remount on card change, preventing backface bleed-through */}
+        <div key={q.id} style={{
           position: flipAnimating ? 'relative' : 'static',
           minHeight: flipAnimating ? 360 : undefined,
-          transformStyle: 'preserve-3d',
-          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          transformStyle: flipAnimating ? 'preserve-3d' : undefined,
+          transform: flipAnimating ? (isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)') : undefined,
           transition: flipAnimating ? 'transform 0.58s cubic-bezier(0.4,0.2,0.2,1)' : 'none',
         }}>
 
@@ -666,7 +666,8 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
             <div style={{
               position: flipAnimating ? 'absolute' : 'relative',
               inset: flipAnimating ? 0 : undefined,
-              backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden',
+              backfaceVisibility: flipAnimating ? 'hidden' : undefined,
+              WebkitBackfaceVisibility: flipAnimating ? 'hidden' : undefined,
               background:'#0d1117', border:'1px solid rgba(255,255,255,0.1)',
               borderRadius:12, padding:'clamp(18px,4vw,28px)',
             }}>
@@ -774,7 +775,8 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
             <div style={{
               position: flipAnimating ? 'absolute' : 'relative',
               inset: flipAnimating ? 0 : undefined,
-              backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden',
+              backfaceVisibility: flipAnimating ? 'hidden' : undefined,
+              WebkitBackfaceVisibility: flipAnimating ? 'hidden' : undefined,
               transform: flipAnimating ? 'rotateY(180deg)' : undefined,
               background:'#0d1117',
               border: `1px solid ${effectiveCorrect === true ? 'rgba(0,255,65,0.3)' : effectiveCorrect === false ? 'rgba(255,45,85,0.3)' : 'rgba(168,85,247,0.3)'}`,
