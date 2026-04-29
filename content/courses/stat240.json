@@ -145,6 +145,32 @@
           ],
           "explanation": "Valid R variable names must start with a letter or a dot (not a digit or underscore). They can contain letters, digits, underscores, and dots. Reserved words like TRUE, FALSE, NULL, and NA cannot be used as variable names. So: my_var2 is valid (starts with letter), .hidden_val is valid (starts with dot), MyResult is valid. 2ndvar is invalid (starts with digit). TRUE is invalid (reserved keyword)."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m1-fc1",
+          "type": "qa",
+          "moduleId": "module-1",
+          "front": "What is the difference between R and RStudio?",
+          "back": "R is the programming language and statistical computing environment that runs on your computer. RStudio is an integrated development environment (IDE) that provides a user-friendly interface for writing R code, managing projects, and visualizing outputs. You can use R without RStudio, but RStudio requires R to be installed first.",
+          "explanation": "Think of R as the engine and RStudio as the dashboard. RStudio makes working with R much easier but is not required."
+        },
+        {
+          "id": "m1-fc2",
+          "type": "qa",
+          "moduleId": "module-1",
+          "front": "What is the assignment operator in R and how do vectors work?",
+          "back": "The assignment operator <- stores a value or object in a variable. Vectors are the fundamental data structure in R that contain multiple elements of the same type. You create vectors using the c() function, which concatenates values together. All elements in a vector must be of the same class (numeric, character, logical).",
+          "explanation": "The <- arrow always points toward the variable name being created. Vectors are one-dimensional, ordered collections. Using c(1, 2, 3) creates a numeric vector."
+        },
+        {
+          "id": "m1-fc3",
+          "type": "qa",
+          "moduleId": "module-1",
+          "front": "What is RMarkdown and what does knitting do?",
+          "back": "RMarkdown is a file format that combines R code, plain text, and markdown formatting. Knitting is the process of converting an RMarkdown file into a final output document (HTML, PDF, or Word) by executing the R code and weaving the results together with the text. The knit button executes this entire process automatically.",
+          "explanation": "RMarkdown files have extension .Rmd. Knitting produces a polished report without manually copying code results into a separate document."
+        }
       ]
     },
     {
@@ -300,6 +326,32 @@
           ],
           "explanation": "na.rm = TRUE tells mean() (and many other functions like sum(), sd(), median()) to remove NA values before computing. Without it, any NA in the vector makes the result NA."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m2-fc1",
+          "type": "qa",
+          "moduleId": "module-2",
+          "front": "What is type coercion and when does it occur in R?",
+          "back": "Type coercion is the automatic conversion of one data type to another. It occurs when you combine elements of different types in a vector or when performing operations that require a specific type. R follows a hierarchy: logical < integer < double < character. An element lower in the hierarchy is converted to match the highest type present.",
+          "explanation": "Example: c(TRUE, 1, 2) becomes c(1, 1, 2). The logical TRUE is coerced to numeric 1. Coercion can lose information, especially when converting to character."
+        },
+        {
+          "id": "m2-fc2",
+          "type": "qa",
+          "moduleId": "module-2",
+          "front": "How does R handle NA values and how do you check for them?",
+          "back": "NA represents a missing or unknown value in R. NA propagates through calculations: any operation involving NA typically returns NA. You cannot use NA == NA to check for missing values because NA compared to anything, including itself, returns NA. Instead, use is.na() to detect missing values, which returns TRUE for NA and FALSE otherwise.",
+          "explanation": "NA is contagious in most operations. sum(c(1, 2, NA)) returns NA unless you use na.rm=TRUE. This prevents silent errors from unhandled missing data."
+        },
+        {
+          "id": "m2-fc3",
+          "type": "qa",
+          "moduleId": "module-2",
+          "front": "What are factors and when should you use them instead of character vectors?",
+          "back": "Factors are categorical variables that store distinct categories as integers with associated labels. They are useful when you have a fixed set of possible values and want to enforce that constraint. Factors use less memory than character vectors and provide natural ordering for categorical data. Use factor() to convert a character vector to a factor, specifying levels if needed.",
+          "explanation": "Factors are powerful for analysis but can cause unexpected behavior if not understood. Subsetting a factor can return unused levels. In modern R, many functions prefer character vectors, so factors are less common than before."
+        }
       ]
     },
     {
@@ -444,6 +496,32 @@
           ],
           "explanation": "geom_bar() counts rows by default (stat=\"count\"), so A is TRUE. geom_col() needs you to supply the y values (stat=\"identity\"), so B is TRUE. C is backwards — geom_bar() does NOT require a pre-computed y column. D is backwards — geom_col() does NOT count rows. E is FALSE — geom_histogram() defaults to 30 bins if binwidth/bins are not specified (it shows a warning but still works)."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m3-fc1",
+          "type": "qa",
+          "moduleId": "module-3",
+          "front": "What is the difference between using aes() and directly specifying color in ggplot2?",
+          "back": "aes() maps variables from your data to visual properties (aesthetics). When you put a column name inside aes(), ggplot2 creates a color scale and legend. Direct color specification, like color='red', applies the same color to all points without mapping data. Use aes() when color should vary by data, use direct specification when you want a fixed color.",
+          "explanation": "Example: aes(color=group) creates a legend with different colors per group. color='red' makes all points red without a legend. This distinction is critical for clear data visualization."
+        },
+        {
+          "id": "m3-fc2",
+          "type": "qa",
+          "moduleId": "module-3",
+          "front": "How do layers work in ggplot2 and what are common geom types?",
+          "back": "ggplot2 builds plots by layering geoms (geometric objects) on top of each other. Each layer represents a different geom function applied to data. Common geoms include geom_point() for scatter plots, geom_line() for lines, geom_histogram() for distributions, and geom_boxplot() for boxplots. Layers are added sequentially using the plus operator, and each layer inherits aesthetics from the main ggplot() call unless overridden.",
+          "explanation": "You can overlay multiple geoms on one plot. Each geom can have its own data and aesthetic mappings. Order matters: earlier layers appear behind later ones."
+        },
+        {
+          "id": "m3-fc3",
+          "type": "qa",
+          "moduleId": "module-3",
+          "front": "How do facet_wrap and theme customization affect plot presentation?",
+          "back": "facet_wrap() splits your plot into multiple subplots (facets) based on a categorical variable, allowing side-by-side comparison across groups. theme() customizes non-data elements like background, grid, axis labels, and legend position. You can use built-in themes like theme_minimal() or theme_classic() for consistent styling, then add theme() for fine-tuning.",
+          "explanation": "facet_wrap(~variable) creates a grid of subplots. theme() calls are often placed at the end of a plot. Common customizations include axis.text.size, plot.background, and legend.position."
+        }
       ]
     },
     {
@@ -586,6 +664,32 @@
             4
           ],
           "explanation": "mutate() adds a new column to all existing rows — row count unchanged. arrange() reorders rows — row count unchanged. select() picks columns — row count unchanged. These three keep ALL original rows. By contrast, summarize() collapses each group into ONE summary row (reducing row count), and filter() removes rows that don't meet the condition."
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "m4-fc1",
+          "type": "qa",
+          "moduleId": "module-4",
+          "front": "What is the pipe operator and how do dplyr verbs work together?",
+          "back": "The pipe operator %>% (or |> in newer R) passes the output of one function as the input to the next, creating a readable left-to-right flow. Core dplyr verbs include filter() to select rows, select() to choose columns, mutate() to create or modify columns, summarize() to compute summaries, and arrange() to sort rows. These verbs work on data frames and return data frames, making them easily chainable.",
+          "explanation": "Piping eliminates nested function calls. data %>% filter(x > 5) %>% select(a, b) is clearer than select(filter(data, x > 5), a, b). Each verb solves one task."
+        },
+        {
+          "id": "m4-fc2",
+          "type": "qa",
+          "moduleId": "module-4",
+          "front": "How does group_by work and what happens when you summarize grouped data?",
+          "back": "group_by() marks rows as belonging to groups based on one or more variables. When you apply summarize() to grouped data, computations happen within each group separately, producing one row per group. For example, group_by(species) %>% summarize(mean_height = mean(height)) calculates the mean height for each species independently. group_by() modifies the data frame metadata; use ungroup() to remove grouping.",
+          "explanation": "Without group_by(), summarize() collapses all rows into one. With group_by(), you get one result per group. This is essential for comparative analysis."
+        },
+        {
+          "id": "m4-fc3",
+          "type": "qa",
+          "moduleId": "module-4",
+          "front": "What is case_when and when do you use it instead of if-else statements?",
+          "back": "case_when() is a dplyr function that creates new columns based on multiple conditions, with cleaner syntax than nested if-else. It evaluates conditions in order and returns the value for the first TRUE condition. Syntax: case_when(condition1 ~ value1, condition2 ~ value2, TRUE ~ default_value). Use case_when() in mutate() for vectorized conditional assignment across entire columns.",
+          "explanation": "case_when(x > 0 ~ 'positive', x < 0 ~ 'negative', TRUE ~ 'zero') is clearer than nested if-else. TRUE at the end provides a catch-all default, like else in programming."
         }
       ]
     },
@@ -730,6 +834,32 @@
             2
           ],
           "explanation": "Both A and C are correct — they differ only in how cols is specified (range vs explicit list), both work. B uses pivot_wider which goes the wrong direction (long to wide). D uses relocate instead of select (relocate doesn't drop columns), and only pivots English and Spanish, missing the other three languages."
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "m5-fc1",
+          "type": "qa",
+          "moduleId": "module-5",
+          "front": "What are the different types of joins and how do they differ?",
+          "back": "Joins combine two data frames based on matching keys. inner_join() keeps only rows present in both data frames. left_join() keeps all rows from the left data frame, adding matched data from the right. right_join() does the opposite. full_join() keeps all rows from both data frames. anti_join() returns rows from the left data frame that have no match in the right, useful for finding missing connections.",
+          "explanation": "Inner join is most restrictive (smallest result). Full join is most inclusive (largest result). Think of Venn diagrams: inner is the intersection, full is the union."
+        },
+        {
+          "id": "m5-fc2",
+          "type": "qa",
+          "moduleId": "module-5",
+          "front": "How do pivot_longer and pivot_wider transform data shape?",
+          "back": "pivot_longer() converts wide data to long format by taking multiple columns and stacking them into fewer columns with repeated rows. This is useful when column names represent data values rather than true variables. pivot_wider() does the opposite, spreading long data to wide format by using column names as variable names. Choose the format based on your analysis needs: long format is standard for modeling, wide format is common in raw data.",
+          "explanation": "pivot_longer needs names_to (new column for old column names) and values_to (new column for values). pivot_wider needs names_from and values_from. Long format is 'tidy' data."
+        },
+        {
+          "id": "m5-fc3",
+          "type": "qa",
+          "moduleId": "module-5",
+          "front": "When should you use each type of join in real data analysis?",
+          "back": "Use inner_join() when you only care about complete cases with data in both sources. Use left_join() when the left data frame is your primary table and you want to add supplementary data without losing rows. Use anti_join() to find rows that failed to match, crucial for data quality checks. Choose based on whether unmatched rows represent errors or valuable information about missingness.",
+          "explanation": "If joining customer data with purchase history, left_join() keeps all customers even those with no purchases. anti_join() finds customers with no matching purchases, useful for troubleshooting."
         }
       ]
     },
@@ -1117,6 +1247,32 @@
           "answer": 1,
           "explanation": "Mutually exclusive means P(A and B)=0, so P(A or B) = P(A)+P(B) = 0.6+0.3 = 0.9."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m6-fc1",
+          "type": "qa",
+          "moduleId": "module-6",
+          "front": "What is the difference between P(A or B) and P(A and B)?",
+          "back": "P(A or B) is the probability that at least one event occurs: P(A or B) = P(A) + P(B) - P(A and B). P(A and B) is the probability that both events occur simultaneously. When events are mutually exclusive (cannot both happen), P(A and B) = 0 and P(A or B) = P(A) + P(B). When events are independent, P(A and B) = P(A) * P(B).",
+          "explanation": "Rolling a die: P(1 or 2) = 1/6 + 1/6 = 1/3. P(1 and even) = 0 because 1 is odd. Always subtract the overlap to avoid double-counting in the 'or' formula."
+        },
+        {
+          "id": "m6-fc2",
+          "type": "qa",
+          "moduleId": "module-6",
+          "front": "What is conditional probability and what does P(A|B) mean?",
+          "back": "Conditional probability P(A|B) is the probability of event A given that event B has already occurred. It answers 'what are the odds of A, knowing B is true?' Formula: P(A|B) = P(A and B) / P(B), provided P(B) > 0. Two events are independent if P(A|B) = P(A), meaning knowledge of B doesn't change the probability of A.",
+          "explanation": "Example: P(rain | clouds) is higher than P(rain) alone because clouds make rain more likely. If events are independent like coin flips, P(heads | previous flip was heads) = 1/2 still."
+        },
+        {
+          "id": "m6-fc3",
+          "type": "qa",
+          "moduleId": "module-6",
+          "front": "What are expected value E(X) and variance Var(X) and why do they matter?",
+          "back": "Expected value E(X) is the long-run average of a random variable, calculated as the sum of each outcome multiplied by its probability. Variance Var(X) measures spread or variability, calculated as E[(X - E(X))^2], and standard deviation is the square root of variance. These parameters fully characterize the behavior of a random variable for predictions and risk assessment.",
+          "explanation": "For a fair die, E(X) = 3.5 (the average outcome). Variance measures how far outcomes typically deviate from the mean. Higher variance means less predictable outcomes."
+        }
       ]
     },
     {
@@ -1254,6 +1410,32 @@
           "answer": 1,
           "explanation": "C(n,k) = n!/(k!(n-k)!) counts the number of ways to arrange k successes among n trials without regard to order."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m7-fc1",
+          "type": "qa",
+          "moduleId": "module-7",
+          "front": "What are the BINS conditions for a binomial distribution?",
+          "back": "For a binomial distribution with n trials and probability p per trial: Binary (two outcomes per trial, success or failure), Independent trials (outcome of one trial doesn't affect others), Number of trials n is fixed in advance, and Same probability p applies to each trial. When all four conditions are met, the random variable X (number of successes) follows a binomial distribution and can be analyzed using binomial functions.",
+          "explanation": "Flipping a coin 10 times satisfies BINS: binary (heads/tails), independent flips, n=10 fixed, p=0.5 same for each. If p changes or trials depend on each other, it's not binomial."
+        },
+        {
+          "id": "m7-fc2",
+          "type": "qa",
+          "moduleId": "module-7",
+          "front": "What is the difference between dbinom and pbinom?",
+          "back": "dbinom(k, n, p) returns the probability of exactly k successes in n trials (the probability mass function). pbinom(k, n, p) returns the cumulative probability of at most k successes. For 'exactly k' use dbinom. For 'at most k' or 'up to k' use pbinom. To find P(X >= k), use 1 - pbinom(k-1, n, p) because pbinom gives cumulative probability up to k-1.",
+          "explanation": "dbinom(5, 10, 0.5) gives P(X=5). pbinom(5, 10, 0.5) gives P(X <= 5). These are different values with different interpretations."
+        },
+        {
+          "id": "m7-fc3",
+          "type": "qa",
+          "moduleId": "module-7",
+          "front": "How do you calculate the mean and standard deviation of a binomial distribution?",
+          "back": "For a binomial random variable X with n trials and success probability p: mean = E(X) = n*p and standard deviation = sqrt(n*p*(1-p)). The variance is Var(X) = n*p*(1-p). These formulas allow you to characterize the center and spread of the distribution without calculating the full probability distribution. The P(X >= k) trick: use 1 - pbinom(k-1, n, p) to find the probability of k or more successes.",
+          "explanation": "For n=100, p=0.6: mean = 60, SD = sqrt(100*0.6*0.4) = sqrt(24) = 4.9. The distribution is centered at 60 with typical variation of about 5 successes."
+        }
       ]
     },
     {
@@ -1390,6 +1572,32 @@
           ],
           "answer": 1,
           "explanation": "The CLT guarantees sample means are approximately normal for large n, enabling normal-based inference even for non-normal populations."
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "m8-fc1",
+          "type": "qa",
+          "moduleId": "module-8",
+          "front": "What is the difference between pnorm and qnorm?",
+          "back": "pnorm(x, mean, sd) returns the cumulative probability P(X <= x) for a normal distribution, answering 'what proportion of data falls below this value?' qnorm(p, mean, sd) is the inverse: it returns the value x such that P(X <= x) = p, answering 'what value is at this percentile?' pnorm goes from value to probability; qnorm goes from probability to value.",
+          "explanation": "pnorm(72, 70, 2) might return 0.84, meaning 84% of data is below 72. qnorm(0.84, 70, 2) returns 72. They are inverses of each other."
+        },
+        {
+          "id": "m8-fc2",
+          "type": "qa",
+          "moduleId": "module-8",
+          "front": "What is standardization and the z-score formula?",
+          "back": "Standardization converts any value from a normal distribution to a standard normal distribution (mean=0, sd=1) using the z-score formula: z = (x - mean) / sd. This allows comparison between variables on different scales and use of standard normal tables. After standardization, pnorm(z) works without specifying mean and sd because the standard normal has known properties.",
+          "explanation": "A height of 72 inches with mean 70 and sd 2 gives z = (72-70)/2 = 1. A test score of 85 with mean 80 and sd 5 also gives z = 1, so both values are equally typical in their distributions."
+        },
+        {
+          "id": "m8-fc3",
+          "type": "qa",
+          "moduleId": "module-8",
+          "front": "What is the Central Limit Theorem and why is it important for sampling distributions?",
+          "back": "The Central Limit Theorem states that the distribution of sample means (x-bar) approaches a normal distribution as the sample size n increases, regardless of the shape of the population distribution. The mean of x-bar equals the population mean mu, and the standard deviation of x-bar (standard error) equals sigma / sqrt(n). This is crucial because it allows inference about population parameters using normal distribution methods even when the population itself is not normal.",
+          "explanation": "Even if data comes from a non-normal population, averaging many samples produces a nearly normal distribution. Standard error decreases with larger samples, making estimates more precise. This justifies using z and t tests in practice."
         }
       ]
     },
@@ -1794,6 +2002,32 @@
           "answer": 1,
           "explanation": "Statistical significance tests whether a difference exists (yes, if p < 0.05). Effect size measures if that difference is large enough to matter. Large samples can find tiny, meaningless differences."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m9-fc1",
+          "type": "qa",
+          "moduleId": "module-9",
+          "front": "What is the confidence interval formula and what does the t* value represent?",
+          "back": "A confidence interval for a population mean is: x-bar +/- t* * (s / sqrt(n)), where x-bar is the sample mean, s is the sample standard deviation, n is sample size, and t* is the critical value from the t-distribution. The t* value increases with confidence level (higher confidence means wider intervals) and depends on degrees of freedom (df = n-1). A 95% confidence interval means if you repeated sampling many times, about 95% of your intervals would contain the true population mean.",
+          "explanation": "For n=25, df=24. The t* value for 95% confidence is about 2.064. Larger confidence levels (99% vs 95%) require larger t* values, widening the interval. Using t instead of z accounts for uncertainty in estimating the standard deviation."
+        },
+        {
+          "id": "m9-fc2",
+          "type": "qa",
+          "moduleId": "module-9",
+          "front": "What is the difference between Type I and Type II error?",
+          "back": "Type I error (false positive) occurs when you reject a true null hypothesis, concluding an effect exists when it doesn't. Type II error (false negative) occurs when you fail to reject a false null hypothesis, missing an effect that does exist. The significance level alpha controls Type I error (P(Type I) = alpha). Power = 1 - P(Type II) increases with sample size. You cannot control both simultaneously; trading off between them is part of experimental design.",
+          "explanation": "A jury convicting an innocent person is Type I. A jury acquitting a guilty person is Type II. In medical testing, Type I is a false diagnosis; Type II is missing a real condition. Different situations emphasize different error types."
+        },
+        {
+          "id": "m9-fc3",
+          "type": "qa",
+          "moduleId": "module-9",
+          "front": "How do p-values and confidence intervals relate to each other in hypothesis testing?",
+          "back": "A p-value is the probability of observing your data (or more extreme) under the null hypothesis. A 95% confidence interval rejects the null hypothesis at alpha=0.05 if the hypothesized value falls outside the interval. If a null value is inside the CI, the p-value > 0.05. If outside, the p-value < 0.05. Both methods answer the same question differently: CIs show a range of plausible values, p-values show evidence against the null.",
+          "explanation": "If a 95% CI for a mean is [50, 70], you reject null hypothesis mu=45 (p < 0.05) but fail to reject mu=60 (p > 0.05). A wide CI suggests weak evidence; a narrow CI suggests strong evidence."
+        }
       ]
     },
     {
@@ -1930,6 +2164,32 @@
           ],
           "answer": 2,
           "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.03))^2 = (32.67)^2 ≈ 1068. This uses the conservative p = 0.5 estimate."
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "m10-fc1",
+          "type": "qa",
+          "moduleId": "module-10",
+          "front": "When do you use z* versus t* for proportion inference?",
+          "back": "For proportion inference, use z* from the standard normal distribution, not t*, because the sampling distribution of p-hat is approximately normal (not t-distributed) when sample size is large enough. Success-failure condition: np >= 10 and n(1-p) >= 10. When this condition holds, construct confidence intervals and tests for proportions using z* values. The t-distribution applies to means, not proportions.",
+          "explanation": "For p=0.5, n=30: both np and n(1-p) equal 15, satisfying the condition. You use z*=1.96 for 95% CI. If either count is < 10, use exact binomial or other methods instead of the normal approximation."
+        },
+        {
+          "id": "m10-fc2",
+          "type": "qa",
+          "moduleId": "module-10",
+          "front": "What is the standard error formula for p-hat and why does it differ between CI and testing?",
+          "back": "For a confidence interval, SE = sqrt(p-hat * (1 - p-hat) / n) using the sample proportion p-hat. For hypothesis testing, SE = sqrt(p0 * (1 - p0) / n) using the null hypothesis value p0. The difference matters: CI uses sample information to estimate SE, while testing uses the specific null value. Confusing these formulas leads to incorrect results.",
+          "explanation": "If p-hat = 0.55 and testing H0: p = 0.5, CI uses SE based on 0.55, but the test uses SE based on 0.5. The null value is the assumed truth under H0, while p-hat is what you observed."
+        },
+        {
+          "id": "m10-fc3",
+          "type": "qa",
+          "moduleId": "module-10",
+          "front": "What is pooled proportion and when do you use it in two-proportion inference?",
+          "back": "For a two-proportion hypothesis test where H0: p1 = p2, the pooled proportion p-pool = (successes1 + successes2) / (n1 + n2) combines data from both samples to estimate the common proportion under the null hypothesis. SE = sqrt(p-pool * (1 - p-pool) * (1/n1 + 1/n2)). Pooling is appropriate only when the null hypothesis claims equality. For confidence intervals or when testing p1 vs p2 (alternative hypothesis), use separate proportions without pooling.",
+          "explanation": "Pooling assumes H0 is true and combines samples for a single estimate. This is more efficient under the null. In a CI, you use p-hat1 and p-hat2 separately because you're not assuming equality."
         }
       ]
     },
@@ -2068,6 +2328,32 @@
           "answer": 1,
           "explanation": "For a valid t-test, we need (1) quantitative data, (2) a random sample, and (3) either normality or a large sample size (n >= 30). Option A sets an arbitrary threshold. Option C is not a requirement. Option D is a decision criterion, not a condition to check beforehand."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m11-fc1",
+          "type": "qa",
+          "moduleId": "module-11",
+          "front": "When do you use the t-distribution versus the z-distribution for inference about a mean?",
+          "back": "Use the t-distribution when the population standard deviation sigma is unknown and must be estimated from the sample (standard case). Use the z-distribution only when sigma is known (rare in practice). The t-distribution has heavier tails than the normal distribution, reflecting extra uncertainty. As sample size increases (df = n-1 increases), the t-distribution converges to the normal distribution.",
+          "explanation": "In real data analysis, you almost always use t because sigma is unknown. The t-distribution produces wider confidence intervals than z would, appropriately accounting for estimation uncertainty. At large n (say, n > 30), t and z are very similar."
+        },
+        {
+          "id": "m11-fc2",
+          "type": "qa",
+          "moduleId": "module-11",
+          "front": "What is the degrees of freedom and how do you use t.test() arguments in R?",
+          "back": "Degrees of freedom df = n-1 for a single-sample t-test, reflecting that one constraint is lost when estimating the mean from data. In R, t.test(x, mu=value) tests whether the mean of x equals a specific value, mu. Use alternative='less' or 'greater' for one-sided tests and alternative='two.sided' (default) for two-sided tests. The output includes the t-statistic, p-value, and confidence interval.",
+          "explanation": "With n=25, df=24, so you look up the t-critical value at df=24. t.test(data, mu=0, alternative='greater') tests if the mean is significantly greater than zero (one-sided)."
+        },
+        {
+          "id": "m11-fc3",
+          "type": "qa",
+          "moduleId": "module-11",
+          "front": "How do one-sided and two-sided p-values differ and when should you use each?",
+          "back": "A two-sided p-value tests the alternative hypothesis that the parameter differs from the null (either direction). A one-sided p-value tests that the parameter is specifically greater than or less than the null. A two-sided p-value equals twice the one-sided p-value (when the t-statistic is in the predicted direction). Use two-sided unless you have a strong directional hypothesis specified before seeing the data, as one-sided tests can mask effects in the opposite direction.",
+          "explanation": "If a t-test produces a two-sided p-value of 0.04, the one-sided p-value is 0.02. One-sided tests require theoretical justification beforehand; otherwise, they inflate Type I error by selectively choosing direction post-hoc."
+        }
       ]
     },
     {
@@ -2205,6 +2491,32 @@
           "answer": 1,
           "explanation": "The ratio of standard deviations is 4.8/2.1 = 2.29, which is substantially greater than the rule-of-thumb cutoff of 1.5. This indicates unequal variances, making Welch's t-test the appropriate choice. Welch's method is safer when variances differ and doesn't require a preliminary test. Equal-variance would assume homogeneity, which is clearly violated here."
         }
+      ],
+      "flashcards": [
+        {
+          "id": "m12-fc1",
+          "type": "qa",
+          "moduleId": "module-12",
+          "front": "What is the difference between pooled t-test and Welch t-test for two samples?",
+          "back": "The pooled t-test assumes both populations have equal variances and combines the two sample variances into one estimate. The Welch t-test does not assume equal variances and uses separate variance estimates. R's t.test() function defaults to the Welch test (var.equal=FALSE). Use the pooled test only if you've verified equal variances; otherwise, the Welch test is safer because it remains valid even when variances differ. The pooled test has df = n1 + n2 - 2; Welch's df is more complex.",
+          "explanation": "If sample SDs are similar, pooled and Welch produce similar results. If one group has much larger variance, Welch adjusts the degrees of freedom downward to be conservative. The equal variance assumption is rarely met in real data."
+        },
+        {
+          "id": "m12-fc2",
+          "type": "qa",
+          "moduleId": "module-12",
+          "front": "When should you use a paired t-test and why does pairing reduce noise?",
+          "back": "Use a paired t-test when observations are naturally matched or correlated, such as before-and-after measurements on the same individuals, or twins paired by family. Pairing works by analyzing differences within pairs, reducing the effect of extraneous variation that affects both measurements equally. The test uses d = X1 - X2 for each pair and tests whether the mean difference is zero. Pairing increases power by removing between-subject variability from the comparison.",
+          "explanation": "Measuring students' test scores before and after tutoring: pairing controls for initial ability differences across students. A paired design is much more powerful than comparing two separate groups of different students, assuming the correlation is moderate to strong."
+        },
+        {
+          "id": "m12-fc3",
+          "type": "qa",
+          "moduleId": "module-12",
+          "front": "How does the paired design improve statistical power compared to independent samples?",
+          "back": "Pairing reduces the standard error of the difference by removing between-subject variability, which inflates the variance in independent samples. The effective sample size increases because each pair provides internal control, similar to having a larger n. If the correlation between paired observations is high, the variance of differences is much smaller than the variance of individual measurements, leading to a smaller standard error and larger t-statistic. This increased power means you can detect smaller true differences.",
+          "explanation": "In an independent t-test, the variance of X1 - X2 is Var(X1) + Var(X2). In a paired test, it's Var(X1) + Var(X2) - 2*Cov(X1, X2). The covariance term reduces the variance, boosting power significantly when observations are correlated."
+        }
       ]
     },
     {
@@ -2341,6 +2653,32 @@
           ],
           "answer": 1,
           "explanation": "Predicting at x = 120 when the data only goes up to x = 50 is extrapolation. The relationship may not hold outside the observed range, and prediction errors tend to increase far from the data. This violates the principle that we should only predict within or near the range of observed data. Option A is opposite of reality; option C and D are not related to extrapolation specifically."
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "m13-fc1",
+          "type": "qa",
+          "moduleId": "module-13",
+          "front": "What is correlation r and how does it relate to regression slope b1?",
+          "back": "Correlation r measures the strength and direction of linear association between two variables, ranging from -1 to 1. The regression slope b1 = r * (sy / sx), where sy and sx are the standard deviations of y and x. The slope incorporates correlation scaled by the ratio of standard deviations, so the same correlation produces different slopes depending on the scales. A strong correlation (r near +/- 1) indicates that x explains most variation in y.",
+          "explanation": "If r=0.8, sy=10, sx=2, then b1 = 0.8 * (10/2) = 4. If sx were 10 instead, b1 = 0.8 * (10/10) = 0.8. Correlation is unitless and standardized; slope is in the original units."
+        },
+        {
+          "id": "m13-fc2",
+          "type": "qa",
+          "moduleId": "module-13",
+          "front": "What are residuals, SSE, and R-squared in regression?",
+          "back": "Residuals are the differences between observed y values and predicted y-hat values: e = y - y-hat. SSE (sum of squared errors) = sum(e^2) measures total prediction error. R-squared = 1 - (SSE / SST) where SST is total sum of squares, representing the proportion of variance in y explained by the model. R-squared ranges from 0 to 1, with higher values indicating better model fit. A low R-squared suggests the predictor(s) don't explain much variation.",
+          "explanation": "If SST = 100 and SSE = 20, then R-squared = 1 - (20/100) = 0.8, meaning the model explains 80% of variation. Unexplained variation (20%) might be due to other unmeasured factors or random noise."
+        },
+        {
+          "id": "m13-fc3",
+          "type": "qa",
+          "moduleId": "module-13",
+          "front": "What is the difference between a confidence interval and prediction interval for regression predictions?",
+          "back": "A confidence interval for y-hat (predicted mean) is narrower and reflects uncertainty in estimating the regression line. A prediction interval for a new y value is wider and includes both the uncertainty in the line plus the variability of individual observations around the line. For a given x value, the CI gives a range for the average y; the PI gives a range for a single new observation. Both widen as you move away from the mean of x.",
+          "explanation": "At x = sample mean, both intervals are narrowest. A 95% CI might be [25, 35] while a 95% PI for the same x is [15, 45], reflecting the fact that individual observations scatter more than their mean."
         }
       ]
     },

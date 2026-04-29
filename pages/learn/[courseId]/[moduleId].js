@@ -531,16 +531,15 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
     checkPlan()
   }, [])
 
-  // Load flashcard progress for exam pages
+  // Load flashcard progress — all modules (not just exams)
   useEffect(() => {
-    if (!mod?.isExam) return
     async function loadFlashcards() {
       try {
         const { auth } = await import('../../../lib/firebase')
         const user = auth.currentUser
         if (!user) { setFlashcardLoaded(true); return }
         const token = await user.getIdToken()
-        const res = await fetch(`/api/learn/flashcards?courseId=${course.id}&examId=${mod.id}`, {
+        const res = await fetch(`/api/learn/flashcards?courseId=${course.id}&moduleId=${mod.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         const data = await res.json()
@@ -551,7 +550,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
       setFlashcardLoaded(true)
     }
     loadFlashcards()
-  }, [mod?.isExam, mod?.id, course?.id])
+  }, [mod?.id, course?.id])
 
   async function saveFlashcardProgress(updatedProgress) {
     setFlashcardProgress(updatedProgress)
@@ -563,7 +562,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
       await fetch('/api/learn/flashcards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ courseId: course.id, examId: mod.id, progress: updatedProgress })
+        body: JSON.stringify({ courseId: course.id, moduleId: mod.id, progress: updatedProgress })
       })
     } catch (_) {}
   }
@@ -706,30 +705,32 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
           </div>
         </div>
 
-        {/* ── FLASHCARD STUDY MODE (exam pages) ── */}
-        {mod?.isExam && !flashcardMode && (
+        {/* ── FLASHCARD STUDY BUTTON (all modules) ── */}
+        {!flashcardMode && (
           <div style={{ marginBottom: 40, padding: 24, background: 'rgba(0,255,65,0.04)', border: '1px solid rgba(0,255,65,0.15)', borderRadius: 8 }}>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 12, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', marginBottom: 8 }}>
-              ADAPTIVE STUDY
+              ADAPTIVE FLASHCARDS
             </div>
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Flashcard Study Mode</div>
             <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginBottom: 16 }}>
-              {flashcardLoaded && flashcardProgress
-                ? `Session ${(flashcardProgress.sessionCount ?? 0) + 1} · Cards sorted by what you need most`
-                : 'Study all exam questions with spaced repetition. Weak topics get prioritized.'}
+              {flashcardLoaded && flashcardProgress?.sessionCount > 0
+                ? `Session ${(flashcardProgress.sessionCount ?? 0) + 1} · Weak cards get shown more. 3 correct in a row to master.`
+                : 'Study this module with spaced repetition. Wrong answers come back weighted heavier.'}
             </div>
             <button
               onClick={() => setFlashcardMode(true)}
               style={{ background: '#00FF41', color: '#000', border: 'none', borderRadius: 4, padding: '10px 24px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, cursor: 'pointer', letterSpacing: '0.05em' }}
             >
-              {flashcardProgress?.sessionCount > 0 ? `CONTINUE STUDYING (SESSION ${(flashcardProgress.sessionCount ?? 0) + 1})` : 'START FLASHCARDS'}
+              {flashcardProgress?.sessionCount > 0 ? `CONTINUE (SESSION ${(flashcardProgress.sessionCount ?? 0) + 1})` : 'START FLASHCARDS'}
             </button>
           </div>
         )}
 
         {flashcardMode && (
           <FlashcardStudy
-            questions={mod.flashQuiz ?? quiz}
+            questions={mod.isExam ? (mod.flashQuiz ?? quiz) : [...(mod.quiz ?? []), ...(mod.flashcards ?? [])]}
+            courseId={course.id}
+            moduleId={mod.id}
             progress={flashcardProgress}
             onSaveProgress={saveFlashcardProgress}
             onClose={() => setFlashcardMode(false)}

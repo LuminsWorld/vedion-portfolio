@@ -5,13 +5,11 @@ export default async function handler(req, res) {
   const { user } = await requireAuth(req)
   if (!user) return res.status(401).json({ error: 'Unauthenticated' })
 
-  const { courseId, examId } = req.query
-  if (!courseId || !examId) return res.status(400).json({ error: 'courseId and examId required' })
+  const { courseId, moduleId, examId } = req.query
+  const mid = moduleId ?? examId   // accept both param names for backward compat
+  if (!courseId || !mid) return res.status(400).json({ error: 'courseId and moduleId required' })
 
-  // Validate it's actually an exam module (security check)
-  if (!examId.startsWith('exam-')) return res.status(400).json({ error: 'examId must be an exam checkpoint' })
-
-  const docId = `${user.uid}_${courseId}_${examId}`
+  const docId = `${user.uid}_${courseId}_${mid}`
   const path = `flashcardProgress/${docId}`
 
   if (req.method === 'GET') {
@@ -33,7 +31,7 @@ export default async function handler(req, res) {
         ...progress,
         uid: user.uid,
         courseId,
-        examId,
+        moduleId: mid,
         updatedAt: new Date().toISOString(),
       }
 
