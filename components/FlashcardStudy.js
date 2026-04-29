@@ -476,18 +476,23 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
     setAiLoading(true)
     setAiError(null)
     try {
-      const wrongText  = currentCard.type === 'multiple'  ? (currentCard.options?.[selectedAnswer] ?? String(selectedAnswer))
-                       : currentCard.type === 'select-all' ? checkboxState.map(i => currentCard.options?.[i]).join(', ')
-                       : currentCard.type === 'fill-blank' ? fillInput
-                       : '(self-assessed)'
-      const rightText  = currentCard.type === 'multiple'  ? (currentCard.options?.[currentCard.answer] ?? '')
-                       : currentCard.type === 'select-all' ? (currentCard.answer ?? []).map(i => currentCard.options?.[i]).join(', ')
-                       : currentCard.type === 'fill-blank' ? (currentCard.blanks?.[0] ?? '')
-                       : (currentCard.back ?? '')
+      const { auth } = await import('../lib/firebase')
+      const user = auth.currentUser
+      if (!user) { setAiError('Not signed in.'); setAiLoading(false); return }
+      const token = await user.getIdToken()
+
+      const wrongText = currentCard.type === 'multiple'   ? (currentCard.options?.[selectedAnswer] ?? String(selectedAnswer))
+                      : currentCard.type === 'select-all' ? checkboxState.map(i => currentCard.options?.[i]).join(', ')
+                      : currentCard.type === 'fill-blank' ? fillInput
+                      : '(self-assessed)'
+      const rightText = currentCard.type === 'multiple'   ? (currentCard.options?.[currentCard.answer] ?? '')
+                      : currentCard.type === 'select-all' ? (currentCard.answer ?? []).map(i => currentCard.options?.[i]).join(', ')
+                      : currentCard.type === 'fill-blank' ? (currentCard.blanks?.[0] ?? '')
+                      : (currentCard.back ?? '')
 
       const res = await fetch('/api/learn/explain', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           courseId,
           moduleId: QUESTION_TOPICS[currentCard.id]?.module ?? moduleId,
