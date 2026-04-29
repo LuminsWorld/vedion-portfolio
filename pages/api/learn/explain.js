@@ -16,21 +16,21 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'AI explanations are a Pro/Ultra feature.', upgradeRequired: true })
   }
 
-  const { courseId, moduleId, cardId, question, wrongAnswer, correctAnswer } = req.body ?? {}
+  const { courseId, moduleId, cardId, question, wrongAnswer, correctAnswer, bypassCache } = req.body ?? {}
   if (!courseId || !moduleId || !question) {
     return res.status(400).json({ error: 'Missing required fields.' })
   }
 
-  // ── Cache check: if we have a cached explanation for this card, serve it free ──
+  // ── Cache check (skipped when bypassCache=true) ──
   const cacheKey = cardId ? `aiExplanations/${courseId}_${cardId}` : null
-  if (cacheKey) {
+  if (cacheKey && !bypassCache) {
     const cached = await getDoc(cacheKey)
     if (cached?.explanation) {
       return res.json({ explanation: cached.explanation, cached: true })
     }
   }
 
-  // ── Not cached — check credits and generate ──
+  // ── Not cached (or bypassed) — check credits and generate ──
   const COST = 1
   if (user.credits < COST) {
     return res.status(402).json({ error: 'Not enough credits.' })

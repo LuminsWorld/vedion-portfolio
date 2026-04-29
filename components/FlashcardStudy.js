@@ -391,6 +391,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
   const [overruled,      setOverruled]        = useState(false)
   const [aiExplanation,  setAiExplanation]    = useState(null)
   const [aiCached,       setAiCached]         = useState(false)
+  const [aiDiffLoading,  setAiDiffLoading]    = useState(false)
   const [aiLoading,      setAiLoading]        = useState(false)
   const [aiError,        setAiError]          = useState(null)
 
@@ -420,6 +421,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
     setOverruled(false)
     setAiExplanation(null)
     setAiCached(false)
+    setAiDiffLoading(false)
     setAiError(null)
   }
 
@@ -473,14 +475,12 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
   }
 
   /* ─── AI explain ─── */
-  async function fetchAiExplain() {
-    if (!currentCard || !courseId || !moduleId) return
-    setAiLoading(true)
-    setAiError(null)
+  async function callExplainApi(bypassCache = false) {
+    if (!currentCard || !courseId || !moduleId) return null
     try {
       const { auth } = await import('../lib/firebase')
       const user = auth.currentUser
-      if (!user) { setAiError('Not signed in.'); setAiLoading(false); return }
+      if (!user) { setAiError('Not signed in.'); return null }
       const token = await user.getIdToken()
 
       const wrongText = currentCard.type === 'multiple'   ? (currentCard.options?.[selectedAnswer] ?? String(selectedAnswer))
@@ -502,15 +502,31 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
           question: currentCard.type === 'qa' ? currentCard.front : currentCard.question,
           wrongAnswer: wrongText,
           correctAnswer: rightText,
+          bypassCache,
         }),
       })
-      const data = await res.json()
-      if (data.error) setAiError(data.error)
-      else { setAiExplanation(data.explanation); setAiCached(!!data.cached) }
+      return await res.json()
     } catch {
-      setAiError('Request failed.')
+      return { error: 'Request failed.' }
     }
+  }
+
+  async function fetchAiExplain() {
+    setAiLoading(true)
+    setAiError(null)
+    const data = await callExplainApi(false)
+    if (data?.error) setAiError(data.error)
+    else if (data) { setAiExplanation(data.explanation); setAiCached(!!data.cached) }
     setAiLoading(false)
+  }
+
+  async function fetchAiExplainDifferently() {
+    setAiDiffLoading(true)
+    setAiError(null)
+    const data = await callExplainApi(true)
+    if (data?.error) setAiError(data.error)
+    else if (data) { setAiExplanation(data.explanation); setAiCached(false) }
+    setAiDiffLoading(false)
   }
 
   /* ────────────────────────────────────────────────────────
@@ -924,7 +940,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
                     {effectiveCorrect === false ? 'EXPLAIN WITH AI' : 'EXPLAIN FURTHER WITH AI'}
                   </button>
                 )}
-                {aiLoading && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'rgba(168,85,247,0.6)' }}>Thinking...</span>}
+                {(aiLoading || aiDiffLoading) && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'rgba(168,85,247,0.6)' }}>Thinking...</span>}
                 {aiError && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#FF2D55' }}>{aiError}</span>}
                 {aiExplanation && (
                   <div style={{ padding:'14px 16px', background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:8, borderLeft:'3px solid #A855F7' }}>
@@ -935,6 +951,11 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
                     <p style={{ fontFamily:'Inter,sans-serif', fontSize:13, color:'rgba(255,255,255,0.75)', margin:0, lineHeight:1.75 }}>
                       <InlineText text={aiExplanation.replace(/^#+\s*\w[^\n]*/,'').trim()} />
                     </p>
+                    {aiCached && !aiDiffLoading && (
+                      <button onClick={fetchAiExplainDifferently} style={{ marginTop:12, background:'transparent', border:'1px solid rgba(168,85,247,0.25)', color:'rgba(168,85,247,0.6)', borderRadius:5, padding:'6px 14px', fontFamily:'JetBrains Mono,monospace', fontSize:10, cursor:'pointer', letterSpacing:'0.08em' }}>
+                        EXPLAIN DIFFERENTLY (1 CREDIT)
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
