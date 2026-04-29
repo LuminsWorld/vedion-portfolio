@@ -390,6 +390,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
   const [resultCorrect,  setResultCorrect]    = useState(null)    // true | false | null
   const [overruled,      setOverruled]        = useState(false)
   const [aiExplanation,  setAiExplanation]    = useState(null)
+  const [aiAltExplanation, setAiAltExplanation] = useState(null)  // "explain differently" candidate
   const [aiCached,       setAiCached]         = useState(false)
   const [aiDiffLoading,  setAiDiffLoading]    = useState(false)
   const [aiLoading,      setAiLoading]        = useState(false)
@@ -420,6 +421,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
     setResultCorrect(null)
     setOverruled(false)
     setAiExplanation(null)
+    setAiAltExplanation(null)
     setAiCached(false)
     setAiDiffLoading(false)
     setAiError(null)
@@ -525,8 +527,33 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
     setAiError(null)
     const data = await callExplainApi(true)
     if (data?.error) setAiError(data.error)
-    else if (data) { setAiExplanation(data.explanation); setAiCached(false) }
+    else if (data) setAiAltExplanation(data.explanation)
     setAiDiffLoading(false)
+  }
+
+  async function pickExplanation(chosen) {
+    // Save the chosen one; if it's the alt (new), overwrite cache — if original, no-op (already cached)
+    if (!currentCard) return
+    try {
+      const { auth } = await import('../lib/firebase')
+      const user = auth.currentUser
+      if (!user) return
+      const token = await user.getIdToken()
+      await fetch('/api/learn/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          courseId,
+          moduleId: QUESTION_TOPICS[currentCard.id]?.module ?? moduleId,
+          cardId: currentCard.id,
+          question: currentCard.type === 'qa' ? currentCard.front : currentCard.question,
+          saveExplanation: chosen,
+        }),
+      })
+    } catch { /* non-critical */ }
+    setAiExplanation(chosen)
+    setAiAltExplanation(null)
+    setAiCached(false)
   }
 
   /* ────────────────────────────────────────────────────────
@@ -940,9 +967,34 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
                     {effectiveCorrect === false ? 'EXPLAIN WITH AI' : 'EXPLAIN FURTHER WITH AI'}
                   </button>
                 )}
-                {(aiLoading || aiDiffLoading) && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'rgba(168,85,247,0.6)' }}>Thinking...</span>}
+                {(aiLoading || aiDiffLoading) && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'rgba(168,85,247,0.6)' }}>{aiDiffLoading ? 'Generating alternative...' : 'Thinking...'}</span>}
                 {aiError && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#FF2D55' }}>{aiError}</span>}
-                {aiExplanation && (
+
+                {/* Side-by-side comparison when alt is ready */}
+                {aiExplanation && aiAltExplanation && (
+                  <div>
+                    <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'rgba(255,255,255,0.3)', letterSpacing:'0.15em', marginBottom:10 }}>PICK THE MORE USEFUL EXPLANATION</div>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                      {[['ORIGINAL', aiExplanation], ['NEW', aiAltExplanation]].map(([label, text]) => (
+                        <div key={label} style={{ padding:'12px 14px', background:'rgba(168,85,247,0.05)', border:'1px solid rgba(168,85,247,0.18)', borderRadius:8 }}>
+                          <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'rgba(168,85,247,0.6)', letterSpacing:'0.12em', marginBottom:8 }}>{label}</div>
+                          <p style={{ fontFamily:'Inter,sans-serif', fontSize:12, color:'rgba(255,255,255,0.7)', margin:'0 0 12px', lineHeight:1.7 }}>
+                            <InlineText text={text.replace(/^#+\s*\w[^\n]*/,'').trim()} />
+                          </p>
+                          <button onClick={() => pickExplanation(text)} style={{ width:'100%', background:'rgba(168,85,247,0.12)', border:'1px solid rgba(168,85,247,0.35)', color:'#A855F7', borderRadius:5, padding:'7px 0', fontFamily:'JetBrains Mono,monospace', fontSize:10, cursor:'pointer', fontWeight:700, letterSpacing:'0.08em' }}>
+                            USE THIS ONE
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <button onClick={() => setAiAltExplanation(null)} style={{ marginTop:8, background:'transparent', border:'none', color:'rgba(255,255,255,0.2)', fontFamily:'JetBrains Mono,monospace', fontSize:10, cursor:'pointer', letterSpacing:'0.06em' }}>
+                      KEEP ORIGINAL
+                    </button>
+                  </div>
+                )}
+
+                {/* Single explanation (no comparison active) */}
+                {aiExplanation && !aiAltExplanation && (
                   <div style={{ padding:'14px 16px', background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:8, borderLeft:'3px solid #A855F7' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
                       <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'rgba(168,85,247,0.7)', letterSpacing:'0.15em' }}>AI EXPLANATION</span>

@@ -16,13 +16,20 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'AI explanations are a Pro/Ultra feature.', upgradeRequired: true })
   }
 
-  const { courseId, moduleId, cardId, question, wrongAnswer, correctAnswer, bypassCache } = req.body ?? {}
+  const { courseId, moduleId, cardId, question, wrongAnswer, correctAnswer, bypassCache, saveExplanation } = req.body ?? {}
   if (!courseId || !moduleId || !question) {
     return res.status(400).json({ error: 'Missing required fields.' })
   }
+  const cacheKey = cardId ? `aiExplanations/${courseId}_${cardId}` : null
+
+  // ── Explicit save: user chose an explanation, just write it ──
+  if (saveExplanation) {
+    if (!cacheKey) return res.status(400).json({ error: 'cardId required to save.' })
+    await setDoc(cacheKey, { explanation: saveExplanation, courseId, moduleId, cardId, question, generatedAt: Date.now() })
+    return res.json({ saved: true })
+  }
 
   // ── Cache check (skipped when bypassCache=true) ──
-  const cacheKey = cardId ? `aiExplanations/${courseId}_${cardId}` : null
   if (cacheKey && !bypassCache) {
     const cached = await getDoc(cacheKey)
     if (cached?.explanation) {
@@ -30,7 +37,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── Not cached (or bypassed) — check credits and generate ──
+  // ── Generate (bypass or no cache) — check credits first ──
   const COST = 1
   if (user.credits < COST) {
     return res.status(402).json({ error: 'Not enough credits.' })
@@ -57,19 +64,13 @@ Give a short, clear explanation (2-4 sentences) of why the correct answer is rig
 
   const explanation = response.content[0].text
 
-  // ── Save to cache so future users get it free ──
-  if (cacheKey) {
-    await setDoc(cacheKey, {
-      explanation,
-      courseId,
-      moduleId,
-      cardId,
-      question,
-      generatedAt: Date.now(),
-    })
+  // ── Save to cache only for first-time generation (not bypass) ──
+  if (cacheKey && !bypassCache) {
+    await setDoc(cacheKey, { explanation, courseId, moduleId, cardId, question, generatedAt: Date.now() })
   }
+  // Note: bypassCache=true → caller shows both and asks user to pick; save happens via saveExplanation route
 
-  // ── Deduct 1 credit from the generating user ──
+  // ── Deduct 1 credit ──
   const userDoc = await getDoc(`users/${user.uid}`)
   await updateDoc(`users/${user.uid}`, { credits: (userDoc?.credits ?? user.credits) - COST })
 
