@@ -390,6 +390,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
   const [resultCorrect,  setResultCorrect]    = useState(null)    // true | false | null
   const [overruled,      setOverruled]        = useState(false)
   const [aiExplanation,  setAiExplanation]    = useState(null)
+  const [aiCached,       setAiCached]         = useState(false)
   const [aiLoading,      setAiLoading]        = useState(false)
   const [aiError,        setAiError]          = useState(null)
 
@@ -418,6 +419,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
     setResultCorrect(null)
     setOverruled(false)
     setAiExplanation(null)
+    setAiCached(false)
     setAiError(null)
   }
 
@@ -496,6 +498,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
         body: JSON.stringify({
           courseId,
           moduleId: QUESTION_TOPICS[currentCard.id]?.module ?? moduleId,
+          cardId: currentCard.id,
           question: currentCard.type === 'qa' ? currentCard.front : currentCard.question,
           wrongAnswer: wrongText,
           correctAnswer: rightText,
@@ -503,7 +506,7 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
       })
       const data = await res.json()
       if (data.error) setAiError(data.error)
-      else setAiExplanation(data.explanation)
+      else { setAiExplanation(data.explanation); setAiCached(!!data.cached) }
     } catch {
       setAiError('Request failed.')
     }
@@ -914,26 +917,27 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
                 </div>
               )}
 
-              {/* AI Explain button */}
-              {effectiveCorrect === false && (
-                <div style={{ marginBottom:16 }}>
-                  {!aiExplanation && !aiLoading && (
-                    <button onClick={fetchAiExplain} style={{ background:'rgba(168,85,247,0.1)', border:'1px solid rgba(168,85,247,0.3)', color:'#A855F7', borderRadius:6, padding:'9px 18px', fontFamily:'JetBrains Mono,monospace', fontSize:11, cursor:'pointer', letterSpacing:'0.06em' }}>
-                      EXPLAIN BETTER WITH AI
-                    </button>
-                  )}
-                  {aiLoading && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'rgba(168,85,247,0.6)' }}>Thinking...</span>}
-                  {aiError && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#FF2D55' }}>{aiError}</span>}
-                  {aiExplanation && (
-                    <div style={{ padding:'14px 16px', background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:8, borderLeft:'3px solid #A855F7' }}>
-                      <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'rgba(168,85,247,0.7)', letterSpacing:'0.15em', marginBottom:8 }}>AI EXPLANATION</div>
-                      <p style={{ fontFamily:'Inter,sans-serif', fontSize:13, color:'rgba(255,255,255,0.75)', margin:0, lineHeight:1.75 }}>
-                    <InlineText text={aiExplanation.replace(/^#+\s*\w+\s*/,'').trim()} />
-                  </p>
+              {/* AI Explain button — always shown after flip */}
+              <div style={{ marginBottom:16 }}>
+                {!aiExplanation && !aiLoading && (
+                  <button onClick={fetchAiExplain} style={{ background:'rgba(168,85,247,0.1)', border:'1px solid rgba(168,85,247,0.3)', color:'#A855F7', borderRadius:6, padding:'9px 18px', fontFamily:'JetBrains Mono,monospace', fontSize:11, cursor:'pointer', letterSpacing:'0.06em' }}>
+                    {effectiveCorrect === false ? 'EXPLAIN WITH AI' : 'EXPLAIN FURTHER WITH AI'}
+                  </button>
+                )}
+                {aiLoading && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'rgba(168,85,247,0.6)' }}>Thinking...</span>}
+                {aiError && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#FF2D55' }}>{aiError}</span>}
+                {aiExplanation && (
+                  <div style={{ padding:'14px 16px', background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.2)', borderRadius:8, borderLeft:'3px solid #A855F7' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                      <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'rgba(168,85,247,0.7)', letterSpacing:'0.15em' }}>AI EXPLANATION</span>
+                      {aiCached && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:8, color:'rgba(0,255,65,0.5)', background:'rgba(0,255,65,0.06)', border:'1px solid rgba(0,255,65,0.15)', padding:'1px 6px', borderRadius:3, letterSpacing:'0.1em' }}>CACHED</span>}
                     </div>
-                  )}
-                </div>
-              )}
+                    <p style={{ fontFamily:'Inter,sans-serif', fontSize:13, color:'rgba(255,255,255,0.75)', margin:0, lineHeight:1.75 }}>
+                      <InlineText text={aiExplanation.replace(/^#+\s*\w[^\n]*/,'').trim()} />
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Action buttons */}
               {q.type === 'qa' ? (
