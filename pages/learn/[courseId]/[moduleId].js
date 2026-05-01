@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { getCourse } from '../../../lib/courseData'
 import LearnAccountButton from '../../../components/LearnAccountButton'
 import FlashcardStudy from '../../../components/FlashcardStudy'
+import SelectionAsk from '../../../components/SelectionAsk'
 
 export async function getStaticPaths() {
   const { getAllCourses } = await import('../../../lib/courseData')
@@ -633,6 +634,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   }
 
   return (
+    <>
     <div style={{ background: '#000', minHeight: '100vh', color: '#fff' }}>
       <Head><title>{mod.title} — {course.title}</title></Head>
 
@@ -896,5 +898,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
       </div>
     </div>
+    <SelectionAsk courseId={course.id} moduleId={mod.id} />
+    </>
   )
 }
