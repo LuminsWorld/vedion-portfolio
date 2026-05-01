@@ -501,6 +501,18 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   const [readProgress, setReadProgress] = useState(0)
   const contentRef = useRef(null)
   const [flashcardMode, setFlashcardMode] = useState(false)
+
+  // Reset all quiz/lesson state when navigating to a different module
+  useEffect(() => {
+    setPhase(mod.isExam ? 'quiz' : 'lesson')
+    setAnswers({})
+    setSubmitted(false)
+    setExplanations({})
+    setLoadingExp({})
+    setExpError({})
+    setFlashcardMode(false)
+    setReadProgress(0)
+  }, [mod.id])
   const [flashcardProgress, setFlashcardProgress] = useState(null)
   const [flashcardLoaded, setFlashcardLoaded] = useState(false)
 
@@ -769,7 +781,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── EXAM INTRO (isExam, not yet submitted) ── */}
-        {!flashcardMode && mod.isExam && phase === 'lesson' && (
+        {mod.isExam && phase === 'lesson' && (
           <div style={{ textAlign: 'center', padding: '32px 0' }}>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: '0.2em', color: ec(0.6), marginBottom: 16 }}>{isFinalExam ? 'READY FOR YOUR FINAL REVIEW?' : 'READY TO TEST YOUR KNOWLEDGE?'}</div>
             <button onClick={() => setPhase('quiz')} style={{ background: examColorSolid, color: '#000', border: 'none', borderRadius: 8, padding: '14px 32px', fontFamily: 'JetBrains Mono,monospace', fontWeight: 900, fontSize: 13, letterSpacing: '0.1em', cursor: 'pointer' }}>
@@ -779,7 +791,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── QUIZ / EXAM ── */}
-        {!flashcardMode && phase === 'quiz' && !submitted && (
+        {phase === 'quiz' && !submitted && (
           <div>
             {/* Progress header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, padding: '14px 18px', background: mod.isExam ? ec(0.03) : 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${mod.isExam ? ec(0.12) : 'rgba(255,255,255,0.06)'}` }}>
@@ -823,7 +835,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── RESULTS ── */}
-        {!flashcardMode && phase === 'quiz' && submitted && (
+        {phase === 'quiz' && submitted && (
           <div>
             {/* Score card */}
             <div style={{ padding: '28px 24px', borderRadius: 14, border: `1px solid ${score === quiz.length ? 'rgba(0,255,65,0.3)' : score >= quiz.length * 0.7 ? 'rgba(255,184,0,0.3)' : 'rgba(255,45,85,0.3)'}`, background: score === quiz.length ? 'rgba(0,255,65,0.04)' : score >= quiz.length * 0.7 ? 'rgba(255,184,0,0.04)' : 'rgba(255,45,85,0.04)', marginBottom: 28, textAlign: 'center' }}>
