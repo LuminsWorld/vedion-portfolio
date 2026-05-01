@@ -73,7 +73,9 @@ export default function CoursePage({ course }) {
         </div>
 
         <div style={s.moduleList}>
-          {course.modules.map((mod, i) => {
+          {(() => { let modNum = 0; return course.modules.map((mod, i) => {
+            if (!mod.isExam) modNum++
+            const displayNum = modNum
             const done  = completed.includes(mod.id)
             const score = progress.quizScores?.[mod.id]
             const isNext = !done && (i === 0 || completed.includes(course.modules[i - 1]?.id))
@@ -87,7 +89,7 @@ export default function CoursePage({ course }) {
               <Link key={mod.id} href={`/learn/${course.id}/${mod.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{ ...s.moduleRow, borderColor: isExam ? (done ? examBorder(0.35) : examBorder(0.15)) : done ? 'rgba(0,255,65,0.2)' : isNext ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)', background: isExam ? examBg : '#0A0A0A' }}>
                   <div style={{ ...s.modNum, background: isExam ? (done ? examC : examBorder(0.12)) : done ? '#00FF41' : isNext ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', color: isExam ? (done ? '#000' : examC) : done ? '#000' : isNext ? '#fff' : 'rgba(255,255,255,0.2)', borderRadius: isExam ? 6 : '50%', fontSize: isExam ? 9 : 11 }}>
-                    {isExam ? (done ? '+' : '!') : (done ? '+' : i + 1)}
+                    {isExam ? (done ? '+' : '!') : (done ? '+' : displayNum)}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -102,7 +104,7 @@ export default function CoursePage({ course }) {
                 </div>
               </Link>
             )
-          })}
+          })})()}
         </div>
       </div>
     </div>
