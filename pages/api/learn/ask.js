@@ -25,17 +25,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing selectedText or question.' })
   }
 
-  // Build module context
+  // Build module context — content is stored as markdown string
   const mod = getModule(courseId, moduleId)
-  let contextBlock = ''
-  if (mod) {
-    const textBlocks = (mod.content ?? [])
-      .filter(b => b.type === 'text' || b.type === 'callout' || b.type === 'formula')
-      .map(b => b.text || b.content || '')
-      .join('\n')
-      .slice(0, 2000)
-    contextBlock = `Module: "${mod.title}"\n\nModule content (excerpt):\n${textBlocks}`
-  }
+  const contextBlock = mod
+    ? `Module: "${mod.title}"\n\n${String(mod.content ?? '').slice(0, 2500)}`
+    : ''
 
   const prompt = `You are a precise study assistant helping a student understand course material.
 
@@ -48,19 +42,23 @@ ${selectedText.slice(0, 800)}
 
 Their question: ${question}
 
-Answer directly and concisely (3-5 sentences). Reference the selected text where relevant. Use plain text — no markdown headers, no bullet points unless naturally helpful.`
+Answer directly and concisely (3-5 sentences). Reference the selected text where relevant. Use plain text only — no markdown headers.`
 
-  const response = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 600,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }],
+    })
 
-  const answer = response.content[0].text
+    const answer = response.content[0].text
+    const userDoc = await getDoc(`users/${user.uid}`)
+    const newCredits = (userDoc?.credits ?? user.credits) - COST
+    await updateDoc(`users/${user.uid}`, { credits: newCredits })
 
-  const userDoc = await getDoc(`users/${user.uid}`)
-  const newCredits = (userDoc?.credits ?? user.credits) - COST
-  await updateDoc(`users/${user.uid}`, { credits: newCredits })
-
-  res.json({ answer, creditsRemaining: newCredits })
+    return res.json({ answer, creditsRemaining: newCredits })
+  } catch (e) {
+    console.error('ask.js AI error:', e)
+    return res.status(500).json({ error: 'AI request failed: ' + e.message })
+  }
 }

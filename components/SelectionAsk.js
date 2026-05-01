@@ -163,6 +163,7 @@ export default function SelectionAsk({ courseId, moduleId }) {
             WebkitBackdropFilter: 'blur(6px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: 16,
+            cursor: 'default',
           }}
         >
           <div style={{
@@ -175,6 +176,7 @@ export default function SelectionAsk({ courseId, moduleId }) {
             maxHeight: '85vh',
             overflowY: 'auto',
             boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+            cursor: 'default',
           }}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>

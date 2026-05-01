@@ -500,7 +500,15 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   const [userPlan, setUserPlan] = useState(null)
   const [readProgress, setReadProgress] = useState(0)
   const contentRef = useRef(null)
+  const quizTopRef  = useRef(null)
   const [flashcardMode, setFlashcardMode] = useState(false)
+
+  // Scroll to quiz top when entering quiz phase
+  useEffect(() => {
+    if (phase === 'quiz') {
+      quizTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [phase])
 
   // Reset all quiz/lesson state when navigating to a different module
   useEffect(() => {
@@ -791,6 +799,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
         )}
 
         {/* ── QUIZ / EXAM ── */}
+        <div ref={quizTopRef} />
         {phase === 'quiz' && !submitted && (
           <div>
             {/* Progress header */}
