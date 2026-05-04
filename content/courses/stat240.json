@@ -1893,7 +1893,8 @@
                 "If we repeated the study many times, 90% of such intervals would contain the true mu",
                 "The sample mean is definitely between 24.1 and 31.9"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "The frequentist CI interpretation: 90% of intervals constructed this way capture the true parameter. The specific numbers (24.1, 31.9) are just one such interval."
             },
             {
               "question": "A 99% CI for mu is (45.2, 58.8). Which interpretation is correct?",
@@ -1903,7 +1904,8 @@
                 "If we repeated the study many times, 99% of such intervals would contain the true mu",
                 "The sample mean is definitely 52.0"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "The frequentist CI interpretation: 99% of intervals constructed this way capture the true parameter. We cannot say mu is definitely inside -- only that the method succeeds 99% of the time."
             },
             {
               "question": "A 95% CI for mu is (8.4, 11.6). Which interpretation is correct?",
@@ -1913,7 +1915,8 @@
                 "If we repeated the study many times, 95% of such intervals would contain the true mu",
                 "We are 95% certain that the sample mean is in (8.4, 11.6)"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "The frequentist CI interpretation: 95% of intervals constructed this way capture the true parameter. The probability applies to the procedure, not to this specific interval."
             }
           ]
         },
@@ -1951,7 +1954,8 @@
                 "Accept H0",
                 "Cannot determine"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "p-value (0.12) > alpha (0.05), so we fail to reject H0. The data are consistent with the null hypothesis."
             },
             {
               "question": "You get a p-value of 0.001 with alpha = 0.01. What is your conclusion?",
@@ -1961,7 +1965,8 @@
                 "Accept H0",
                 "Cannot determine"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "p-value (0.001) < alpha (0.01), so we reject H0. The result is statistically significant -- the data are unlikely under H0."
             },
             {
               "question": "You get a p-value of 0.06 with alpha = 0.05. What is your conclusion?",
@@ -1971,7 +1976,8 @@
                 "Accept H0",
                 "Cannot determine"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "p-value (0.06) > alpha (0.05), so we fail to reject H0. 0.06 is close but still above the threshold -- we do not have sufficient evidence."
             }
           ]
         },
@@ -2133,7 +2139,8 @@
                 "0.080",
                 "0.490"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.4 * 0.6 / 150) = sqrt(0.0016) = 0.04."
             },
             {
               "question": "SE of p-hat when p-hat = 0.55, n = 200?",
@@ -2143,7 +2150,8 @@
                 "0.070",
                 "0.497"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.7 * 0.3 / 200) = sqrt(0.00105) ≈ 0.032."
             },
             {
               "question": "SE of p-hat when p-hat = 0.3, n = 120?",
@@ -2153,7 +2161,8 @@
                 "0.084",
                 "0.458"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.5 * 0.5 / 80) = sqrt(0.003125) ≈ 0.056."
             }
           ]
         },
@@ -2230,7 +2239,8 @@
                 "Accept H0: p = 0.5",
                 "Cannot determine"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "0.5 IS inside the 95% CI (0.43, 0.57), so we fail to reject H0: p = 0.5 at the 5% level. The null value is consistent with the data."
             },
             {
               "question": "A 95% CI for p is (0.52, 0.68). What can you conclude about H0: p = 0.5?",
@@ -2240,7 +2250,8 @@
                 "Accept H0: p = 0.5",
                 "Cannot determine"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "0.5 is NOT inside the 95% CI (0.52, 0.68), so we reject H0: p = 0.5. The entire interval is above 0.5."
             },
             {
               "question": "A 95% CI for p is (0.48, 0.54). What can you conclude about H0: p = 0.5?",
@@ -2250,7 +2261,8 @@
                 "Accept H0: p = 0.5",
                 "Cannot determine"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "0.5 IS inside the 95% CI (0.48, 0.54), so we fail to reject H0: p = 0.5. A CI that contains the null value corresponds to failing to reject."
             }
           ]
         },
@@ -2275,7 +2287,8 @@
                 "Average of 45/75 and 10/25 = 0.500",
                 "45/75 = 0.600"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "Pooled proportion = (total successes) / (total trials) = (45 + 10) / (75 + 25) = 55/100 = 0.550."
             },
             {
               "question": "Study: group A has 30/50 successes, group B has 20/40 successes. Pooled proportion p-pool = ?",
@@ -2285,7 +2298,8 @@
                 "Average of 30/50 and 20/40 = 0.550",
                 "30/50 = 0.600"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "Pooled proportion = (total successes) / (total trials) = (30 + 20) / (50 + 40) = 50/90 ≈ 0.556."
             },
             {
               "question": "Study: group A has 72/100 successes, group B has 12/50 successes. Pooled proportion p-pool = ?",
@@ -2295,7 +2309,8 @@
                 "Average of 72/100 and 12/50 = 0.480",
                 "72/100 = 0.720"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "Pooled proportion = (total successes) / (total trials) = (72 + 12) / (100 + 50) = 84/150 = 0.560."
             }
           ]
         },
@@ -2333,7 +2348,8 @@
                 "900",
                 "1200"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.04))^2 = (24.5)^2 = 600.25, round up to 601. Conservative estimate uses p = 0.5."
             },
             {
               "question": "You need a 95% CI with margin of error <= 0.05, no prior estimate of p. Approximately what n is needed?",
@@ -2343,7 +2359,8 @@
                 "385",
                 "1068"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.05))^2 = (19.6)^2 = 384.2, round up to 385. Conservative estimate uses p = 0.5."
             },
             {
               "question": "You need a 95% CI with margin of error <= 0.02, no prior estimate of p. Approximately what n is needed?",
@@ -2353,7 +2370,8 @@
                 "500",
                 "2000"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.02))^2 = (49)^2 = 2401, round up to 2401. Smaller margin of error requires a much larger sample."
             }
           ]
         }
@@ -2411,7 +2429,8 @@
                 "The t-distribution with df = 36",
                 "The normal distribution, because n > 30"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "Since population sigma is unknown, use the t-distribution. df = n - 1 = 36 - 1 = 35."
             },
             {
               "question": "A sample of n=20 exam scores has mean 82 and s=9.3. Which distribution should be used for a CI for the population mean?",
@@ -2421,7 +2440,8 @@
                 "The t-distribution with df = 19",
                 "The chi-squared distribution with df = 19"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "Since population sigma is unknown, use the t-distribution. df = n - 1 = 20 - 1 = 19."
             },
             {
               "question": "A sample of n=100 blood pressure readings has mean 128 and s=15. Which distribution should be used for a CI for the population mean?",
@@ -2431,7 +2451,8 @@
                 "The t-distribution with df = 100",
                 "Either z or t -- both give identical results here"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "Since population sigma is unknown, use the t-distribution. df = n - 1 = 100 - 1 = 99. Even though n is large, we still use t (it converges to z anyway at large df)."
             }
           ]
         },
@@ -2456,7 +2477,8 @@
                 "[42.51, 45.49]",
                 "[42.01, 44.00]"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "SE = s/sqrt(n) = 7/sqrt(50) = 0.990. t*(2.01 for df=49). ME = 2.01 x 0.990 = 1.99. CI: 44 ± 1.99 = (42.01, 45.99)."
             },
             {
               "question": "Sample size n = 150, mean 46.0, s = 9.0. The 95% CI for mu is closest to:",
@@ -2466,7 +2488,8 @@
                 "[45.05, 46.95]",
                 "[44.55, 46.00]"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "SE = s/sqrt(n) = 9/sqrt(150) = 0.735. t*(1.976 for df=149). ME = 1.976 x 0.735 = 1.45. CI: 46 ± 1.45 = (44.55, 47.45)."
             },
             {
               "question": "Sample size n = 80, mean 45.5, s = 8.5. The 95% CI for mu is closest to:",
@@ -2476,7 +2499,8 @@
                 "[44.11, 46.89]",
                 "[43.61, 45.50]"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "SE = s/sqrt(n) = 8.5/sqrt(80) = 0.950. t*(1.99 for df=79). ME = 1.99 x 0.950 = 1.89. CI: 45.5 ± 1.89 = (43.61, 47.39)."
             }
           ]
         },
@@ -2514,7 +2538,8 @@
                 "2 * pt(-1.8, df = 25)",
                 "2 * (1 - pt(abs(-1.8), df = 25))"
               ],
-              "answer": 3
+              "answer": 3,
+              "explanation": "Two-sided test: p-value = 2 * P(|t| > 1.8) = 2 * (1 - pt(abs(-1.8), df=25)). For t=-1.8, both tails are symmetric."
             },
             {
               "question": "For H0: mu = 10 vs Ha: mu != 10, the test statistic is t = 3.1 with df = 60. The p-value is:",
@@ -2524,7 +2549,8 @@
                 "2 * (1 - pt(3.1, df = 60))",
                 "1 - pt(3.1, df = 60)"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "Two-sided test: p-value = 2 * P(t > 3.1) = 2 * (1 - pt(3.1, df=60))."
             },
             {
               "question": "For H0: mu = 0 vs Ha: mu > 0, the test statistic is t = 2.2 with df = 14. The p-value is:",
@@ -2534,7 +2560,8 @@
                 "1 - pt(2.2, df = 14)",
                 "2 * pt(2.2, df = 14)"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "One-sided test (Ha: mu > 0): p-value = P(t > 2.2) = 1 - pt(2.2, df=14). Only the upper tail counts."
             }
           ]
         },
@@ -2591,34 +2618,37 @@
           "explanation": "For a one-sample t-test, the degrees of freedom is always df = n - 1. With n = 85, we have df = 85 - 1 = 84. The degrees of freedom does not depend on the significance level; it only depends on the sample size.",
           "variants": [
             {
-              "question": "In a right-tailed hypothesis test with Ha: mu > mu0, the p-value is computed as:",
+              "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 40 observations?",
               "options": [
-                "P(T <= t_obs) where T ~ t-distribution",
-                "P(T >= t_obs) where T ~ t-distribution",
-                "P(|T| >= |t_obs|) where T ~ t-distribution",
-                "The area in both tails of the t-distribution"
+                "A. 40",
+                "B. 39",
+                "C. 38",
+                "D. 41"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "df = n - 1 = 40 - 1 = 39 for a one-sample t-test."
             },
             {
-              "question": "In a left-tailed hypothesis test with Ha: mu > mu0, the p-value is computed as:",
+              "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 120 observations?",
               "options": [
-                "P(T <= t_obs) where T ~ t-distribution",
-                "P(T >= t_obs) where T ~ t-distribution",
-                "P(|T| >= |t_obs|) where T ~ t-distribution",
-                "The area in both tails of the t-distribution"
+                "A. 120",
+                "B. 121",
+                "C. 119",
+                "D. 118"
               ],
-              "answer": 1
+              "answer": 2,
+              "explanation": "df = n - 1 = 120 - 1 = 119 for a one-sample t-test."
             },
             {
-              "question": "In a right-tailed hypothesis test with Ha: mu > mu0, the p-value is computed as:",
+              "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 25 observations?",
               "options": [
-                "P(T <= t_obs) where T ~ t-distribution",
-                "P(T >= t_obs) where T ~ t-distribution",
-                "P(|T| >= |t_obs|) where T ~ t-distribution",
-                "The area in both tails of the t-distribution"
+                "A. 25",
+                "B. 23",
+                "C. 26",
+                "D. 24"
               ],
-              "answer": 1
+              "answer": 3,
+              "explanation": "df = n - 1 = 25 - 1 = 24 for a one-sample t-test."
             }
           ]
         },
@@ -2711,31 +2741,34 @@
               "question": "Two groups: n1=20, s1=2.5, n2=20, s2=2.2. Pooled SD s_p = ?",
               "options": [
                 "2.35",
-                "2.35",
                 "2.50",
-                "2.35"
+                "2.23",
+                "2.15"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "s_p = sqrt(((n1-1)*s1^2 + (n2-1)*s2^2) / (n1+n2-2)) = sqrt(((19)*6.25 + (19)*4.84) / 38) = sqrt(5.545) = 2.35."
             },
             {
               "question": "Two groups: n1=25, s1=3.0, n2=30, s2=2.8. Pooled SD s_p = ?",
               "options": [
                 "2.89",
-                "2.90",
                 "3.00",
-                "2.90"
+                "2.80",
+                "2.50"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "s_p = sqrt(((24)*9 + (29)*7.84) / 53) = sqrt(8.365) = 2.89."
             },
             {
               "question": "Two groups: n1=18, s1=2.1, n2=22, s2=2.4. Pooled SD s_p = ?",
               "options": [
                 "2.27",
-                "2.25",
                 "2.40",
-                "2.25"
+                "2.10",
+                "2.50"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "s_p = sqrt(((17)*4.41 + (21)*5.76) / 38) = sqrt(5.156) = 2.27."
             }
           ]
         },
@@ -2773,7 +2806,8 @@
                 "C. 50",
                 "D. 24"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "df = n1 + n2 - 2 = 25 + 25 - 2 = 48."
             },
             {
               "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=15 and n2=20?",
@@ -2783,7 +2817,8 @@
                 "C. 14",
                 "D. 34"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "df = n1 + n2 - 2 = 15 + 20 - 2 = 33."
             },
             {
               "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=40 and n2=35?",
@@ -2793,7 +2828,8 @@
                 "C. 73",
                 "D. 70"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "df = n1 + n2 - 2 = 40 + 35 - 2 = 73."
             }
           ]
         },
@@ -2883,7 +2919,8 @@
                 "C. Paired t-test because we have two groups",
                 "D. Welch's t-test always, regardless of variances"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "SD ratio = 3.4/3.1 = 1.10, well below 1.5. The variances are similar, so the equal-variance (pooled) t-test is appropriate."
             },
             {
               "question": "Two groups have n1=30, n2=30, s1=1.2, s2=6.5. Which test is most appropriate?",
@@ -2893,7 +2930,8 @@
                 "C. Welch's t-test because the standard deviations are substantially different (ratio > 1.5)",
                 "D. Equal-variance t-test to maximize degrees of freedom"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "SD ratio = 6.5/1.2 = 5.42, far above the rule-of-thumb threshold of 1.5. Use Welch's t-test to avoid the equal-variance assumption."
             },
             {
               "question": "Two groups have n1=18, n2=22, s1=5.0, s2=5.3. Which test is most appropriate?",
@@ -2903,7 +2941,8 @@
                 "C. Paired t-test because we can match subjects",
                 "D. Welch's t-test to be conservative"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "SD ratio = 5.3/5.0 = 1.06, well below 1.5. The variances are nearly identical, so the equal-variance t-test is appropriate."
             }
           ]
         }
@@ -2974,7 +3013,8 @@
                 "Correlation coefficient r = 2.50",
                 "The model explains 250% of variation"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "The slope b1 = 2.5 means for each additional year, the predicted outcome increases by 2.5 cm on average. Slope always represents a rate of change per 1 unit of x."
             },
             {
               "question": "Regression: proportion vs month has slope b1 = -0.12. Correct interpretation?",
@@ -2984,7 +3024,8 @@
                 "Correlation coefficient r = -0.12",
                 "The model explains 12% of variation"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "The slope b1 = -0.12 means for each additional month, the predicted proportion decreases by 0.12 on average. A negative slope means x and y move in opposite directions."
             },
             {
               "question": "Regression: test score vs hour has slope b1 = 1.85. Correct interpretation?",
@@ -2994,7 +3035,8 @@
                 "Correlation coefficient r = 1.85",
                 "The model explains 185% of variation"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "The slope b1 = 1.85 means for each additional hour, the predicted test score increases by 1.85 points on average."
             }
           ]
         },
@@ -3019,7 +3061,8 @@
                 "C) The correlation between height and weight is 0.42",
                 "D) 42% of the variation in weight is explained by height"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "The slope b1 = 0.42 means for each 1 cm increase in height, predicted weight increases by 0.42 kg on average."
             },
             {
               "question": "In a regression model predicting salary ($1000s) from years of experience, the slope is b1 = 2.8. How should we interpret this?",
@@ -3029,7 +3072,8 @@
                 "C) When years of experience is 0, salary is $2,800",
                 "D) 2.8% of variation in salary is explained by experience"
               ],
-              "answer": 1
+              "answer": 1,
+              "explanation": "The slope b1 = 2.8 means for each additional year of experience, predicted salary increases by $2,800 on average (since salary is in $1000s, 2.8 x 1000 = $2,800)."
             },
             {
               "question": "In a regression model predicting test score from hours studied, the slope is b1 = -1.5. How should we interpret this?",
@@ -3039,7 +3083,8 @@
                 "C) Students who study 0 hours score 1.5 points",
                 "D) 15% of variation in test scores is explained by study hours"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "The slope b1 = -1.5 means for each additional hour studied, predicted test score decreases by 1.5 points on average. A negative slope means the variables move in opposite directions."
             }
           ]
         },
@@ -3077,7 +3122,8 @@
                 "C) 38",
                 "D) 37"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "In regression inference, df = n - 2. With n = 40, df = 40 - 2 = 38. We lose 2 degrees of freedom because we estimate both b0 and b1."
             },
             {
               "question": "When conducting a hypothesis test for the slope in regression with n = 15 observations, what are the degrees of freedom?",
@@ -3087,7 +3133,8 @@
                 "C) 15",
                 "D) 12"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "In regression inference, df = n - 2. With n = 15, df = 15 - 2 = 13."
             },
             {
               "question": "When conducting a hypothesis test for the slope in regression with n = 50 observations, what are the degrees of freedom?",
@@ -3097,7 +3144,8 @@
                 "C) 48",
                 "D) 47"
               ],
-              "answer": 2
+              "answer": 2,
+              "explanation": "In regression inference, df = n - 2. With n = 50, df = 50 - 2 = 48."
             }
           ]
         },
@@ -3135,7 +3183,8 @@
                 "C) 15",
                 "D) 10"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "y-hat = b0 + b1*x = 3 + 2*5 = 3 + 10 = 13."
             },
             {
               "question": "A regression model has b0 = 10 and b1 = 4. What is the predicted value when x = 6?",
@@ -3145,7 +3194,8 @@
                 "C) 38",
                 "D) 26"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "y-hat = b0 + b1*x = 10 + 4*6 = 10 + 24 = 34."
             },
             {
               "question": "A regression model has b0 = -2 and b1 = 3. What is the predicted value when x = 7?",
@@ -3155,7 +3205,8 @@
                 "C) 21",
                 "D) 23"
               ],
-              "answer": 0
+              "answer": 0,
+              "explanation": "y-hat = b0 + b1*x = -2 + 3*7 = -2 + 21 = 19."
             }
           ]
         },
