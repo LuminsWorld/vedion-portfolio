@@ -244,12 +244,18 @@ export const QUESTION_TOPICS = {
 }
 
 /* ─── Algorithm: weighted SM-2-inspired ─── */
+function resolveVariant(q) {
+  if (!q.variants || q.variants.length === 0) return q
+  const v = q.variants[Math.floor(Math.random() * q.variants.length)]
+  return { ...q, ...v, id: q.id }
+}
+
 function initDeck(questions, savedProgress) {
   const weights     = savedProgress?.weights      ?? {}
   const consec      = savedProgress?.consecutive  ?? {}
   const masteredSet = new Set(savedProgress?.mastered ?? [])
   return questions.map(q => ({
-    ...q,
+    ...resolveVariant(q),
     weight:     weights[q.id]  ?? 1.0,
     consecutive: consec[q.id] ?? 0,
     mastered:   masteredSet.has(q.id),
@@ -466,7 +472,8 @@ export default function FlashcardStudy({ questions, courseId, moduleId, progress
       return
     }
 
-    setCurrentCard(next)
+    // Re-pick variant each time a card is shown so numbers change every round
+    setCurrentCard(next ? resolveVariant(next) : next)
     resetCardState()
   }, [deck, currentCard, sessionStats, sessionCount, questions.length, onSaveProgress])
 

@@ -589,6 +589,13 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   }
 
   // ─── Exam colour helpers (orange = midterm, purple = final) ───
+  // ─── Variant picker: if a question has variants[], pick one randomly ───
+  function resolveVariant(q) {
+    if (!q.variants || q.variants.length === 0) return q
+    const v = q.variants[Math.floor(Math.random() * q.variants.length)]
+    return { ...q, ...v, id: q.id } // keep original id for tracking
+  }
+
   // ─── Active quiz: random 20 from pool (re-shuffled each visit) ───
   const [activeQuiz, setActiveQuiz]   = useState([])
   const [quizReady,  setQuizReady]    = useState(false)
@@ -598,7 +605,7 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
     const pool = mod.flashQuiz ?? mod.quiz ?? []
     if (pool.length === 0) { setActiveQuiz([]); setQuizReady(true); return }
     const shuffled = [...pool].sort(() => Math.random() - 0.5)
-    setActiveQuiz(shuffled.slice(0, Math.min(20, shuffled.length)))
+    setActiveQuiz(shuffled.slice(0, Math.min(20, shuffled.length)).map(resolveVariant))
     setQuizReady(true)
   }, [mod.id])
 
@@ -608,7 +615,13 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   const ec = (a) => isFinalExam ? `rgba(168,85,247,${a})` : `rgba(255,184,0,${a})`
   const examLabel      = isFinalExam ? 'FINAL' : 'EXAM CHECKPOINT'
 
-  const quiz       = (quizReady && mod.isExam) ? activeQuiz : (mod.quiz ?? [])
+  // resolvedRegularQuiz: variant-picked once per module load (not re-picked on every render)
+  const [resolvedRegularQuiz, setResolvedRegularQuiz] = useState(() => (mod.quiz ?? []).map(resolveVariant))
+  useEffect(() => {
+    setResolvedRegularQuiz((mod.quiz ?? []).map(resolveVariant))
+  }, [mod.id])
+
+  const quiz       = (quizReady && mod.isExam) ? activeQuiz : resolvedRegularQuiz
   const answered   = quiz.filter(q => isAnswered(q, answers)).length
   const allAnswered = answered === quiz.length
   const score      = quiz.filter(q => isCorrect(q, answers)).length

@@ -1883,7 +1883,39 @@
             "The sample mean is definitely between 12.3 and 18.7"
           ],
           "answer": 2,
-          "explanation": "The frequentist CI interpretation: 95% of intervals constructed this way capture the true parameter. The specific interval either does or doesn't contain μ."
+          "explanation": "The frequentist CI interpretation: 95% of intervals constructed this way capture the true parameter. The specific interval either does or doesn't contain μ.",
+          "variants": [
+            {
+              "question": "A 90% CI for mu is (24.1, 31.9). Which interpretation is correct?",
+              "options": [
+                "90% of individual data values fall between 24.1 and 31.9",
+                "There is a 90% probability that mu is between 24.1 and 31.9",
+                "If we repeated the study many times, 90% of such intervals would contain the true mu",
+                "The sample mean is definitely between 24.1 and 31.9"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "A 99% CI for mu is (45.2, 58.8). Which interpretation is correct?",
+              "options": [
+                "The true mu is between 45.2 and 58.8 with 99% certainty",
+                "99% of all possible sample means fall in (45.2, 58.8)",
+                "If we repeated the study many times, 99% of such intervals would contain the true mu",
+                "The sample mean is definitely 52.0"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "A 95% CI for mu is (8.4, 11.6). Which interpretation is correct?",
+              "options": [
+                "There is a 95% chance that mu = 10",
+                "95% of individual data values fall in (8.4, 11.6)",
+                "If we repeated the study many times, 95% of such intervals would contain the true mu",
+                "We are 95% certain that the sample mean is in (8.4, 11.6)"
+              ],
+              "answer": 2
+            }
+          ]
         },
         {
           "id": "m9-q2",
@@ -1909,7 +1941,39 @@
             "Cannot determine"
           ],
           "answer": 1,
-          "explanation": "p-value (0.03) < alpha (0.05), so we reject the null hypothesis. The result is statistically significant."
+          "explanation": "p-value (0.03) < alpha (0.05), so we reject the null hypothesis. The result is statistically significant.",
+          "variants": [
+            {
+              "question": "You get a p-value of 0.12 with alpha = 0.05. What is your conclusion?",
+              "options": [
+                "Fail to reject H0",
+                "Reject H0",
+                "Accept H0",
+                "Cannot determine"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "You get a p-value of 0.001 with alpha = 0.01. What is your conclusion?",
+              "options": [
+                "Fail to reject H0",
+                "Reject H0",
+                "Accept H0",
+                "Cannot determine"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "You get a p-value of 0.06 with alpha = 0.05. What is your conclusion?",
+              "options": [
+                "Fail to reject H0",
+                "Reject H0",
+                "Accept H0",
+                "Cannot determine"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m9-q4",
@@ -2059,7 +2123,39 @@
             "0.006"
           ],
           "answer": 0,
-          "explanation": "SE = sqrt(p̂(1-p̂)/n) = sqrt(0.6 x 0.4/100) = sqrt(0.0024) ≈ 0.049."
+          "explanation": "SE = sqrt(p̂(1-p̂)/n) = sqrt(0.6 x 0.4/100) = sqrt(0.0024) ≈ 0.049.",
+          "variants": [
+            {
+              "question": "SE of p-hat when p-hat = 0.4, n = 150?",
+              "options": [
+                "0.040",
+                "0.400",
+                "0.080",
+                "0.490"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "SE of p-hat when p-hat = 0.55, n = 200?",
+              "options": [
+                "0.035",
+                "0.550",
+                "0.070",
+                "0.497"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "SE of p-hat when p-hat = 0.3, n = 120?",
+              "options": [
+                "0.042",
+                "0.300",
+                "0.084",
+                "0.458"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m10-q3",
@@ -2124,7 +2220,39 @@
             "Cannot determine"
           ],
           "answer": 1,
-          "explanation": "0.5 is NOT inside the 95% CI (0.501, 0.599), so we reject H₀: p = 0.5 at the 5% significance level."
+          "explanation": "0.5 is NOT inside the 95% CI (0.501, 0.599), so we reject H₀: p = 0.5 at the 5% significance level.",
+          "variants": [
+            {
+              "question": "A 95% CI for p is (0.43, 0.57). What can you conclude about H0: p = 0.5?",
+              "options": [
+                "Fail to reject H0: p = 0.5",
+                "Reject H0: p = 0.5 at alpha = 0.05",
+                "Accept H0: p = 0.5",
+                "Cannot determine"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "A 95% CI for p is (0.52, 0.68). What can you conclude about H0: p = 0.5?",
+              "options": [
+                "Fail to reject H0: p = 0.5",
+                "Reject H0: p = 0.5 at alpha = 0.05",
+                "Accept H0: p = 0.5",
+                "Cannot determine"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "A 95% CI for p is (0.48, 0.54). What can you conclude about H0: p = 0.5?",
+              "options": [
+                "Reject H0: p = 0.5 at alpha = 0.05",
+                "Fail to reject H0: p = 0.5",
+                "Accept H0: p = 0.5",
+                "Cannot determine"
+              ],
+              "answer": 1
+            }
+          ]
         },
         {
           "id": "m10-q8",
@@ -2137,7 +2265,39 @@
             "Average of 60/90 and 16/30 = 0.600"
           ],
           "answer": 1,
-          "explanation": "Pooled proportion = (total successes) / (total trials) = (x1 + x2) / (n₁ + n2) = 76/120 ≈ 0.633."
+          "explanation": "Pooled proportion = (total successes) / (total trials) = (x1 + x2) / (n₁ + n2) = 76/120 ≈ 0.633.",
+          "variants": [
+            {
+              "question": "Study: group A has 45/75 successes, group B has 10/25 successes. Pooled proportion p-pool = ?",
+              "options": [
+                "(45+10)/(75+25) = 0.55",
+                "(45+75)/(10+25) = 3.43",
+                "Average of 45/75 and 10/25 = 0.500",
+                "45/75 = 0.600"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Study: group A has 30/50 successes, group B has 20/40 successes. Pooled proportion p-pool = ?",
+              "options": [
+                "(30+20)/(50+40) = 0.556",
+                "(30+50)/(20+40) = 1.33",
+                "Average of 30/50 and 20/40 = 0.550",
+                "30/50 = 0.600"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Study: group A has 72/100 successes, group B has 12/50 successes. Pooled proportion p-pool = ?",
+              "options": [
+                "(72+12)/(100+50) = 0.56",
+                "(72+100)/(12+50) = 2.77",
+                "Average of 72/100 and 12/50 = 0.480",
+                "72/100 = 0.720"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m10-q9",
@@ -2163,7 +2323,39 @@
             "2401"
           ],
           "answer": 2,
-          "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.03))^2 = (32.67)^2 ≈ 1068. This uses the conservative p = 0.5 estimate."
+          "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.03))^2 = (32.67)^2 ≈ 1068. This uses the conservative p = 0.5 estimate.",
+          "variants": [
+            {
+              "question": "You need a 95% CI with margin of error <= 0.04, no prior estimate of p. Approximately what n is needed?",
+              "options": [
+                "250",
+                "601",
+                "900",
+                "1200"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "You need a 95% CI with margin of error <= 0.05, no prior estimate of p. Approximately what n is needed?",
+              "options": [
+                "200",
+                "500",
+                "385",
+                "1068"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "You need a 95% CI with margin of error <= 0.02, no prior estimate of p. Approximately what n is needed?",
+              "options": [
+                "2401",
+                "1200",
+                "500",
+                "2000"
+              ],
+              "answer": 0
+            }
+          ]
         }
       ],
       "flashcards": [
@@ -2209,7 +2401,39 @@
             "The normal distribution, because n > 30"
           ],
           "answer": 1,
-          "explanation": "Since the population standard deviation is unknown, we use the t-distribution. The degrees of freedom is n - 1 = 50 - 1 = 49. Although n > 30 and we could argue the normal approximation is reasonable, the most precise approach is to use the t-distribution with df = 49."
+          "explanation": "Since the population standard deviation is unknown, we use the t-distribution. The degrees of freedom is n - 1 = 50 - 1 = 49. Although n > 30 and we could argue the normal approximation is reasonable, the most precise approach is to use the t-distribution with df = 49.",
+          "variants": [
+            {
+              "question": "A sample of n=36 measurements has mean 7.4 and s=1.8. Which distribution should be used for a CI for the population mean?",
+              "options": [
+                "The z-distribution because sigma is known",
+                "The t-distribution with df = 35",
+                "The t-distribution with df = 36",
+                "The normal distribution, because n > 30"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "A sample of n=20 exam scores has mean 82 and s=9.3. Which distribution should be used for a CI for the population mean?",
+              "options": [
+                "The z-distribution (standard normal)",
+                "The t-distribution with df = 20",
+                "The t-distribution with df = 19",
+                "The chi-squared distribution with df = 19"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "A sample of n=100 blood pressure readings has mean 128 and s=15. Which distribution should be used for a CI for the population mean?",
+              "options": [
+                "The z-distribution because n is large",
+                "The t-distribution with df = 99",
+                "The t-distribution with df = 100",
+                "Either z or t -- both give identical results here"
+              ],
+              "answer": 1
+            }
+          ]
         },
         {
           "id": "m11-q2",
@@ -2222,7 +2446,39 @@
             "[45 - 12.614, 45 + 12.614] = [32.386, 57.614]"
           ],
           "answer": 1,
-          "explanation": "First, calculate SE = s / sqrt(n) = 8 / sqrt(100) = 8 / 10 = 0.8. The margin of error is t* * SE = 1.984 * 0.8 = 1.587 (approximately 1.589). The CI is 45 +/- 1.589 = [43.411, 46.589]."
+          "explanation": "First, calculate SE = s / sqrt(n) = 8 / sqrt(100) = 8 / 10 = 0.8. The margin of error is t* * SE = 1.984 * 0.8 = 1.587 (approximately 1.589). The CI is 45 +/- 1.589 = [43.411, 46.589].",
+          "variants": [
+            {
+              "question": "Sample size n = 50, mean 44.0, s = 7.0. The 95% CI for mu is closest to:",
+              "options": [
+                "[42.01, 45.99]",
+                "[41.51, 46.49]",
+                "[42.51, 45.49]",
+                "[42.01, 44.00]"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Sample size n = 150, mean 46.0, s = 9.0. The 95% CI for mu is closest to:",
+              "options": [
+                "[44.55, 47.45]",
+                "[44.05, 47.95]",
+                "[45.05, 46.95]",
+                "[44.55, 46.00]"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Sample size n = 80, mean 45.5, s = 8.5. The 95% CI for mu is closest to:",
+              "options": [
+                "[43.61, 47.39]",
+                "[43.11, 47.89]",
+                "[44.11, 46.89]",
+                "[43.61, 45.50]"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m11-q3",
@@ -2248,7 +2504,39 @@
             "2 * (1 - pt(2.5, df = 40))"
           ],
           "answer": 3,
-          "explanation": "For a two-sided test, the p-value is 2 * P(t > |t_obs|) = 2 * (1 - pt(t_obs, df)). Since pt() gives cumulative probability from the left, we calculate 2 * (1 - pt(2.5, df = 40))."
+          "explanation": "For a two-sided test, the p-value is 2 * P(t > |t_obs|) = 2 * (1 - pt(t_obs, df)). Since pt() gives cumulative probability from the left, we calculate 2 * (1 - pt(2.5, df = 40)).",
+          "variants": [
+            {
+              "question": "For H0: mu = 50 vs Ha: mu != 50, the test statistic is t = -1.8 with df = 25. The p-value is:",
+              "options": [
+                "pt(-1.8, df = 25)",
+                "1 - pt(-1.8, df = 25)",
+                "2 * pt(-1.8, df = 25)",
+                "2 * (1 - pt(abs(-1.8), df = 25))"
+              ],
+              "answer": 3
+            },
+            {
+              "question": "For H0: mu = 10 vs Ha: mu != 10, the test statistic is t = 3.1 with df = 60. The p-value is:",
+              "options": [
+                "pt(3.1, df = 60)",
+                "2 * pt(3.1, df = 60)",
+                "2 * (1 - pt(3.1, df = 60))",
+                "1 - pt(3.1, df = 60)"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "For H0: mu = 0 vs Ha: mu > 0, the test statistic is t = 2.2 with df = 14. The p-value is:",
+              "options": [
+                "2 * (1 - pt(2.2, df = 14))",
+                "pt(2.2, df = 14)",
+                "1 - pt(2.2, df = 14)",
+                "2 * pt(2.2, df = 14)"
+              ],
+              "answer": 2
+            }
+          ]
         },
         {
           "id": "m11-q5",
@@ -2300,7 +2588,39 @@
             "Depends on the significance level"
           ],
           "answer": 0,
-          "explanation": "For a one-sample t-test, the degrees of freedom is always df = n - 1. With n = 85, we have df = 85 - 1 = 84. The degrees of freedom does not depend on the significance level; it only depends on the sample size."
+          "explanation": "For a one-sample t-test, the degrees of freedom is always df = n - 1. With n = 85, we have df = 85 - 1 = 84. The degrees of freedom does not depend on the significance level; it only depends on the sample size.",
+          "variants": [
+            {
+              "question": "In a right-tailed hypothesis test with Ha: mu > mu0, the p-value is computed as:",
+              "options": [
+                "P(T <= t_obs) where T ~ t-distribution",
+                "P(T >= t_obs) where T ~ t-distribution",
+                "P(|T| >= |t_obs|) where T ~ t-distribution",
+                "The area in both tails of the t-distribution"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "In a left-tailed hypothesis test with Ha: mu > mu0, the p-value is computed as:",
+              "options": [
+                "P(T <= t_obs) where T ~ t-distribution",
+                "P(T >= t_obs) where T ~ t-distribution",
+                "P(|T| >= |t_obs|) where T ~ t-distribution",
+                "The area in both tails of the t-distribution"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "In a right-tailed hypothesis test with Ha: mu > mu0, the p-value is computed as:",
+              "options": [
+                "P(T <= t_obs) where T ~ t-distribution",
+                "P(T >= t_obs) where T ~ t-distribution",
+                "P(|T| >= |t_obs|) where T ~ t-distribution",
+                "The area in both tails of the t-distribution"
+              ],
+              "answer": 1
+            }
+          ]
         },
         {
           "id": "m11-q9",
@@ -2385,7 +2705,39 @@
             "D. They are the degrees of freedom for the critical value lookup"
           ],
           "answer": 1,
-          "explanation": "The terms (n1-1) and (n2-1) are the degrees of freedom for each sample. They weight the variances so that samples with more information (larger samples) contribute more to the pooled estimate. This is a weighted average of variance estimates."
+          "explanation": "The terms (n1-1) and (n2-1) are the degrees of freedom for each sample. They weight the variances so that samples with more information (larger samples) contribute more to the pooled estimate. This is a weighted average of variance estimates.",
+          "variants": [
+            {
+              "question": "Two groups: n1=20, s1=2.5, n2=20, s2=2.2. Pooled SD s_p = ?",
+              "options": [
+                "2.35",
+                "2.35",
+                "2.50",
+                "2.35"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Two groups: n1=25, s1=3.0, n2=30, s2=2.8. Pooled SD s_p = ?",
+              "options": [
+                "2.89",
+                "2.90",
+                "3.00",
+                "2.90"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Two groups: n1=18, s1=2.1, n2=22, s2=2.4. Pooled SD s_p = ?",
+              "options": [
+                "2.27",
+                "2.25",
+                "2.40",
+                "2.25"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m12-q3",
@@ -2411,7 +2763,39 @@
             "D. 58"
           ],
           "answer": 2,
-          "explanation": "For the equal-variance t-test, df = n₁ + n₂ - 2 = 30 + 28 - 2 = 56. This is option C."
+          "explanation": "For the equal-variance t-test, df = n₁ + n₂ - 2 = 30 + 28 - 2 = 56. This is option C.",
+          "variants": [
+            {
+              "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=25 and n2=25?",
+              "options": [
+                "A. 25",
+                "B. 48",
+                "C. 50",
+                "D. 24"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=15 and n2=20?",
+              "options": [
+                "A. 35",
+                "B. 33",
+                "C. 14",
+                "D. 34"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=40 and n2=35?",
+              "options": [
+                "A. 75",
+                "B. 74",
+                "C. 73",
+                "D. 70"
+              ],
+              "answer": 2
+            }
+          ]
         },
         {
           "id": "m12-q5",
@@ -2489,7 +2873,39 @@
             "D. Equal-variance t-test if p-value < 0.05 in a preliminary Levene's test"
           ],
           "answer": 1,
-          "explanation": "The ratio of standard deviations is 4.8/2.1 = 2.29, which is substantially greater than the rule-of-thumb cutoff of 1.5. This indicates unequal variances, making Welch's t-test the appropriate choice. Welch's method is safer when variances differ and doesn't require a preliminary test. Equal-variance would assume homogeneity, which is clearly violated here."
+          "explanation": "The ratio of standard deviations is 4.8/2.1 = 2.29, which is substantially greater than the rule-of-thumb cutoff of 1.5. This indicates unequal variances, making Welch's t-test the appropriate choice. Welch's method is safer when variances differ and doesn't require a preliminary test. Equal-variance would assume homogeneity, which is clearly violated here.",
+          "variants": [
+            {
+              "question": "Two groups have n1=20, n2=22, s1=3.1, s2=3.4. Which test is most appropriate?",
+              "options": [
+                "A. Welch's t-test because n values differ slightly",
+                "B. Equal-variance t-test because the standard deviations are very similar (ratio < 1.5)",
+                "C. Paired t-test because we have two groups",
+                "D. Welch's t-test always, regardless of variances"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "Two groups have n1=30, n2=30, s1=1.2, s2=6.5. Which test is most appropriate?",
+              "options": [
+                "A. Equal-variance t-test because n1 = n2",
+                "B. Paired t-test because both groups have n=30",
+                "C. Welch's t-test because the standard deviations are substantially different (ratio > 1.5)",
+                "D. Equal-variance t-test to maximize degrees of freedom"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "Two groups have n1=18, n2=22, s1=5.0, s2=5.3. Which test is most appropriate?",
+              "options": [
+                "A. Welch's t-test because the sample sizes differ",
+                "B. Equal-variance t-test because the standard deviations are very similar (ratio < 1.5)",
+                "C. Paired t-test because we can match subjects",
+                "D. Welch's t-test to be conservative"
+              ],
+              "answer": 1
+            }
+          ]
         }
       ],
       "flashcards": [
@@ -2548,7 +2964,39 @@
             "D) The correlation coefficient is 0.81"
           ],
           "answer": 0,
-          "explanation": "R-squared measures the proportion of variation explained by the model. R^2 = 0.81 means 81% of variation in the response is explained by the explanatory variable, with 19% due to other factors. High R-squared does not imply causation (option C is wrong)."
+          "explanation": "R-squared measures the proportion of variation explained by the model. R^2 = 0.81 means 81% of variation in the response is explained by the explanatory variable, with 19% due to other factors. High R-squared does not imply causation (option C is wrong).",
+          "variants": [
+            {
+              "question": "Regression: cm vs year has slope b1 = 2.5. Correct interpretation?",
+              "options": [
+                "Each additional year increases predicted cm by 2.50",
+                "When year = 0, predicted cm = 2.50",
+                "Correlation coefficient r = 2.50",
+                "The model explains 250% of variation"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Regression: proportion vs month has slope b1 = -0.12. Correct interpretation?",
+              "options": [
+                "Each additional month decreases predicted proportion by 0.12",
+                "When month = 0, predicted proportion = -0.12",
+                "Correlation coefficient r = -0.12",
+                "The model explains 12% of variation"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "Regression: test score vs hour has slope b1 = 1.85. Correct interpretation?",
+              "options": [
+                "Each additional hour increases predicted test score by 1.85",
+                "When hour = 0, predicted test score = 1.85",
+                "Correlation coefficient r = 1.85",
+                "The model explains 185% of variation"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m13-q3",
@@ -2561,7 +3009,39 @@
             "D) 35% of the variation in height is explained by age"
           ],
           "answer": 0,
-          "explanation": "The slope b₁ represents the change in the response variable (height) for each 1-unit increase in the explanatory variable (age). Option B describes the intercept, option C confuses slope with correlation, and option D confuses slope with R-squared."
+          "explanation": "The slope b₁ represents the change in the response variable (height) for each 1-unit increase in the explanatory variable (age). Option B describes the intercept, option C confuses slope with correlation, and option D confuses slope with R-squared.",
+          "variants": [
+            {
+              "question": "In a regression model predicting weight (kg) from height (cm), the slope is b1 = 0.42. How should we interpret this?",
+              "options": [
+                "A) For each additional cm of height, weight increases by 0.42 kg on average",
+                "B) When height is 0, weight is 0.42 kg",
+                "C) The correlation between height and weight is 0.42",
+                "D) 42% of the variation in weight is explained by height"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "In a regression model predicting salary ($1000s) from years of experience, the slope is b1 = 2.8. How should we interpret this?",
+              "options": [
+                "A) The correlation between salary and experience is 0.28",
+                "B) For each additional year of experience, salary increases by $2,800 on average",
+                "C) When years of experience is 0, salary is $2,800",
+                "D) 2.8% of variation in salary is explained by experience"
+              ],
+              "answer": 1
+            },
+            {
+              "question": "In a regression model predicting test score from hours studied, the slope is b1 = -1.5. How should we interpret this?",
+              "options": [
+                "A) For each additional hour studied, test score decreases by 1.5 points on average",
+                "B) The correlation between test score and study hours is -1.5",
+                "C) Students who study 0 hours score 1.5 points",
+                "D) 15% of variation in test scores is explained by study hours"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m13-q4",
@@ -2587,7 +3067,39 @@
             "D) 26"
           ],
           "answer": 1,
-          "explanation": "In regression inference, degrees of freedom = n - 2. With n = 25, df = 25 - 2 = 23. The two is subtracted because we estimate two parameters (the slope and intercept)."
+          "explanation": "In regression inference, degrees of freedom = n - 2. With n = 25, df = 25 - 2 = 23. The two is subtracted because we estimate two parameters (the slope and intercept).",
+          "variants": [
+            {
+              "question": "When conducting a hypothesis test for the slope in regression with n = 40 observations, what are the degrees of freedom?",
+              "options": [
+                "A) 40",
+                "B) 39",
+                "C) 38",
+                "D) 37"
+              ],
+              "answer": 2
+            },
+            {
+              "question": "When conducting a hypothesis test for the slope in regression with n = 15 observations, what are the degrees of freedom?",
+              "options": [
+                "A) 13",
+                "B) 14",
+                "C) 15",
+                "D) 12"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "When conducting a hypothesis test for the slope in regression with n = 50 observations, what are the degrees of freedom?",
+              "options": [
+                "A) 50",
+                "B) 49",
+                "C) 48",
+                "D) 47"
+              ],
+              "answer": 2
+            }
+          ]
         },
         {
           "id": "m13-q6",
@@ -2613,7 +3125,39 @@
             "D) 20"
           ],
           "answer": 0,
-          "explanation": "Using the regression equation y-hat = b₀ + b₁×x, we get y-hat = 5 + 3(4) = 5 + 12 = 17."
+          "explanation": "Using the regression equation y-hat = b₀ + b₁×x, we get y-hat = 5 + 3(4) = 5 + 12 = 17.",
+          "variants": [
+            {
+              "question": "A regression model has b0 = 3 and b1 = 2. What is the predicted value when x = 5?",
+              "options": [
+                "A) 13",
+                "B) 11",
+                "C) 15",
+                "D) 10"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "A regression model has b0 = 10 and b1 = 4. What is the predicted value when x = 6?",
+              "options": [
+                "A) 34",
+                "B) 30",
+                "C) 38",
+                "D) 26"
+              ],
+              "answer": 0
+            },
+            {
+              "question": "A regression model has b0 = -2 and b1 = 3. What is the predicted value when x = 7?",
+              "options": [
+                "A) 19",
+                "B) 17",
+                "C) 21",
+                "D) 23"
+              ],
+              "answer": 0
+            }
+          ]
         },
         {
           "id": "m13-q8",
