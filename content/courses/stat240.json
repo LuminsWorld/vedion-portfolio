@@ -2123,10 +2123,10 @@
           "question": "SE of p-hat when p-hat = 0.6, n = 100?",
           "type": "multiple",
           "options": [
-            "≈0.049",
-            "0.24",
-            "0.36",
-            "0.006"
+            "A. sqrt(0.6 x 0.4 / 100) = sqrt(0.0024) = 0.049",
+            "B. 0.6 / 100 = 0.006",
+            "C. sqrt(0.6 / 100) = 0.077",
+            "D. 0.6 x 0.4 = 0.24"
           ],
           "answer": 0,
           "explanation": "SE = sqrt(p̂(1-p̂)/n) = sqrt(0.6 x 0.4/100) = sqrt(0.0024) ≈ 0.049.",
@@ -2134,35 +2134,68 @@
             {
               "question": "SE of p-hat when p-hat = 0.4, n = 150?",
               "options": [
-                "0.040",
-                "0.400",
-                "0.080",
-                "0.490"
+                "A. sqrt(0.4 x 0.6 / 150) = 0.04",
+                "B. 0.4 / 150 = 0.0027",
+                "C. sqrt(0.4 / 150) = 0.052",
+                "D. 0.4 x 0.6 = 0.24"
               ],
               "answer": 0,
-              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.4 * 0.6 / 150) = sqrt(0.0016) = 0.04."
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.4 x 0.6/150) = sqrt(0.0016) = 0.04."
             },
             {
-              "question": "SE of p-hat when p-hat = 0.55, n = 200?",
+              "question": "SE of p-hat when p-hat = 0.7, n = 200?",
               "options": [
-                "0.035",
-                "0.550",
-                "0.070",
-                "0.497"
+                "A. sqrt(0.7 x 0.3 / 200) = 0.032",
+                "B. 0.7 / 200 = 0.0035",
+                "C. sqrt(0.7 / 200) = 0.059",
+                "D. 0.7 x 0.3 = 0.21"
               ],
               "answer": 0,
-              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.7 * 0.3 / 200) = sqrt(0.00105) ≈ 0.032."
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.7 x 0.3/200) = sqrt(0.00105) = 0.032."
+            },
+            {
+              "question": "SE of p-hat when p-hat = 0.5, n = 80?",
+              "options": [
+                "A. sqrt(0.5 x 0.5 / 80) = 0.056",
+                "B. 0.5 / 80 = 0.0063",
+                "C. sqrt(0.5 / 80) = 0.079",
+                "D. 0.5 x 0.5 = 0.25"
+              ],
+              "answer": 0,
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.5 x 0.5/80) = sqrt(0.00313) = 0.056."
             },
             {
               "question": "SE of p-hat when p-hat = 0.3, n = 120?",
               "options": [
-                "0.042",
-                "0.300",
-                "0.084",
-                "0.458"
+                "A. sqrt(0.3 x 0.7 / 120) = 0.042",
+                "B. 0.3 / 120 = 0.0025",
+                "C. sqrt(0.3 / 120) = 0.05",
+                "D. 0.3 x 0.7 = 0.21"
               ],
               "answer": 0,
-              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.5 * 0.5 / 80) = sqrt(0.003125) ≈ 0.056."
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.3 x 0.7/120) = sqrt(0.00175) = 0.042."
+            },
+            {
+              "question": "SE of p-hat when p-hat = 0.8, n = 250?",
+              "options": [
+                "A. sqrt(0.8 x 0.2 / 250) = 0.025",
+                "B. 0.8 / 250 = 0.0032",
+                "C. sqrt(0.8 / 250) = 0.057",
+                "D. 0.8 x 0.2 = 0.16"
+              ],
+              "answer": 0,
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.8 x 0.2/250) = sqrt(0.00064) = 0.025."
+            },
+            {
+              "question": "SE of p-hat when p-hat = 0.55, n = 90?",
+              "options": [
+                "A. sqrt(0.55 x 0.45 / 90) = 0.052",
+                "B. 0.55 / 90 = 0.0061",
+                "C. sqrt(0.55 / 90) = 0.078",
+                "D. 0.55 x 0.45 = 0.2475"
+              ],
+              "answer": 0,
+              "explanation": "SE = sqrt(p-hat*(1-p-hat)/n) = sqrt(0.55 x 0.45/90) = sqrt(0.00275) = 0.052."
             }
           ]
         },
@@ -2332,46 +2365,79 @@
           "question": "You need a 95% CI with margin of error <= 0.03, no prior estimate of p. Approximately what n is needed?",
           "type": "multiple",
           "options": [
-            "333",
-            "600",
-            "1068",
-            "2401"
+            "A. (1.96/(2x0.03))^2 = (32.67)^2 = 1068",
+            "B. 333",
+            "C. 600",
+            "D. 2401"
           ],
-          "answer": 2,
+          "answer": 0,
           "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.03))^2 = (32.67)^2 ≈ 1068. This uses the conservative p = 0.5 estimate.",
           "variants": [
             {
               "question": "You need a 95% CI with margin of error <= 0.04, no prior estimate of p. Approximately what n is needed?",
               "options": [
-                "250",
-                "601",
-                "900",
-                "1200"
+                "A. (1.96/(2x0.04))^2 = (24.5)^2 = 601",
+                "B. 333",
+                "C. 1068",
+                "D. 250"
               ],
-              "answer": 1,
-              "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.04))^2 = (24.5)^2 = 600.25, round up to 601. Conservative estimate uses p = 0.5."
+              "answer": 0,
+              "explanation": "n = (z*/(2m))^2 = (1.96/(2x0.04))^2 = (24.5)^2 = 600.25, round up to 601."
             },
             {
               "question": "You need a 95% CI with margin of error <= 0.05, no prior estimate of p. Approximately what n is needed?",
               "options": [
-                "200",
-                "500",
-                "385",
-                "1068"
+                "A. (1.96/(2x0.05))^2 = (19.6)^2 = 385",
+                "B. 500",
+                "C. 1068",
+                "D. 200"
               ],
-              "answer": 2,
-              "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.05))^2 = (19.6)^2 = 384.2, round up to 385. Conservative estimate uses p = 0.5."
+              "answer": 0,
+              "explanation": "n = (z*/(2m))^2 = (1.96/(2x0.05))^2 = (19.6)^2 = 384.2, round up to 385."
             },
             {
               "question": "You need a 95% CI with margin of error <= 0.02, no prior estimate of p. Approximately what n is needed?",
               "options": [
-                "2401",
-                "1200",
-                "500",
-                "2000"
+                "A. (1.96/(2x0.02))^2 = (49)^2 = 2401",
+                "B. 1200",
+                "C. 1068",
+                "D. 500"
               ],
               "answer": 0,
-              "explanation": "n = (z*/(2m))^2 = (1.96/(2 x 0.02))^2 = (49)^2 = 2401, round up to 2401. Smaller margin of error requires a much larger sample."
+              "explanation": "n = (z*/(2m))^2 = (1.96/(2x0.02))^2 = (49)^2 = 2401, round up to 2401."
+            },
+            {
+              "question": "You need a 99% CI with margin of error <= 0.03, no prior estimate of p. Approximately what n is needed?",
+              "options": [
+                "A. (2.576/(2x0.03))^2 = (42.93)^2 = 1844",
+                "B. 1068",
+                "C. 600",
+                "D. 500"
+              ],
+              "answer": 0,
+              "explanation": "For 99% CI, z*=2.576. n = (2.576/(2x0.03))^2 = (42.93)^2 = 1843.3, round up to 1844."
+            },
+            {
+              "question": "You need a 95% CI with margin of error <= 0.025, no prior estimate of p. Approximately what n is needed?",
+              "options": [
+                "A. (1.96/(2x0.025))^2 = (39.2)^2 = 1537",
+                "B. 600",
+                "C. 2401",
+                "D. 1068"
+              ],
+              "answer": 0,
+              "explanation": "n = (1.96/(2x0.025))^2 = (39.2)^2 = 1536.6, round up to 1537."
+            },
+            {
+              "question": "You need a 90% CI with margin of error <= 0.05, no prior estimate of p. Approximately what n is needed?",
+              "options": [
+                "A. (1.645/(2x0.05))^2 = (16.45)^2 = 271",
+                "B. 385",
+                "C. 600",
+                "D. 250"
+              ],
+              "answer": 0,
+              "explanation": "For 90% CI, z*=1.645. n = (1.645/(2x0.05))^2 = (16.45)^2 = 270.6, round up to 271."
             }
           ]
         }
@@ -2609,46 +2675,79 @@
           "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 85 observations?",
           "type": "multiple",
           "options": [
-            "84",
-            "85",
-            "86",
-            "Depends on the significance level"
+            "A. 85",
+            "B. n-1 = 85-1 = 84",
+            "C. 83",
+            "D. 86"
           ],
-          "answer": 0,
+          "answer": 1,
           "explanation": "For a one-sample t-test, the degrees of freedom is always df = n - 1. With n = 85, we have df = 85 - 1 = 84. The degrees of freedom does not depend on the significance level; it only depends on the sample size.",
           "variants": [
             {
               "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 40 observations?",
               "options": [
-                "A. 40",
-                "B. 39",
+                "A. n-1 = 40-1 = 39",
+                "B. 40",
                 "C. 38",
-                "D. 41"
+                "D. 40"
               ],
-              "answer": 1,
-              "explanation": "df = n - 1 = 40 - 1 = 39 for a one-sample t-test."
+              "answer": 0,
+              "explanation": "df = n-1 = 40-1 = 39 for a one-sample t-test."
             },
             {
               "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 120 observations?",
               "options": [
-                "A. 120",
-                "B. 121",
-                "C. 119",
-                "D. 118"
+                "A. n-1 = 120-1 = 119",
+                "B. 120",
+                "C. 118",
+                "D. 120"
               ],
-              "answer": 2,
-              "explanation": "df = n - 1 = 120 - 1 = 119 for a one-sample t-test."
+              "answer": 0,
+              "explanation": "df = n-1 = 120-1 = 119 for a one-sample t-test."
             },
             {
               "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 25 observations?",
               "options": [
-                "A. 25",
-                "B. 23",
-                "C. 26",
-                "D. 24"
+                "A. n-1 = 25-1 = 24",
+                "B. 25",
+                "C. 23",
+                "D. 25"
               ],
-              "answer": 3,
-              "explanation": "df = n - 1 = 25 - 1 = 24 for a one-sample t-test."
+              "answer": 0,
+              "explanation": "df = n-1 = 25-1 = 24 for a one-sample t-test."
+            },
+            {
+              "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 60 observations?",
+              "options": [
+                "A. n-1 = 60-1 = 59",
+                "B. 60",
+                "C. 58",
+                "D. 60"
+              ],
+              "answer": 0,
+              "explanation": "df = n-1 = 60-1 = 59 for a one-sample t-test."
+            },
+            {
+              "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 200 observations?",
+              "options": [
+                "A. n-1 = 200-1 = 199",
+                "B. 200",
+                "C. 198",
+                "D. 200"
+              ],
+              "answer": 0,
+              "explanation": "df = n-1 = 200-1 = 199 for a one-sample t-test."
+            },
+            {
+              "question": "What is the degrees of freedom (df) for a one-sample t-test with n = 15 observations?",
+              "options": [
+                "A. n-1 = 15-1 = 14",
+                "B. 15",
+                "C. 13",
+                "D. 15"
+              ],
+              "answer": 0,
+              "explanation": "df = n-1 = 15-1 = 14 for a one-sample t-test."
             }
           ]
         },
@@ -2740,35 +2839,68 @@
             {
               "question": "Two groups: n1=20, s1=2.5, n2=20, s2=2.2. Pooled SD s_p = ?",
               "options": [
-                "2.35",
-                "2.50",
-                "2.23",
-                "2.15"
+                "A. sqrt(((20-1)(2.5^2)+(20-1)(2.2^2))/(20+20-2)) = 2.35",
+                "B. (2.5+2.2)/2 = 2.35",
+                "C. sqrt((2.5^2+2.2^2)/2) = 2.35",
+                "D. max(2.5,2.2) = 2.5"
               ],
               "answer": 0,
-              "explanation": "s_p = sqrt(((n1-1)*s1^2 + (n2-1)*s2^2) / (n1+n2-2)) = sqrt(((19)*6.25 + (19)*4.84) / 38) = sqrt(5.545) = 2.35."
+              "explanation": "s_p = sqrt(((20-1)*2.5^2 + (20-1)*2.2^2) / (20+20-2)) = sqrt(5.545) = 2.35."
             },
             {
               "question": "Two groups: n1=25, s1=3.0, n2=30, s2=2.8. Pooled SD s_p = ?",
               "options": [
-                "2.89",
-                "3.00",
-                "2.80",
-                "2.50"
+                "A. sqrt(((25-1)(3.0^2)+(30-1)(2.8^2))/(25+30-2)) = 2.89",
+                "B. (3.0+2.8)/2 = 2.9",
+                "C. sqrt((3.0^2+2.8^2)/2) = 2.9",
+                "D. max(3.0,2.8) = 3.0"
               ],
               "answer": 0,
-              "explanation": "s_p = sqrt(((24)*9 + (29)*7.84) / 53) = sqrt(8.365) = 2.89."
+              "explanation": "s_p = sqrt(((25-1)*3.0^2 + (30-1)*2.8^2) / (25+30-2)) = sqrt(8.365) = 2.89."
             },
             {
               "question": "Two groups: n1=18, s1=2.1, n2=22, s2=2.4. Pooled SD s_p = ?",
               "options": [
-                "2.27",
-                "2.40",
-                "2.10",
-                "2.50"
+                "A. sqrt(((18-1)(2.1^2)+(22-1)(2.4^2))/(18+22-2)) = 2.27",
+                "B. (2.1+2.4)/2 = 2.25",
+                "C. sqrt((2.1^2+2.4^2)/2) = 2.25",
+                "D. max(2.1,2.4) = 2.4"
               ],
               "answer": 0,
-              "explanation": "s_p = sqrt(((17)*4.41 + (21)*5.76) / 38) = sqrt(5.156) = 2.27."
+              "explanation": "s_p = sqrt(((18-1)*2.1^2 + (22-1)*2.4^2) / (18+22-2)) = sqrt(5.156) = 2.27."
+            },
+            {
+              "question": "Two groups: n1=30, s1=4.0, n2=25, s2=3.5. Pooled SD s_p = ?",
+              "options": [
+                "A. sqrt(((30-1)(4.0^2)+(25-1)(3.5^2))/(30+25-2)) = 3.78",
+                "B. (4.0+3.5)/2 = 3.75",
+                "C. sqrt((4.0^2+3.5^2)/2) = 3.76",
+                "D. max(4.0,3.5) = 4.0"
+              ],
+              "answer": 0,
+              "explanation": "s_p = sqrt(((30-1)*4.0^2 + (25-1)*3.5^2) / (30+25-2)) = sqrt(14.302) = 3.78."
+            },
+            {
+              "question": "Two groups: n1=15, s1=1.8, n2=20, s2=2.6. Pooled SD s_p = ?",
+              "options": [
+                "A. sqrt(((15-1)(1.8^2)+(20-1)(2.6^2))/(15+20-2)) = 2.29",
+                "B. (1.8+2.6)/2 = 2.2",
+                "C. sqrt((1.8^2+2.6^2)/2) = 2.24",
+                "D. max(1.8,2.6) = 2.6"
+              ],
+              "answer": 0,
+              "explanation": "s_p = sqrt(((15-1)*1.8^2 + (20-1)*2.6^2) / (15+20-2)) = sqrt(5.267) = 2.29."
+            },
+            {
+              "question": "Two groups: n1=40, s1=5.0, n2=35, s2=4.5. Pooled SD s_p = ?",
+              "options": [
+                "A. sqrt(((40-1)(5.0^2)+(35-1)(4.5^2))/(40+35-2)) = 4.77",
+                "B. (5.0+4.5)/2 = 4.75",
+                "C. sqrt((5.0^2+4.5^2)/2) = 4.76",
+                "D. max(5.0,4.5) = 5.0"
+              ],
+              "answer": 0,
+              "explanation": "s_p = sqrt(((40-1)*5.0^2 + (35-1)*4.5^2) / (40+35-2)) = sqrt(22.788) = 4.77."
             }
           ]
         },
@@ -2792,7 +2924,7 @@
           "options": [
             "A. 28",
             "B. 30",
-            "C. 56",
+            "C. 30+28-2 = 56",
             "D. 58"
           ],
           "answer": 2,
@@ -2801,35 +2933,68 @@
             {
               "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=25 and n2=25?",
               "options": [
-                "A. 25",
-                "B. 48",
-                "C. 50",
+                "A. 25+25-2 = 48",
+                "B. 50",
+                "C. 46",
                 "D. 24"
               ],
-              "answer": 1,
-              "explanation": "df = n1 + n2 - 2 = 25 + 25 - 2 = 48."
+              "answer": 0,
+              "explanation": "df = n1+n2-2 = 25+25-2 = 48."
             },
             {
               "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=15 and n2=20?",
               "options": [
-                "A. 35",
-                "B. 33",
-                "C. 14",
-                "D. 34"
+                "A. 15+20-2 = 33",
+                "B. 35",
+                "C. 31",
+                "D. 14"
               ],
-              "answer": 1,
-              "explanation": "df = n1 + n2 - 2 = 15 + 20 - 2 = 33."
+              "answer": 0,
+              "explanation": "df = n1+n2-2 = 15+20-2 = 33."
             },
             {
               "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=40 and n2=35?",
               "options": [
-                "A. 75",
-                "B. 74",
-                "C. 73",
-                "D. 70"
+                "A. 40+35-2 = 73",
+                "B. 75",
+                "C. 71",
+                "D. 39"
               ],
-              "answer": 2,
-              "explanation": "df = n1 + n2 - 2 = 40 + 35 - 2 = 73."
+              "answer": 0,
+              "explanation": "df = n1+n2-2 = 40+35-2 = 73."
+            },
+            {
+              "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=12 and n2=18?",
+              "options": [
+                "A. 12+18-2 = 28",
+                "B. 30",
+                "C. 26",
+                "D. 11"
+              ],
+              "answer": 0,
+              "explanation": "df = n1+n2-2 = 12+18-2 = 28."
+            },
+            {
+              "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=50 and n2=45?",
+              "options": [
+                "A. 50+45-2 = 93",
+                "B. 95",
+                "C. 91",
+                "D. 49"
+              ],
+              "answer": 0,
+              "explanation": "df = n1+n2-2 = 50+45-2 = 93."
+            },
+            {
+              "question": "What are the degrees of freedom for an equal-variance two-sample t-test with n1=10 and n2=15?",
+              "options": [
+                "A. 10+15-2 = 23",
+                "B. 25",
+                "C. 21",
+                "D. 9"
+              ],
+              "answer": 0,
+              "explanation": "df = n1+n2-2 = 10+15-2 = 23."
             }
           ]
         },
@@ -3106,10 +3271,10 @@
           "question": "When conducting a hypothesis test for the slope in regression with n = 25 observations, what are the degrees of freedom?",
           "type": "multiple",
           "options": [
-            "A) 24",
-            "B) 23",
-            "C) 25",
-            "D) 26"
+            "A. 24",
+            "B. n-2 = 25-2 = 23",
+            "C. 25",
+            "D. 26"
           ],
           "answer": 1,
           "explanation": "In regression inference, degrees of freedom = n - 2. With n = 25, df = 25 - 2 = 23. The two is subtracted because we estimate two parameters (the slope and intercept).",
@@ -3117,35 +3282,68 @@
             {
               "question": "When conducting a hypothesis test for the slope in regression with n = 40 observations, what are the degrees of freedom?",
               "options": [
-                "A) 40",
-                "B) 39",
-                "C) 38",
-                "D) 37"
+                "A. n-2 = 40-2 = 38",
+                "B. 39",
+                "C. 40",
+                "D. 37"
               ],
-              "answer": 2,
-              "explanation": "In regression inference, df = n - 2. With n = 40, df = 40 - 2 = 38. We lose 2 degrees of freedom because we estimate both b0 and b1."
+              "answer": 0,
+              "explanation": "Regression slope test: df = n-2 = 40-2 = 38. We lose 2 degrees of freedom because we estimate b0 and b1."
             },
             {
               "question": "When conducting a hypothesis test for the slope in regression with n = 15 observations, what are the degrees of freedom?",
               "options": [
-                "A) 13",
-                "B) 14",
-                "C) 15",
-                "D) 12"
+                "A. n-2 = 15-2 = 13",
+                "B. 14",
+                "C. 15",
+                "D. 12"
               ],
               "answer": 0,
-              "explanation": "In regression inference, df = n - 2. With n = 15, df = 15 - 2 = 13."
+              "explanation": "Regression slope test: df = n-2 = 15-2 = 13. We lose 2 degrees of freedom because we estimate b0 and b1."
             },
             {
               "question": "When conducting a hypothesis test for the slope in regression with n = 50 observations, what are the degrees of freedom?",
               "options": [
-                "A) 50",
-                "B) 49",
-                "C) 48",
-                "D) 47"
+                "A. n-2 = 50-2 = 48",
+                "B. 49",
+                "C. 50",
+                "D. 47"
               ],
-              "answer": 2,
-              "explanation": "In regression inference, df = n - 2. With n = 50, df = 50 - 2 = 48."
+              "answer": 0,
+              "explanation": "Regression slope test: df = n-2 = 50-2 = 48. We lose 2 degrees of freedom because we estimate b0 and b1."
+            },
+            {
+              "question": "When conducting a hypothesis test for the slope in regression with n = 30 observations, what are the degrees of freedom?",
+              "options": [
+                "A. n-2 = 30-2 = 28",
+                "B. 29",
+                "C. 30",
+                "D. 27"
+              ],
+              "answer": 0,
+              "explanation": "Regression slope test: df = n-2 = 30-2 = 28. We lose 2 degrees of freedom because we estimate b0 and b1."
+            },
+            {
+              "question": "When conducting a hypothesis test for the slope in regression with n = 100 observations, what are the degrees of freedom?",
+              "options": [
+                "A. n-2 = 100-2 = 98",
+                "B. 99",
+                "C. 100",
+                "D. 97"
+              ],
+              "answer": 0,
+              "explanation": "Regression slope test: df = n-2 = 100-2 = 98. We lose 2 degrees of freedom because we estimate b0 and b1."
+            },
+            {
+              "question": "When conducting a hypothesis test for the slope in regression with n = 20 observations, what are the degrees of freedom?",
+              "options": [
+                "A. n-2 = 20-2 = 18",
+                "B. 19",
+                "C. 20",
+                "D. 17"
+              ],
+              "answer": 0,
+              "explanation": "Regression slope test: df = n-2 = 20-2 = 18. We lose 2 degrees of freedom because we estimate b0 and b1."
             }
           ]
         },
@@ -3167,10 +3365,10 @@
           "question": "A regression model has b0 = 5 and b1 = 3. What is the predicted value when x = 4?",
           "type": "multiple",
           "options": [
-            "A) 17",
-            "B) 12",
-            "C) 9",
-            "D) 20"
+            "A. 5 + 3(4) = 5 + 12 = 17",
+            "B. 5 x 3 x 4 = 60",
+            "C. 3 + 5(4) = 23",
+            "D. 5 + 3 = 8"
           ],
           "answer": 0,
           "explanation": "Using the regression equation y-hat = b₀ + b₁×x, we get y-hat = 5 + 3(4) = 5 + 12 = 17.",
@@ -3178,35 +3376,68 @@
             {
               "question": "A regression model has b0 = 3 and b1 = 2. What is the predicted value when x = 5?",
               "options": [
-                "A) 13",
-                "B) 11",
-                "C) 15",
-                "D) 10"
+                "A. 3 + 2(5) = 13",
+                "B. 10",
+                "C. 11",
+                "D. 5"
               ],
               "answer": 0,
-              "explanation": "y-hat = b0 + b1*x = 3 + 2*5 = 3 + 10 = 13."
+              "explanation": "y-hat = b0 + b1*x = 3 + 2(5) = 13."
             },
             {
               "question": "A regression model has b0 = 10 and b1 = 4. What is the predicted value when x = 6?",
               "options": [
-                "A) 34",
-                "B) 30",
-                "C) 38",
-                "D) 26"
+                "A. 10 + 4(6) = 34",
+                "B. 20",
+                "C. 46",
+                "D. 14"
               ],
               "answer": 0,
-              "explanation": "y-hat = b0 + b1*x = 10 + 4*6 = 10 + 24 = 34."
+              "explanation": "y-hat = b0 + b1*x = 10 + 4(6) = 34."
             },
             {
               "question": "A regression model has b0 = -2 and b1 = 3. What is the predicted value when x = 7?",
               "options": [
-                "A) 19",
-                "B) 17",
-                "C) 21",
-                "D) 23"
+                "A. -2 + 3(7) = 19",
+                "B. 8",
+                "C. 1",
+                "D. 1"
               ],
               "answer": 0,
-              "explanation": "y-hat = b0 + b1*x = -2 + 3*7 = -2 + 21 = 19."
+              "explanation": "y-hat = b0 + b1*x = -2 + 3(7) = 19."
+            },
+            {
+              "question": "A regression model has b0 = 0 and b1 = 5. What is the predicted value when x = 8?",
+              "options": [
+                "A. 0 + 5(8) = 40",
+                "B. 13",
+                "C. 8",
+                "D. 5"
+              ],
+              "answer": 0,
+              "explanation": "y-hat = b0 + b1*x = 0 + 5(8) = 40."
+            },
+            {
+              "question": "A regression model has b0 = 7 and b1 = 1.5. What is the predicted value when x = 4?",
+              "options": [
+                "A. 7 + 1.5(4) = 13.0",
+                "B. 12.5",
+                "C. 14.5",
+                "D. 8.5"
+              ],
+              "answer": 0,
+              "explanation": "y-hat = b0 + b1*x = 7 + 1.5(4) = 13.0."
+            },
+            {
+              "question": "A regression model has b0 = 20 and b1 = -2. What is the predicted value when x = 6?",
+              "options": [
+                "A. 20 + -2(6) = 8",
+                "B. 24",
+                "C. -34",
+                "D. 18"
+              ],
+              "answer": 0,
+              "explanation": "y-hat = b0 + b1*x = 20 + -2(6) = 8."
             }
           ]
         },
