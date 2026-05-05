@@ -384,7 +384,7 @@ function CheckboxOption({ label, text, checked, state, onChange, disabled }) {
 function QuizQuestion({ q, qi, answers, submitted, onAnswer }) {
   const answered  = isAnswered(q, answers)
   const correct   = submitted ? isCorrect(q, answers) : null
-  const qType     = q.type ?? 'multiple'
+  const qType     = (q.type === 'mc' || q.type == null) ? 'multiple' : q.type
 
   const borderColor = !submitted ? (answered ? 'rgba(0,255,65,0.12)' : 'rgba(255,255,255,0.06)')
     : (correct ? 'rgba(0,255,65,0.2)' : 'rgba(255,45,85,0.2)')
@@ -615,10 +615,14 @@ export default function ModulePage({ course, mod, modIndex, prevMod, nextMod }) 
   const ec = (a) => isFinalExam ? `rgba(168,85,247,${a})` : `rgba(255,184,0,${a})`
   const examLabel      = isFinalExam ? 'FINAL' : 'EXAM CHECKPOINT'
 
-  // resolvedRegularQuiz: variant-picked once per module load (not re-picked on every render)
-  const [resolvedRegularQuiz, setResolvedRegularQuiz] = useState(() => (mod.quiz ?? []).map(resolveVariant))
+  // resolvedRegularQuiz: shuffled, capped at 10, variant-picked once per module load
+  const pickQuiz = (questions) => {
+    const shuffled = [...questions].sort(() => Math.random() - 0.5)
+    return shuffled.slice(0, Math.min(10, shuffled.length)).map(resolveVariant)
+  }
+  const [resolvedRegularQuiz, setResolvedRegularQuiz] = useState(() => pickQuiz(mod.quiz ?? []))
   useEffect(() => {
-    setResolvedRegularQuiz((mod.quiz ?? []).map(resolveVariant))
+    setResolvedRegularQuiz(pickQuiz(mod.quiz ?? []))
   }, [mod.id])
 
   const quiz       = (quizReady && mod.isExam) ? activeQuiz : resolvedRegularQuiz
